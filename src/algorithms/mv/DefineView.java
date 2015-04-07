@@ -1,0 +1,160 @@
+/*
+ * Automatic Creation Materialized Views
+ * Authors: rpoliveira@inf.puc-rio.br, sergio@inf.puc-rio.br  *
+ */
+package algorithms.mv;
+
+import algorithms.Algorithms;
+import base.MaterializedVision;
+import drivers.Table;
+import java.util.ArrayList;
+
+/**
+ *
+ * @author Rafael
+ */
+public class DefineView extends Algorithms {
+
+    private String select;
+    private String from;
+    private String where;
+    private String groupBy;
+    private String orderBy;
+
+    public ArrayList<MaterializedVision> getWorkloadSelected(ArrayList<MaterializedVision> capturedQueries) {
+        for (int i = 0; i < capturedQueries.size(); i++) {
+            MaterializedVision current = (MaterializedVision) capturedQueries.get(i);
+            current.setHypoMaterializedView(this.getDdlCreateViewFromQuery(current));
+            capturedQueries.set(i, current);
+        }
+        return capturedQueries;
+    }
+
+    public String getDdlCreateViewFromQuery(MaterializedVision query) {
+        this.gerateClauseSelectForDDLView(query);
+        this.gerateClauseFromForDDLView(query);
+        this.gerateClauseWhereForDDLView(query);
+        this.gerateClauseGroupByForDDLView(query);
+        this.gerateClauseOrderByForDDLView(query);
+        return this.getDdlCreateViewComplete();
+    }
+
+    private String getDdlCreateViewComplete() {
+        return this.treatComma(this.select) + " "
+                + treatComma(this.from) + " "
+                + treatComma(this.where) + " "
+                + treatComma(this.groupBy) + " "
+                + treatComma(this.orderBy);
+    }
+
+    private String treatComma(String query) {
+        query = query.trim();
+        if (query.length() > 0 && query.charAt(query.length() - 1) == ',') {
+            query = query.substring(0, query.length() - 1);
+        }
+        return query;
+    }
+
+    public void gerateClauseSelectForDDLView(MaterializedVision query) {
+        this.select = query.getClauseFromSql("select").trim();
+        String fields = ", ";
+        if (!this.select.equals("select *")) {
+            for (Table table : query.getTablesQuery()) {
+                for (String field : table.getFields()) {
+                    if (query.getSql().contains(field) && !select.contains(field)) {
+                        if (!fields.equals(", ")) {
+                            fields += ", ";
+                        }
+                        fields += field;
+                    }
+                }
+            }
+        }
+        this.select = query.getComents() + this.select + fields;
+        this.groupBy = fields;
+    }
+
+    public void gerateClauseFromForDDLView(MaterializedVision query) {
+        this.from = query.getClauseFromSql("from");
+        for (Table table : query.getTablesQuery()) {
+            if (!this.from.contains(table.getName())) {
+                this.from += ", " + table.getName();
+            }
+        }
+    }
+
+    public void gerateClauseGroupByForDDLView(MaterializedVision query) {
+        if (!this.groupBy.isEmpty() && query.existClause("group by")) {
+            this.groupBy = query.getClauseFromSql("group by") + this.groupBy;
+        } else {
+            if (this.hasForceClauseGroupBy()) {
+                this.groupBy = " group by " + this.groupBy.substring(1);
+            } else {
+                this.groupBy = "";
+            }
+        }
+    }
+
+    public void gerateClauseOrderByForDDLView(MaterializedVision query) {
+        this.orderBy = query.getClauseFromSql("order by");
+    }
+
+    public boolean hasForceClauseGroupBy() {
+        return !this.groupBy.trim().isEmpty() && !this.groupBy.trim().equals(",") && (this.select.contains(" sum(") || this.select.contains(" count("));
+    }
+    
+    public void gerateClauseWhereForDDLView(MaterializedVision query) {
+        String clause = query.getClauseFromSql("where");
+        Combinacao combination = new Combinacao();
+        ArrayList<String> lista = combination.dividirExpressaoPredicado(clause);
+        this.where = "";
+        for (String constrain : lista) {
+            if (isConstrainValid(constrain) && !this.where.contains(constrain)) {
+                if (!this.where.isEmpty()) {
+                    this.where += " and ";
+                }
+                this.where += " " + constrain;
+            }
+        }
+        if (!this.where.isEmpty()) {
+            this.where = "where " + this.where;
+        }
+    }
+    
+    private boolean isConstrainValid(String constrain) {
+        if (constrain.contains("'") || constrain.contains("\"")) {
+            return false;
+        }
+        if (constrain.contains("<")) {
+            return false;
+        }
+        if (constrain.contains(">")) {
+            return false;
+        }
+        String[] words = constrain.split(" ");
+        for (String word : words) {
+            if (this.containNumber(word)) {
+                return false;
+            }
+        }
+        return true;
+    }
+    
+    private boolean containNumber(String word) {
+        if (word.contains("0")
+                || word.contains("1")
+                || word.contains("2")
+                || word.contains("3")
+                || word.contains("4")
+                || word.contains("5")
+                || word.contains("6")
+                || word.contains("7")
+                || word.contains("8")
+                || word.contains("9")) {
+            return true;
+        }
+        return false;
+    }
+    
+
+}
