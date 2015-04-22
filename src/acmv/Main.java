@@ -1,4 +1,4 @@
-package acmv;
+package dbx;
 
 import agents.factory.ObserverFactory;
 import agents.factory.PredictorFactory;
