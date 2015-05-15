@@ -23,7 +23,7 @@ public final class DriverSQLServer extends Driver {
     private void connect() {
         try {
             if (DriverSQLServer.connection == null) {
-                DriverSQLServer.connection = DriverManager.getConnection(this.propertiesFile.getProperty("urlSqlServer") + this.propertiesFile.getProperty("databaseName"), this.propertiesFile.getProperty("userSqlServer"), this.propertiesFile.getProperty("pwdSqlServer"));
+                DriverSQLServer.connection = DriverManager.getConnection(this.propertiesFile.getProperty("urlSQLServer") + "databaseName=" + this.propertiesFile.getProperty("databaseName") + ";", this.propertiesFile.getProperty("userSQLServer"), this.propertiesFile.getProperty("pwdSQLServer"));
                 log.msgPrint("Conectado ao bd!", this.getClass().toString());
             }
         } catch (SQLException e) {

@@ -5,7 +5,6 @@
 package agents;
 
 import static agents.Agent.driver;
-import agents.interfaces.IAgent;
 import base.Base;
 import static base.Base.log;
 import base.MaterializedVision;
@@ -13,13 +12,12 @@ import base.Queries;
 import drivers.Driver;
 import drivers.Schema;
 import drivers.Table;
-import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
 
-public class Agent extends Base implements IAgent {
+public class Agent extends Base {
 
     protected static Driver driver;
     protected ResultSet resultset;
@@ -36,7 +34,8 @@ public class Agent extends Base implements IAgent {
     public void getSchemaDataBase() {
         try {
             driver.createStatement();
-            this.resultset = driver.executeQuery(this.queries.getSqlTableNames(this.propertiesFile.getProperty("database")));
+            String query = this.queries.getSqlTableNames(this.propertiesFile.getProperty("databaseName"));
+            this.resultset = driver.executeQuery(query);
             log.title("Criando o objeto Schema", this.getClass().toString());
             if (this.resultset != null) {
                 while (this.resultset.next()) {
@@ -54,24 +53,8 @@ public class Agent extends Base implements IAgent {
         }
     }
 
-    @Override
     public String getPlanQuery(String query) {
-        String partitionedPlan = "";
-        System.out.println(query);
-        try {
-            PreparedStatement preparedStatement;
-            preparedStatement = driver.prepareStatement(this.queries.getSqlClauseToGetThePlan(query));
-            try (ResultSet result = driver.executeQuery(preparedStatement)) {
-                while (result.next()) {
-                    partitionedPlan += "\n" + result.getString(1);
-                }
-            }
-            driver.closeStatement();
-        } catch (SQLException e) {
-            log.errorPrint(this.queries.getSqlClauseToGetThePlan(query), this.getClass().toString());
-            log.errorPrint(e, this.getClass().toString());
-        }
-        return partitionedPlan.trim();
+        return this.queries.getPlanExecution(driver, query).trim();
     }
 
 }

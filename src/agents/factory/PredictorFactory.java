@@ -4,7 +4,7 @@
  */
 package agents.factory;
 
-import agents.postgresql.PredictorMVPostgreSQL;
+import agents.postgresql.PredictorMVPostgreSQLMV;
 import base.Base;
 import static base.Base.log;
 
@@ -18,7 +18,7 @@ public class PredictorFactory extends Base implements Runnable {
         switch (Integer.parseInt(this.propertiesFile.getProperty("database"))) {
             case 2:
                 if (Integer.parseInt(this.propertiesFile.getProperty("executionMode")) == 2) {
-                    PredictorMVPostgreSQL pr = new PredictorMVPostgreSQL();
+                    PredictorMVPostgreSQLMV pr = new PredictorMVPostgreSQLMV();
                     pr.run();
                 }
                 break;

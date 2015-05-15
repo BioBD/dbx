@@ -11,9 +11,9 @@ import algorithms.mv.DefineView;
 import static base.Base.log;
 import base.MaterializedVision;
 import static java.lang.Thread.sleep;
+import java.math.BigDecimal;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
-import java.math.BigDecimal;
 
 /**
  *

@@ -4,7 +4,7 @@
  */
 package agents.factory;
 
-import agents.postgresql.ReactorPostgreSQL;
+import agents.postgresql.ReactorPostgreSQLMV;
 import base.Base;
 import static base.Base.log;
 
@@ -18,7 +18,7 @@ public class ReactorFactory extends Base implements Runnable {
         switch (Integer.parseInt(this.propertiesFile.getProperty("database"))) {
             case 2:
                 if (Integer.parseInt(this.propertiesFile.getProperty("executionMode")) == 2) {
-                    ReactorPostgreSQL reactor = new ReactorPostgreSQL();
+                    ReactorPostgreSQLMV reactor = new ReactorPostgreSQLMV();
                     reactor.run();
                 }
                 break;

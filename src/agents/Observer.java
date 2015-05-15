@@ -87,7 +87,7 @@ public abstract class Observer extends Agent {
     }
 
     public boolean isQueryGeneratedByACMV(String query) {
-        return query.contains(this.signatureToDifferentiate);
+        return query.contains(this.getSignatureToDifferentiate());
     }
 
     private boolean isNoQuerySelect(String query) {
@@ -161,7 +161,8 @@ public abstract class Observer extends Agent {
 
     public int getIdWorkload(String query) {
         try {
-            PreparedStatement preparedStatement = driver.prepareStatement(this.queries.getSqlClauseToCheckIfQueryIsAlreadyCaptured());
+            String queryTemp = this.queries.getSqlClauseToCheckIfQueryIsAlreadyCaptured();
+            PreparedStatement preparedStatement = driver.prepareStatement(queryTemp);
             preparedStatement.setString(1, query);
             ResultSet result = driver.executeQuery(preparedStatement);
             if (result.next()) {

@@ -4,13 +4,13 @@
  */
 package base;
 
+import drivers.Driver;
+
 /**
  *
  * @author Rafael
  */
 public interface IQueries {
-
-    public String getSqlClauseToGetThePlan(String query);
 
     public String getSqlClauseToCaptureCurrentQueries(String database);
 
@@ -42,4 +42,5 @@ public interface IQueries {
 
     public String getSqlDDLNotAnalizedReactor();
 
+    public String getPlanExecution(Driver driver, String query);
 }

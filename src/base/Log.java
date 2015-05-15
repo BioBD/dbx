@@ -4,10 +4,15 @@
  */
 package base;
 
+import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.PrintWriter;
+import java.io.UnsupportedEncodingException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Properties;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -117,6 +122,15 @@ public final class Log {
 
     public void endTitle(String agent) {
         this.title("fim", agent);
+    }
+
+    public void writeToFile(String text, String name) {
+        try (PrintWriter writer = new PrintWriter(name, "UTF-8")) {
+            writer.write(text);
+            writer.close();
+        } catch (FileNotFoundException | UnsupportedEncodingException ex) {
+            Logger.getLogger(Log.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
 
 }

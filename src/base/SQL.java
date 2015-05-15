@@ -6,10 +6,10 @@ package base;
 
 import drivers.Schema;
 import drivers.Table;
+import java.math.BigInteger;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.math.BigInteger;
 
 /**
  *
@@ -34,9 +34,19 @@ public class SQL extends Base {
     }
 
     private void setCost() {
-        int ini = this.getPlan().indexOf("..") + 2;
-        int end = this.getPlan().substring(ini).indexOf(".") + ini;
-        this.cost = new BigInteger(this.getPlan().substring(ini,end));
+        if (!this.getPlan().isEmpty()) {
+            if (planIsXML()) {
+                int ini = this.getPlan().toLowerCase().indexOf("statementsubtreecost=") + 22;
+                int end = this.getPlan().substring(ini).indexOf('"') + ini;
+                String numero = this.getPlan().substring(ini, end);
+                numero = numero.replaceAll("\\.", "");
+                this.cost = new BigInteger(numero);
+            } else {
+                int ini = this.getPlan().indexOf("..") + 2;
+                int end = this.getPlan().substring(ini).indexOf(".") + ini;
+                this.cost = new BigInteger(this.getPlan().substring(ini, end));
+            }
+        }
     }
 
     public Schema getSchemaDataBase() {
@@ -259,4 +269,7 @@ public class SQL extends Base {
         return this.getSql().toLowerCase().contains(clause);
     }
 
+    public boolean planIsXML() {
+        return this.getPlan().toLowerCase().contains("showplanxml");
+    }
 }

@@ -51,11 +51,6 @@ public class Driver extends Base {
     }
 
     public void closeStatement() {
-//        try {
-////            this.statement.close();
-//        } catch (SQLException e) {
-//            log.errorPrint(e);
-//        }
     }
 
     public void executeUpdate(PreparedStatement prepared) {
@@ -75,4 +70,7 @@ public class Driver extends Base {
         }
     }
 
+    public Statement getStatement() {
+        return statement;
+    }
 }

@@ -12,12 +12,16 @@ import java.util.regex.Pattern;
 public class Base {
 
     public static Log log;
-    public String signatureToDifferentiate;
+    private String signatureToDifferentiate;
     public Properties propertiesFile;
 
     public Base() {
         Base.log = new Log();
         this.getPropertiesFromFile();
+    }
+
+    public String getSignatureToDifferentiate() {
+        return signatureToDifferentiate;
     }
 
     private void getPropertiesFromFile() {

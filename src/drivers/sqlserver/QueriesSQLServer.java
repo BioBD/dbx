@@ -4,7 +4,12 @@
  */
 package drivers.sqlserver;
 
+import static base.Base.log;
 import base.Queries;
+import drivers.Driver;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 
 /**
  *
@@ -25,8 +30,7 @@ public class QueriesSQLServer extends Queries {
     @Override
     public String getSqlTableNames(String database) {
         return this.getSignatureToDifferentiate() + "USE " + database
-                + "GO "
-                + "SELECT t.name AS table_name, "
+                + " SELECT t.name AS table_name, "
                 + "(SELECT STUFF(( SELECT ', ' + c.name "
                 + "       FROM sys.columns c where t.OBJECT_ID = c.OBJECT_ID "
                 + "        FOR XML PATH('') ), 1,1,'') AS activities ) AS f "
@@ -45,4 +49,50 @@ public class QueriesSQLServer extends Queries {
         return this.getSignatureToDifferentiate() + "CREATE VIEW dbo." + nameView + " WITH SCHEMABINDING AS " + query + "GO;";
     }
 
+    @Override
+    public String getPlanExecution(Driver driver, String query) {
+        String partitionedPlan = "";
+        try {
+            ResultSet resultset = this.getResultPlanQuery(driver, query);
+            while (resultset.next()) {
+                partitionedPlan += " " + resultset.getString(1);
+            }
+            if (partitionedPlan.isEmpty()) {
+                driver.executeQuery(query);
+
+                resultset = this.getResultPlanQuery(driver, query);
+                while (resultset.next()) {
+                    partitionedPlan += " " + resultset.getString(1);
+                }
+            }
+        } catch (SQLException ex) {
+            log.errorPrint(ex, query);
+        }
+        return partitionedPlan;
+    }
+
+    private ResultSet getResultPlanQuery(Driver driver, String query) {
+        String queryGetPlan = "SELECT "
+                + "qp.query_plan AS QueryPlan "
+                + "FROM sys.dm_exec_cached_plans AS cp "
+                + "CROSS APPLY sys.dm_exec_query_plan(cp.plan_handle) AS qp "
+                + "CROSS APPLY sys.dm_exec_sql_text(cp.plan_handle) AS st "
+                + "where cp.objtype = 'Adhoc' "
+                + "and st.TEXT like ?;";
+        try {
+            driver.createStatement();
+            PreparedStatement preparedStatement = driver.prepareStatement(queryGetPlan);
+            preparedStatement.setString(1, query);
+            ResultSet result = driver.executeQuery(preparedStatement);
+            if (result != null) {
+
+                return result;
+            } else {
+                log.msgPrint("error", "ff");
+            }
+        } catch (SQLException ex) {
+            log.errorPrint(ex, query);
+        }
+        return null;
+    }
 }

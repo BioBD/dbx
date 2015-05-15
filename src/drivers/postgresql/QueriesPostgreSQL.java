@@ -5,6 +5,9 @@
 package drivers.postgresql;
 
 import base.Queries;
+import drivers.Driver;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 
 public class QueriesPostgreSQL extends Queries {
 
@@ -46,6 +49,23 @@ public class QueriesPostgreSQL extends Queries {
     @Override
     public String getSqlClauseToCaptureCurrentQueries(String database) {
         return this.getSignatureToDifferentiate() + " select pid as processo_id, query as sql, query_start as inicio, datname as database_name from pg_stat_activity where datname like '" + database + "';";
+    }
+
+    @Override
+    public String getPlanExecution(Driver driver, String query) {
+        String partitionedPlan = "";
+        if (!query.isEmpty()) {
+            try {
+                driver.createStatement();
+                ResultSet result = driver.executeQuery(this.getSignatureToDifferentiate() + " EXPLAIN " + query + ";");
+                while (result.next()) {
+                    partitionedPlan += "\n" + result.getString(1);
+                }
+            } catch (SQLException ex) {
+                log.errorPrint(ex, query);
+            }
+        }
+        return partitionedPlan;
     }
 
 }
