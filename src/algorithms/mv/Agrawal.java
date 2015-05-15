@@ -7,7 +7,7 @@ package algorithms.mv;
 import agents.ObserverMV;
 import algorithms.Algorithms;
 import static base.Base.log;
-import base.MaterializedVision;
+import base.MaterializedView;
 import base.SQL;
 import java.util.ArrayList;
 import java.math.BigInteger;
@@ -19,7 +19,7 @@ import java.math.BigInteger;
 public class Agrawal extends Algorithms {
 
     private final ObserverMV observer;
-    private ArrayList<MaterializedVision> capturedQueries;
+    private ArrayList<MaterializedView> capturedQueries;
     private final int treshold;
     private int maxTables;
 
@@ -28,7 +28,7 @@ public class Agrawal extends Algorithms {
         this.treshold = Integer.parseInt(this.propertiesFile.getProperty("threshold"));
     }
 
-    public ArrayList<MaterializedVision> getWorkloadSelected(ArrayList<MaterializedVision> capturedQueries) {
+    public ArrayList<MaterializedView> getWorkloadSelected(ArrayList<MaterializedView> capturedQueries) {
         try {
             this.capturedQueries = capturedQueries;
             int i = 1;

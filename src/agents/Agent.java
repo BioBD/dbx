@@ -7,7 +7,7 @@ package agents;
 import static agents.Agent.driver;
 import base.Base;
 import static base.Base.log;
-import base.MaterializedVision;
+import base.MaterializedView;
 import base.Queries;
 import drivers.Driver;
 import drivers.Schema;
@@ -23,7 +23,7 @@ public class Agent extends Base {
     protected ResultSet resultset;
     protected Queries queries;
     protected Schema schema;
-    protected ArrayList<MaterializedVision> capturedQueriesForAnalyses;
+    protected ArrayList<MaterializedView> capturedQueriesForAnalyses;
 
     public Agent() {
         super();

@@ -30,6 +30,18 @@ public class Base {
             prop.load(Log.class.getResourceAsStream("database.properties"));
             this.signatureToDifferentiate = String.valueOf(prop.getProperty("signature"));
             this.propertiesFile = prop;
+            switch (this.propertiesFile.getProperty("database")) {
+                case "2":
+                    prop.load(Log.class.getResourceAsStream("database_postgresql.properties"));
+                    this.propertiesFile.putAll(prop);
+                    break;
+                case "3":
+                    prop.load(Log.class.getResourceAsStream("database_sqlserver.properties"));
+                    this.propertiesFile.putAll(prop);
+                    break;
+
+            }
+
         } catch (IOException e) {
             log.errorPrint(e, this.getClass().toString());
         }

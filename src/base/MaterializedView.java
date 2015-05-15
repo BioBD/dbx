@@ -4,7 +4,6 @@
  */
 package base;
 
-import algorithms.mv.CalculateHypoCostPostgres;
 import static base.Base.log;
 import java.math.BigDecimal;
 import java.math.BigInteger;
@@ -16,19 +15,20 @@ import java.sql.SQLException;
  *
  * @author Rafael
  */
-public class MaterializedVision extends SQL {
+public abstract class MaterializedView extends SQL implements IMaterializedView {
 
     private String hypoPlan;
     private String hypoMaterializedView;
-    private BigInteger hypoCost;
+    protected BigInteger hypoCost;
     private BigInteger hypoGain;
-    private BigInteger hypoNumRow;
-    private int hypoSizeRow;
     private BigInteger hypoNumPages;
     private BigInteger hypoCreationCost;
     private int pageSize;
-    private double fillfactory;
     private BigDecimal hypoGainAC;
+
+    protected double fillfactory;
+    protected int hypoSizeRow;
+    protected BigInteger hypoNumRow;
 
     public String getHypoPlan() {
         return hypoPlan;
@@ -71,34 +71,6 @@ public class MaterializedVision extends SQL {
         return hypoCost;
     }
 
-    public void setHypoCost() {
-        BigInteger numPages;
-        BigDecimal numPagesTemp = new BigDecimal(this.hypoNumRow);
-        numPagesTemp = numPagesTemp.multiply(BigDecimal.valueOf(this.hypoSizeRow)).multiply(BigDecimal.valueOf(fillfactory));
-        numPagesTemp = numPagesTemp.divide(BigDecimal.valueOf(this.getPageSize()));
-        numPages = numPagesTemp.toBigInteger();
-
-        switch (Integer.valueOf(this.propertiesFile.getProperty("database"))) {
-            case 2:
-                CalculateHypoCostPostgres hypoPostgres = new CalculateHypoCostPostgres();
-                this.hypoCost = hypoPostgres.calculateHypoCostPostgres(this, numPages, this.hypoNumRow);
-                break;
-            default:
-                this.hypoCost = numPages;
-
-        }
-
-        log.title("custo hypotético visão " + this.getComents(), this.getClass().toString());
-        log.msgPrint("hypoNumRow: " + this.hypoNumRow, this.getClass().toString());
-        log.msgPrint("hypoSizeRow: " + this.hypoSizeRow, this.getClass().toString());
-        log.msgPrint("hypoCost: " + this.hypoCost, this.getClass().toString());
-        log.msgPrint("fillFactory: " + this.fillfactory, this.getClass().toString());
-        log.msgPrint("pageSize: " + this.getPageSize(), this.getClass().toString());
-        log.msgPrint("Cost: " + this.getCost(), this.getClass().toString());
-        log.msgPrint("Cost - hypoCost: " + (this.getCost().subtract(this.hypoCost)), this.getClass().toString());
-        log.endTitle(this.getClass().toString());
-    }
-
     public BigInteger getHypoGain() {
         return hypoGain;
     }
@@ -124,33 +96,8 @@ public class MaterializedVision extends SQL {
         return hypoNumRow;
     }
 
-    public void setHypoNumRow() {
-        if (planIsXML()) {
-            int ini = this.getHypoPlan().toLowerCase().indexOf("statementestrows=") + 18;
-            int end = this.getHypoPlan().substring(ini).indexOf('"') + ini;
-            this.hypoNumRow = new BigInteger(this.getHypoPlan().substring(ini, end));
-        } else {
-            int ini = this.getHypoPlan().indexOf("rows=") + 5;
-            int end = this.getHypoPlan().substring(ini).indexOf(" ") + ini;
-            this.hypoNumRow = new BigInteger(this.getHypoPlan().substring(ini, end));
-        }
-    }
-
     public long getHypoSizeRow() {
         return hypoSizeRow;
-    }
-
-    public void setHypoSizeRow() {
-        if (planIsXML()) {
-            int ini = this.getHypoPlan().toLowerCase().indexOf("statementestrows=") + 18;
-            int end = this.getHypoPlan().substring(ini).indexOf('"') + ini;
-            this.hypoSizeRow = Integer.valueOf(this.getHypoPlan().substring(ini, end));
-        } else {
-            int ini = this.getHypoPlan().indexOf("width=") + 6;
-            int end = this.getHypoPlan().substring(ini).indexOf(")") + ini;
-            this.hypoSizeRow = Integer.valueOf(this.getHypoPlan().substring(ini, end));
-        }
-
     }
 
     public BigInteger getHypoNumPages() {
@@ -187,7 +134,7 @@ public class MaterializedVision extends SQL {
         this.pageSize = Integer.valueOf(this.propertiesFile.getProperty("sizepagedb"));
     }
 
-    private int getPageSize() {
+    public int getPageSize() {
         return this.pageSize;
     }
 
@@ -207,6 +154,24 @@ public class MaterializedVision extends SQL {
             return false;
         }
 
+    }
+
+    protected void printStatistics() {
+        log.title("custo hypotético visão " + this.getComents(), this.getClass().toString());
+        log.msgPrint("hypoNumRow: " + this.hypoNumRow, this.getClass().toString());
+        log.msgPrint("hypoSizeRow: " + this.hypoSizeRow, this.getClass().toString());
+        log.msgPrint("hypoCost: " + this.hypoCost, this.getClass().toString());
+        log.msgPrint("fillFactory: " + this.fillfactory, this.getClass().toString());
+        log.msgPrint("pageSize: " + this.getPageSize(), this.getClass().toString());
+        log.msgPrint("Cost: " + this.getCost(), this.getClass().toString());
+        log.msgPrint("Cost - hypoCost: " + (this.getCost().subtract(this.hypoCost)), this.getClass().toString());
+        log.endTitle(this.getClass().toString());
+    }
+
+    @Override
+    public void setPlan(String plan) {
+        super.setPlan(plan);
+        this.setCost();
     }
 
 }

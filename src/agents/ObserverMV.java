@@ -9,7 +9,7 @@ import agents.interfaces.IObserverMV;
 import algorithms.mv.Agrawal;
 import algorithms.mv.DefineView;
 import static base.Base.log;
-import base.MaterializedVision;
+import base.MaterializedView;
 import static java.lang.Thread.sleep;
 import java.math.BigDecimal;
 import java.sql.PreparedStatement;
@@ -39,29 +39,6 @@ public abstract class ObserverMV extends Observer implements IObserverMV {
         this.getQueriesNotAnalized();
         this.executeAgrawal();
         this.executeDefineView();
-    }
-
-    @Override
-    public void getQueriesNotAnalized() {
-        try {
-            driver.createStatement();
-            this.capturedQueriesForAnalyses.clear();
-            this.resultset = driver.executeQuery(this.queries.getSqlQueriesNotAnalized());
-            if (this.resultset != null) {
-                while (this.resultset.next()) {
-                    MaterializedVision currentQuery = new MaterializedVision();
-                    currentQuery.setResultSet(this.resultset);
-                    currentQuery.setSchemaDataBase(this.schema);
-                    this.capturedQueriesForAnalyses.add(currentQuery);
-                }
-                if (!this.capturedQueriesForAnalyses.isEmpty()) {
-                    this.updateQueryAnalizedCount();
-                }
-            }
-            driver.closeStatement();
-        } catch (SQLException e) {
-            log.errorPrint(e, this.getClass().toString());
-        }
     }
 
     @Override
@@ -98,7 +75,7 @@ public abstract class ObserverMV extends Observer implements IObserverMV {
 
     public void getPlanDDLViews() {
         driver.createStatement();
-        MaterializedVision query;
+        MaterializedView query;
         for (int i = 0; i < this.capturedQueriesForAnalyses.size(); ++i) {
             query = this.capturedQueriesForAnalyses.get(i);
             query.setHypoPlan(this.getPlanQuery(query.getHypoMaterializedView()));
@@ -110,7 +87,7 @@ public abstract class ObserverMV extends Observer implements IObserverMV {
         try {
             if (this.capturedQueriesForAnalyses.size() > 0) {
                 log.title("Persist ddl create MV", this.getClass().toString());
-                for (MaterializedVision query : this.capturedQueriesForAnalyses) {
+                for (MaterializedView query : this.capturedQueriesForAnalyses) {
                     log.msgPrint(query.getComents(), this.getClass().toString());
                     if (!query.getHypoMaterializedView().isEmpty()) {
                         if (query.getAnalyze_count() == 0) {
@@ -144,7 +121,7 @@ public abstract class ObserverMV extends Observer implements IObserverMV {
         }
     }
 
-    private void updateQueryAnalizedCount() {
+    protected void updateQueryAnalizedCount() {
         PreparedStatement preparedStatement = driver.prepareStatement(this.queries.getSqlClauseToUpdateWldAnalyzeCount());
         log.dmlPrint(this.queries.getSqlClauseToUpdateWldAnalyzeCount(), this.getClass().toString());
         driver.executeUpdate(preparedStatement);

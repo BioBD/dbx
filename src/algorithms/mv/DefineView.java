@@ -5,7 +5,7 @@
 package algorithms.mv;
 
 import algorithms.Algorithms;
-import base.MaterializedVision;
+import base.MaterializedView;
 import drivers.Table;
 import java.util.ArrayList;
 
@@ -21,16 +21,16 @@ public class DefineView extends Algorithms {
     private String groupBy;
     private String orderBy;
 
-    public ArrayList<MaterializedVision> getWorkloadSelected(ArrayList<MaterializedVision> capturedQueries) {
+    public ArrayList<MaterializedView> getWorkloadSelected(ArrayList<MaterializedView> capturedQueries) {
         for (int i = 0; i < capturedQueries.size(); i++) {
-            MaterializedVision current = (MaterializedVision) capturedQueries.get(i);
+            MaterializedView current = (MaterializedView) capturedQueries.get(i);
             current.setHypoMaterializedView(this.getDdlCreateViewFromQuery(current));
             capturedQueries.set(i, current);
         }
         return capturedQueries;
     }
 
-    public String getDdlCreateViewFromQuery(MaterializedVision query) {
+    public String getDdlCreateViewFromQuery(MaterializedView query) {
         this.gerateClauseSelectForDDLView(query);
         this.gerateClauseFromForDDLView(query);
         this.gerateClauseWhereForDDLView(query);
@@ -55,7 +55,7 @@ public class DefineView extends Algorithms {
         return query;
     }
 
-    public void gerateClauseSelectForDDLView(MaterializedVision query) {
+    public void gerateClauseSelectForDDLView(MaterializedView query) {
         this.select = query.getClauseFromSql("select").trim();
         String fields = ", ";
         if (!this.select.equals("select *")) {
@@ -74,7 +74,7 @@ public class DefineView extends Algorithms {
         this.groupBy = fields;
     }
 
-    public void gerateClauseFromForDDLView(MaterializedVision query) {
+    public void gerateClauseFromForDDLView(MaterializedView query) {
         this.from = query.getClauseFromSql("from");
         for (Table table : query.getTablesQuery()) {
             if (!this.from.contains(table.getName())) {
@@ -83,7 +83,7 @@ public class DefineView extends Algorithms {
         }
     }
 
-    public void gerateClauseGroupByForDDLView(MaterializedVision query) {
+    public void gerateClauseGroupByForDDLView(MaterializedView query) {
         if (!this.groupBy.isEmpty() && query.existClause("group by")) {
             this.groupBy = query.getClauseFromSql("group by") + this.groupBy;
         } else {
@@ -95,7 +95,7 @@ public class DefineView extends Algorithms {
         }
     }
 
-    public void gerateClauseOrderByForDDLView(MaterializedVision query) {
+    public void gerateClauseOrderByForDDLView(MaterializedView query) {
         this.orderBy = query.getClauseFromSql("order by");
     }
 
@@ -103,7 +103,7 @@ public class DefineView extends Algorithms {
         return !this.groupBy.trim().isEmpty() && !this.groupBy.trim().equals(",") && (this.select.contains(" sum(") || this.select.contains(" count("));
     }
     
-    public void gerateClauseWhereForDDLView(MaterializedVision query) {
+    public void gerateClauseWhereForDDLView(MaterializedView query) {
         String clause = query.getClauseFromSql("where");
         Combinacao combination = new Combinacao();
         ArrayList<String> lista = combination.dividirExpressaoPredicado(clause);

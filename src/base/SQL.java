@@ -27,26 +27,10 @@ public class SQL extends Base {
     private ArrayList<Table> tablesQuery;
     private ArrayList<String> fieldsQuery;
     private Schema schemaDataBase;
-    private BigInteger cost;
+    protected BigInteger cost;
 
     public BigInteger getCost() {
         return cost;
-    }
-
-    private void setCost() {
-        if (!this.getPlan().isEmpty()) {
-            if (planIsXML()) {
-                int ini = this.getPlan().toLowerCase().indexOf("statementsubtreecost=") + 22;
-                int end = this.getPlan().substring(ini).indexOf('"') + ini;
-                String numero = this.getPlan().substring(ini, end);
-                numero = numero.replaceAll("\\.", "");
-                this.cost = new BigInteger(numero);
-            } else {
-                int ini = this.getPlan().indexOf("..") + 2;
-                int end = this.getPlan().substring(ini).indexOf(".") + ini;
-                this.cost = new BigInteger(this.getPlan().substring(ini, end));
-            }
-        }
     }
 
     public Schema getSchemaDataBase() {
@@ -132,7 +116,6 @@ public class SQL extends Base {
     public void setPlan(String plan) {
         this.plan = plan;
         this.setType();
-        this.setCost();
     }
 
     public Integer getCapture_count() {
@@ -269,7 +252,4 @@ public class SQL extends Base {
         return this.getSql().toLowerCase().contains(clause);
     }
 
-    public boolean planIsXML() {
-        return this.getPlan().toLowerCase().contains("showplanxml");
-    }
 }

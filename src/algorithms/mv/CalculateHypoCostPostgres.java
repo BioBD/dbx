@@ -5,12 +5,12 @@
 package algorithms.mv;
 
 import algorithms.Algorithms;
-import base.MaterializedVision;
+import base.MaterializedView;
 import java.math.BigInteger;
 import java.math.BigDecimal;
 
 public class CalculateHypoCostPostgres extends Algorithms {
-    public BigInteger calculateHypoCostPostgres ( MaterializedVision view, BigInteger numPages , BigInteger numRows ) {
+    public BigInteger calculateHypoCostPostgres ( MaterializedView view, BigInteger numPages , BigInteger numRows ) {
         BigDecimal temp = new BigDecimal(numPages);
         BigDecimal tempRows = new BigDecimal(numRows);
         BigDecimal seq_page_cost = new BigDecimal(view.propertiesFile.getProperty("seq_page_cost"));

@@ -12,4 +12,6 @@ public interface IReactor {
 
     public void run();
 
+    public void getDDLNotAnalized();
+
 }
