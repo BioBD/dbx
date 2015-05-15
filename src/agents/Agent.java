@@ -36,7 +36,7 @@ public class Agent extends Base implements IAgent {
     public void getSchemaDataBase() {
         try {
             driver.createStatement();
-            this.resultset = driver.executeQuery(this.queries.getSqlTableNames());
+            this.resultset = driver.executeQuery(this.queries.getSqlTableNames(this.propertiesFile.getProperty("database")));
             log.title("Criando o objeto Schema", this.getClass().toString());
             if (this.resultset != null) {
                 while (this.resultset.next()) {

@@ -22,15 +22,13 @@ public interface IQueries {
 
     public String getSqlQueriesNotAnalized();
 
-    public String getSqlTableNames();
+    public String getSqlTableNames(String database);
 
     public String getSqlTableLength();
 
     public String getSqlClauseToCreateMV(String query, String nameView);
 
     public String getSqlClauseToInsertDDLCreateMV();
-
-    public String getSqlTableFields();
 
     public String getSqlClauseToUpdateWldAnalyzeCount();
 
