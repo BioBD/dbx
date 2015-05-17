@@ -58,6 +58,7 @@ public class QueriesSQLServer extends Queries {
                 partitionedPlan += " " + resultset.getString(1);
             }
             if (partitionedPlan.isEmpty()) {
+                System.out.println(query);
                 driver.executeQuery(query);
 
                 resultset = this.getResultPlanQuery(driver, query);

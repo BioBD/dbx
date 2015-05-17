@@ -36,7 +36,7 @@ public class MaterializedViewSQLServer extends MaterializedView {
     public void setHypoSizeRow() {
         int ini = this.getHypoPlan().toLowerCase().indexOf("avgrowsize=") + 12;
         int end = this.getHypoPlan().substring(ini).indexOf('"') + ini;
-        this.hypoSizeRow = Integer.valueOf(this.getHypoPlan().substring(ini, end));
+        this.hypoSizeRow = Integer.valueOf(this.getHypoPlan().substring(ini, end)) * 1024;
     }
 
     @Override

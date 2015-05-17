@@ -200,20 +200,32 @@ public class SQL extends Base {
         return name;
     }
 
+    public String removeComents(String clause) {
+        if (clause.contains("*/")) {
+            return clause.substring(clause.lastIndexOf("*/") + 2).trim();
+        } else {
+            return clause.trim();
+        }
+    }
+
     public String getClauseFromSql(String clause) {
         if (existClause(clause)) {
             int ini;
-            if (clause.contains("select") || clause.contains("from") || clause.contains("where")) {
-                ini = this.getSql().indexOf(clause) + clause.length();
-            } else {
-                ini = this.getSql().lastIndexOf(clause) + clause.length();
+            String clauseComplete;
+            switch (clause) {
+                case "select":
+                case "from":
+                case "where":
+                    ini = this.getSqlCommLess().indexOf(clause) + clause.length();
+                    break;
+                default:
+                    ini = this.getSqlCommLess().lastIndexOf(clause) + clause.length();
             }
             int end = this.getEndClause(ini);
-            String clauseComplete;
             if (end > 0) {
-                clauseComplete = this.getSql().substring(ini, end).trim();
+                clauseComplete = this.getSqlCommLess().substring(ini, end).trim();
             } else {
-                clauseComplete = this.getSql().substring(ini).trim();
+                clauseComplete = this.getSqlCommLess().substring(ini).trim();
             }
             return " " + clause + " " + clauseComplete;
         } else {
@@ -222,19 +234,22 @@ public class SQL extends Base {
     }
 
     public int getEndClause(int ini) {
-        int current = this.sql.length();
-        current = this.getSmaller(current, ini, this.getSql().substring(ini).indexOf(" from "));
-        current = this.getSmaller(current, ini, this.getSql().substring(ini).indexOf(" where "));
-        current = this.getSmaller(current, ini, this.getSql().substring(ini).indexOf(" group by "));
-        current = this.getSmaller(current, ini, this.getSql().substring(ini).indexOf(" having "));
-        current = this.getSmaller(current, ini, this.getSql().substring(ini).indexOf(" order by "));
-        current = this.getSmaller(current, ini, this.getSql().substring(ini).indexOf(" limit "));
+        int current = this.getSqlCommLess().length();
+        current = this.getSmaller(current, ini, this.getSqlCommLess().substring(ini).indexOf(" from "));
+        current = this.getSmaller(current, ini, this.getSqlCommLess().substring(ini).indexOf(" where "));
+        current = this.getSmaller(current, ini, this.getSqlCommLess().substring(ini).indexOf(" group by "));
+        current = this.getSmaller(current, ini, this.getSqlCommLess().substring(ini).indexOf(" having "));
+        current = this.getSmaller(current, ini, this.getSqlCommLess().substring(ini).indexOf(" order by "));
+        current = this.getSmaller(current, ini, this.getSqlCommLess().substring(ini).indexOf(" limit "));
         if (current > ini) {
             return current;
         } else {
             return 0;
         }
+    }
 
+    private String getSqlCommLess() {
+        return this.removeComents(this.getSql());
     }
 
     public int getSmaller(int current, int ini, int end) {

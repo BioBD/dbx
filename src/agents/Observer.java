@@ -73,14 +73,18 @@ public abstract class Observer extends Agent {
         wordsBySGBD.add("pg_catalog");
         wordsBySGBD.add("pg_attribute");
         wordsBySGBD.add("pg_roles");
+        wordsBySGBD.add("qp.query_plan");
         wordsBySGBD.add("news");
         wordsBySGBD.add("captured");
         wordsBySGBD.add("pg_stat_activity");
-        wordsBySGBD.add("EXPLAIN");
+        wordsBySGBD.add("create procedure");
+        wordsBySGBD.add("explain");
+        wordsBySGBD.add("update");
 
         for (String word : wordsBySGBD) {
             if (query.toLowerCase().contains(word)) {
                 isCommand = true;
+                break;
             }
         }
         return isCommand;

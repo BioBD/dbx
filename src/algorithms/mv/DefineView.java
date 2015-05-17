@@ -102,25 +102,29 @@ public class DefineView extends Algorithms {
     public boolean hasForceClauseGroupBy() {
         return !this.groupBy.trim().isEmpty() && !this.groupBy.trim().equals(",") && (this.select.contains(" sum(") || this.select.contains(" count("));
     }
-    
+
     public void gerateClauseWhereForDDLView(MaterializedView query) {
         String clause = query.getClauseFromSql("where");
-        Combinacao combination = new Combinacao();
-        ArrayList<String> lista = combination.dividirExpressaoPredicado(clause);
-        this.where = "";
-        for (String constrain : lista) {
-            if (isConstrainValid(constrain) && !this.where.contains(constrain)) {
-                if (!this.where.isEmpty()) {
-                    this.where += " and ";
+        if (!clause.isEmpty()) {
+            Combinacao combination = new Combinacao();
+            ArrayList<String> lista = combination.dividirExpressaoPredicado(clause);
+            this.where = "";
+            for (String constrain : lista) {
+                if (isConstrainValid(constrain) && !this.where.contains(constrain)) {
+                    if (!this.where.isEmpty()) {
+                        this.where += " and ";
+                    }
+                    this.where += " " + constrain;
                 }
-                this.where += " " + constrain;
             }
-        }
-        if (!this.where.isEmpty()) {
-            this.where = "where " + this.where;
+            if (!this.where.isEmpty()) {
+                this.where = "where " + this.where;
+            }
+        } else {
+            this.where = "";
         }
     }
-    
+
     private boolean isConstrainValid(String constrain) {
         if (constrain.contains("'") || constrain.contains("\"")) {
             return false;
@@ -139,7 +143,7 @@ public class DefineView extends Algorithms {
         }
         return true;
     }
-    
+
     private boolean containNumber(String word) {
         if (word.contains("0")
                 || word.contains("1")
@@ -155,6 +159,5 @@ public class DefineView extends Algorithms {
         }
         return false;
     }
-    
 
 }
