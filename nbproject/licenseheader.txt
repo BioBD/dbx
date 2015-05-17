@@ -1,8 +1,0 @@
-<#if licenseFirst??>
-${licenseFirst}
-</#if>
-${licensePrefix}Automatic Creation Materialized Views
-${licensePrefix}Authors: rpoliveira@inf.puc-rio.br, sergio@inf.puc-rio.br ${licensePrefix}
-<#if licenseLast??>
-${licenseLast}
-</#if>
