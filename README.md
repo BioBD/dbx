@@ -1,5 +1,5 @@
 # DBX 
-	A tool to aid the creation of indexes and materialized views
+	A tool to aid the creation of indexes and materialized views in relational databases
 
 ## Intro
 
