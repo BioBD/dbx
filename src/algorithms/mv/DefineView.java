@@ -59,19 +59,45 @@ public class DefineView extends Algorithms {
         this.select = query.getClauseFromSql("select").trim();
         String fields = ", ";
         if (!this.select.equals("select *")) {
+//            for (Table table : query.getTablesQuery()) {
+//                for (String field : table.getFields()) {
+//                    if ((query.getSql().contains(field)) && (query.getSql().contains(table.getName())) && !select.contains(field)) {
+//                        if (!fields.equals(", ")) {
+//                            fields += ", ";
+//                        }
+//                        fields += field;
+//                    }
+//                }
+//            }
+            fields = this.getAllFieldsWhere(query);
+        }
+        this.select = query.getComents() + this.select + fields;
+        this.groupBy = fields;
+    }
+
+    public String getAllFieldsWhere(MaterializedView query) {
+        this.where = query.getClauseFromSql("where").trim();
+        String fields = ", ";
+        if (!this.where.isEmpty()) {
             for (Table table : query.getTablesQuery()) {
                 for (String field : table.getFields()) {
-                    if (query.getSql().contains(field) && !select.contains(field)) {
-                        if (!fields.equals(", ")) {
-                            fields += ", ";
+                    if (query.containsField(this.where, field)) {
+                        int end = this.where.indexOf(field) + field.length();
+                        String temp = this.where.substring(0, end);
+                        int ini = temp.lastIndexOf(" ");
+                        if (!temp.substring(ini - 1, ini + 1).equals("=")) {
+                            if (!fields.equals(", ")) {
+                                fields += ", ";
+                            }
+                            fields += this.where.substring(ini, end);
+                            System.out.println(this.where.substring(ini, end));
                         }
-                        fields += field;
                     }
                 }
             }
         }
-        this.select = query.getComents() + this.select + fields;
-        this.groupBy = fields;
+        System.out.println(fields);
+        return fields;
     }
 
     public void gerateClauseFromForDDLView(MaterializedView query) {
@@ -100,7 +126,7 @@ public class DefineView extends Algorithms {
     }
 
     public boolean hasForceClauseGroupBy() {
-        return !this.groupBy.trim().isEmpty() && !this.groupBy.trim().equals(",") && (this.select.contains(" sum(") || this.select.contains(" count("));
+        return !this.groupBy.trim().isEmpty() && !this.groupBy.trim().equals(",") && (this.select.contains("sum(") || this.select.contains("count("));
     }
 
     public void gerateClauseWhereForDDLView(MaterializedView query) {

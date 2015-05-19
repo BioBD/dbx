@@ -10,6 +10,7 @@ import drivers.Driver;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 
 /**
  *
@@ -58,13 +59,7 @@ public class QueriesSQLServer extends Queries {
                 partitionedPlan += " " + resultset.getString(1);
             }
             if (partitionedPlan.isEmpty()) {
-                System.out.println(query);
-                driver.executeQuery(query);
-
-                resultset = this.getResultPlanQuery(driver, query);
-                while (resultset.next()) {
-                    partitionedPlan += " " + resultset.getString(1);
-                }
+                partitionedPlan = this.getResultEstimatedPlanQuery(driver, query);
             }
         } catch (SQLException ex) {
             log.errorPrint(ex, query);
@@ -86,7 +81,6 @@ public class QueriesSQLServer extends Queries {
             preparedStatement.setString(1, query);
             ResultSet result = driver.executeQuery(preparedStatement);
             if (result != null) {
-
                 return result;
             } else {
                 log.msgPrint("error", "ff");
@@ -95,5 +89,27 @@ public class QueriesSQLServer extends Queries {
             log.errorPrint(ex, query);
         }
         return null;
+    }
+
+    private String getResultEstimatedPlanQuery(Driver driver, String query) {
+        String plan = "";
+        try {
+            ResultSet resultset = null;
+            Statement statement = driver.getStatement();
+            statement.execute(this.getSignatureToDifferentiate() + "SET SHOWPLAN_TEXT OFF");
+            statement.execute(this.getSignatureToDifferentiate() + "SET SHOWPLAN_XML ON");
+            resultset = statement.executeQuery(this.getSignatureToDifferentiate() + " " + query);
+            while (resultset.next()) {
+                plan += " " + resultset.getString(1);
+            }
+            statement.execute(this.getSignatureToDifferentiate() + "SET SHOWPLAN_XML OFF");
+            statement.execute(this.getSignatureToDifferentiate() + "SET SHOWPLAN_TEXT OFF");
+            System.out.println("aqui fio");
+            System.out.println(plan);
+        } catch (SQLException ex) {
+            log.errorPrint(ex, query);
+        }
+
+        return plan;
     }
 }

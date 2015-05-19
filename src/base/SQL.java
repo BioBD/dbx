@@ -191,11 +191,13 @@ public class SQL extends Base {
         name = name.replace("/", "");
         name = name.replace(" ", "_");
         name = name.replace("-", "_");
-        while (name.charAt(0) == '_') {
-            name = name.substring(1, name.length());
-        }
-        while (name.charAt(name.length() - 1) == '_') {
-            name = name.substring(0, name.length() - 2);
+        if (!name.isEmpty()) {
+            while (name.charAt(0) == '_') {
+                name = name.substring(1, name.length());
+            }
+            while (name.charAt(name.length() - 1) == '_') {
+                name = name.substring(0, name.length() - 2);
+            }
         }
         return name;
     }
