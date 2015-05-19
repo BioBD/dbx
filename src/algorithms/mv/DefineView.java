@@ -90,13 +90,11 @@ public class DefineView extends Algorithms {
                                 fields += ", ";
                             }
                             fields += this.where.substring(ini, end);
-                            System.out.println(this.where.substring(ini, end));
                         }
                     }
                 }
             }
         }
-        System.out.println(fields);
         return fields;
     }
 

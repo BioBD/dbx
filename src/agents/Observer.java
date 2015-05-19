@@ -80,6 +80,7 @@ public abstract class Observer extends Agent {
         wordsBySGBD.add("create procedure");
         wordsBySGBD.add("explain");
         wordsBySGBD.add("update");
+        wordsBySGBD.add("statman");
 
         for (String word : wordsBySGBD) {
             if (query.toLowerCase().contains(word)) {

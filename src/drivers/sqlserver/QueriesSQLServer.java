@@ -104,8 +104,6 @@ public class QueriesSQLServer extends Queries {
             }
             statement.execute(this.getSignatureToDifferentiate() + "SET SHOWPLAN_XML OFF");
             statement.execute(this.getSignatureToDifferentiate() + "SET SHOWPLAN_TEXT OFF");
-            System.out.println("aqui fio");
-            System.out.println(plan);
         } catch (SQLException ex) {
             log.errorPrint(ex, query);
         }

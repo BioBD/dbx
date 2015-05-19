@@ -47,7 +47,7 @@ public final class Log {
 
     private void createFileReport() {
         if (Log.report == null && this.isPrint(3)) {
-            Log.report = new Report(this.getDateTime("dd-MM-yyyy-'at'-hh-mm-ss-a") + "_report.csv");
+            Log.report = new Report("report/" + this.getDateTime("dd-MM-yyyy-'at'-hh-mm-ss-a") + "_report.csv");
         }
     }
 

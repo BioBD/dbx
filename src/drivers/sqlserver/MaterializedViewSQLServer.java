@@ -29,7 +29,6 @@ public class MaterializedViewSQLServer extends MaterializedView {
     public void setHypoNumRow() {
         int ini = this.getHypoPlan().toLowerCase().indexOf("statementestrows=") + 18;
         int end = this.getHypoPlan().substring(ini).indexOf('"') + ini;
-        System.out.println(this.getHypoPlan().substring(ini, end));
         this.hypoNumRow = new BigInteger(this.getHypoPlan().substring(ini, end));
     }
 
