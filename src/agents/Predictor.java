@@ -4,7 +4,6 @@
  */
 package agents;
 
-import static agents.Agent.driver;
 import java.sql.SQLException;
 
 /**

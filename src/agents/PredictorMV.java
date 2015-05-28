@@ -4,17 +4,15 @@
  */
 package agents;
 
-import static agents.Agent.driver;
 import agents.interfaces.IPredictorMV;
 import algorithms.mv.ItemBag;
 import algorithms.mv.Knapsack;
 import static base.Base.log;
 import static java.lang.Thread.sleep;
+import java.math.BigDecimal;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.math.BigDecimal;
-
 
 /**
  *
@@ -77,12 +75,12 @@ public abstract class PredictorMV extends Predictor implements IPredictorMV {
             this.resultset = driver.executeQuery(this.queries.getSqlDDLNotAnalizedPredictor());
             if (this.resultset != null) {
                 while (this.resultset.next()) {
-                    ItemBag item = new ItemBag(this.resultset.getInt(1), this.resultset.getBigDecimal(2,0)
-                                                                            , this.resultset.getBigDecimal(3,0));
+                    BigDecimal cost = new BigDecimal(String.valueOf(this.resultset.getInt(2)));
+                    BigDecimal gain = new BigDecimal(String.valueOf(this.resultset.getInt(3)));
+                    ItemBag item = new ItemBag(this.resultset.getInt(1), cost, gain);
                     this.itemsBag.add(item);
                 }
             }
-            driver.closeStatement();
         } catch (SQLException e) {
             log.errorPrint(e, this.getClass().toString());
         }

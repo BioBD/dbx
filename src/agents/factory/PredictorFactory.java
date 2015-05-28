@@ -5,6 +5,7 @@
 package agents.factory;
 
 import agents.postgresql.PredictorMVPostgreSQLMV;
+import agents.sqlserver.PredictorSQLServerMV;
 import base.Base;
 import static base.Base.log;
 
@@ -21,6 +22,10 @@ public class PredictorFactory extends Base implements Runnable {
                     PredictorMVPostgreSQLMV pr = new PredictorMVPostgreSQLMV();
                     pr.run();
                 }
+                break;
+            case 3:
+                PredictorSQLServerMV woSQL = new PredictorSQLServerMV();
+                woSQL.run();
                 break;
             default:
                 log.errorPrint("Banco de dados configurado incorreamente.", this.getClass().toString());

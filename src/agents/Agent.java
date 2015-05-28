@@ -4,7 +4,6 @@
  */
 package agents;
 
-import static agents.Agent.driver;
 import base.Base;
 import static base.Base.log;
 import base.MaterializedView;
@@ -19,7 +18,7 @@ import java.util.Arrays;
 
 public class Agent extends Base {
 
-    protected static Driver driver;
+    protected Driver driver;
     protected ResultSet resultset;
     protected Queries queries;
     protected Schema schema;

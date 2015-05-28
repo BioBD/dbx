@@ -4,7 +4,6 @@
  */
 package agents;
 
-import static agents.Agent.driver;
 import agents.interfaces.IObserverMV;
 import algorithms.mv.Agrawal;
 import algorithms.mv.DefineView;

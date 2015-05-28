@@ -36,6 +36,7 @@ public class Driver extends Base {
     public void createStatement() {
         try {
             this.statement = Driver.connection.createStatement();
+            log.msgPrint("criou statement", this.getClass().toString());
         } catch (SQLException e) {
             log.errorPrint(e, this.getClass().toString());
         }
@@ -43,6 +44,9 @@ public class Driver extends Base {
 
     public ResultSet executeQuery(String query) {
         try {
+            if (statement.isClosed()) {
+                this.createStatement();
+            }
             return statement.executeQuery(query);
         } catch (SQLException e) {
             log.errorPrint(e, this.getClass().toString());
@@ -71,6 +75,13 @@ public class Driver extends Base {
     }
 
     public Statement getStatement() {
+        try {
+            if (statement.isClosed()) {
+                this.createStatement();
+            }
+        } catch (SQLException ex) {
+            log.errorPrint(ex, this.getClass().toString());
+        }
         return statement;
     }
 }

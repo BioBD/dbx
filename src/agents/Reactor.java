@@ -4,7 +4,6 @@
  */
 package agents;
 
-import static agents.Agent.driver;
 import agents.interfaces.IReactor;
 import base.MaterializedView;
 import static java.lang.Thread.sleep;
