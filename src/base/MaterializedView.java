@@ -5,8 +5,6 @@
 package base;
 
 import static base.Base.log;
-import java.math.BigDecimal;
-import java.math.BigInteger;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
@@ -19,16 +17,16 @@ public abstract class MaterializedView extends SQL implements IMaterializedView 
 
     private String hypoPlan;
     private String hypoMaterializedView;
-    protected BigInteger hypoCost;
-    private BigInteger hypoGain;
-    private BigInteger hypoNumPages;
-    private BigInteger hypoCreationCost;
+    protected long hypoCost;
+    private long hypoGain;
+    private long hypoNumPages;
+    private long hypoCreationCost;
     private int pageSize;
-    private BigDecimal hypoGainAC;
+    private double hypoGainAC;
 
     protected double fillfactory;
     protected int hypoSizeRow;
-    protected BigInteger hypoNumRow;
+    protected long hypoNumRow;
 
     public String getHypoPlan() {
         return hypoPlan;
@@ -67,32 +65,27 @@ public abstract class MaterializedView extends SQL implements IMaterializedView 
         this.fillfactory = Float.valueOf(this.propertiesFile.getProperty("fillfactorydb"));
     }
 
-    public BigInteger getHypoCost() {
+    public long getHypoCost() {
         return hypoCost;
     }
 
-    public BigInteger getHypoGain() {
+    public long getHypoGain() {
         return hypoGain;
     }
 
     public void setHypoGain() {
-        this.hypoGain = this.getCost().subtract(this.getHypoCost());
-        if (this.hypoGain.compareTo(BigInteger.ZERO) <= 0) {
-            this.hypoGain = BigInteger.ZERO;
-        }
+        this.hypoGain = (this.getCost() - this.getHypoCost());
     }
 
-    public BigDecimal getHypoGainAC() {
+    public double getHypoGainAC() {
         return hypoGainAC;
     }
 
     public void setHypoGainAC() {
-        BigDecimal hypGain = new BigDecimal(this.getHypoGain());
-        BigDecimal capture = new BigDecimal(this.getCapture_count());
-        this.hypoGainAC = hypGain.multiply(capture);
+        this.hypoGainAC = this.getHypoGain() * this.getCapture_count();
     }
 
-    public BigInteger getHypoNumRow() {
+    public long getHypoNumRow() {
         return hypoNumRow;
     }
 
@@ -100,26 +93,20 @@ public abstract class MaterializedView extends SQL implements IMaterializedView 
         return hypoSizeRow;
     }
 
-    public BigInteger getHypoNumPages() {
+    public long getHypoNumPages() {
         return hypoNumPages;
     }
 
     public void setHypoNumPages() {
-        BigDecimal numPagesTemp = new BigDecimal(this.hypoNumRow);
-        numPagesTemp = numPagesTemp.multiply(BigDecimal.valueOf(this.hypoSizeRow)).multiply(BigDecimal.valueOf(fillfactory));
-        numPagesTemp = numPagesTemp.divide(BigDecimal.valueOf(this.getPageSize()));
-        this.hypoNumPages = numPagesTemp.toBigInteger();
+        this.hypoNumPages = (long) (this.hypoSizeRow * fillfactory) / this.getPageSize();
     }
 
-    public BigInteger getHypoCreationCost() {
+    public long getHypoCreationCost() {
         return hypoCreationCost;
     }
 
     public void setHypoCreationCost() {
-        BigInteger temp = new BigInteger("2");
-        temp = temp.multiply(this.getHypoNumPages());
-        temp = temp.add(this.getCost());
-        this.hypoCreationCost = temp;
+        this.hypoCreationCost = (this.getHypoNumPages() * 2) + this.getCost();
     }
 
     public String getHypoMaterializedView() {
@@ -164,7 +151,7 @@ public abstract class MaterializedView extends SQL implements IMaterializedView 
         log.msgPrint("fillFactory: " + this.fillfactory, this.getClass().toString());
         log.msgPrint("pageSize: " + this.getPageSize(), this.getClass().toString());
         log.msgPrint("Cost: " + this.getCost(), this.getClass().toString());
-        log.msgPrint("Cost - hypoCost: " + (this.getCost().subtract(this.hypoCost)), this.getClass().toString());
+        log.msgPrint("Cost - hypoCost: " + (this.getCost() - this.hypoCost), this.getClass().toString());
         log.endTitle(this.getClass().toString());
     }
 

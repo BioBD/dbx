@@ -4,9 +4,10 @@
  */
 package algorithms.mv;
 
-import java.util.ArrayList;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.util.ArrayList;
+
 /**
  *
  * @author Rafael
@@ -16,36 +17,33 @@ public class Knapsack extends algorithms.Algorithms {
     @SuppressWarnings("empty-statement")
     public ArrayList<BigDecimal> exec(ArrayList<ItemBag> itemsBag, int capacityBag) {
         BigDecimal SIZEINT = new BigDecimal("2147483647");
-        
+
         int numberItems = itemsBag.size();
-        BigDecimal dividingFactor = BigDecimal.ONE; 
+        BigDecimal dividingFactor = BigDecimal.ONE;
         int[] profit = new int[numberItems + 1];
         int[] weight = new int[numberItems + 1];
         int[] id = new int[numberItems + 1];
-        
-        
+
         for (int i = 1; i <= numberItems; i++) {
-            if (itemsBag.get(i - 1).gain.compareTo(SIZEINT) >= 0){
-                BigDecimal temp = itemsBag.get(i - 1).gain.divide(SIZEINT,2,RoundingMode.DOWN);
+            if (itemsBag.get(i - 1).gain.compareTo(SIZEINT) >= 0) {
+                BigDecimal temp = itemsBag.get(i - 1).gain.divide(SIZEINT, 2, RoundingMode.DOWN);
                 dividingFactor = temp.max(dividingFactor);
             }
-            if (itemsBag.get(i - 1).cost.compareTo(SIZEINT) >= 0){
-                BigDecimal temp = itemsBag.get(i - 1).gain.divide(SIZEINT,2,RoundingMode.DOWN);
+            if (itemsBag.get(i - 1).cost.compareTo(SIZEINT) >= 0) {
+                BigDecimal temp = itemsBag.get(i - 1).gain.divide(SIZEINT, 2, RoundingMode.DOWN);
                 dividingFactor = temp.max(dividingFactor);
-            }     
+            }
         }
-        
-        
-        
-        for (int i = 1; i <= numberItems; i++) { 
-            profit[i] = itemsBag.get(i - 1).gain.divide(dividingFactor,2, RoundingMode.HALF_UP).intValue();
-            weight[i] = itemsBag.get(i - 1).cost.divide(dividingFactor, 2,RoundingMode.DOWN).intValue();
-            
+
+        for (int i = 1; i <= numberItems; i++) {
+            profit[i] = itemsBag.get(i - 1).gain.divide(dividingFactor, 2, RoundingMode.HALF_UP).intValue();
+            weight[i] = itemsBag.get(i - 1).cost.divide(dividingFactor, 2, RoundingMode.DOWN).intValue();
+
             id[i] = itemsBag.get(i - 1).id;
         }
-        
-        capacityBag = capacityBag/dividingFactor.intValue();
-        
+
+        capacityBag = capacityBag / dividingFactor.intValue();
+
         int[][] opt = new int[numberItems + 1][capacityBag + 1];
         boolean[][] sol = new boolean[numberItems + 1][capacityBag + 1];
 
@@ -68,11 +66,11 @@ public class Knapsack extends algorithms.Algorithms {
             }
         }
         ArrayList<BigDecimal> solution = new ArrayList<>();
-        for (int i: solutionScalled){
+        for (int i : solutionScalled) {
             BigDecimal temp = new BigDecimal(String.valueOf(i));
             solution.add(temp.multiply(dividingFactor));
         }
-        
+
         return solution;
     }
 

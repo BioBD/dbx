@@ -10,7 +10,6 @@ import static base.Base.log;
 import base.MaterializedView;
 import base.SQL;
 import java.util.ArrayList;
-import java.math.BigInteger;
 
 /**
  *
@@ -57,19 +56,15 @@ public class Agrawal extends Algorithms {
         return num_tuples;
     }
 
-    public BigInteger TS_Cost(SQL query) {
-        BigInteger temp = new BigInteger(query.getCapture_count().toString());
-        
-        temp = temp.multiply(query.getCost());
-        return temp;
-        
+    public long TS_Cost(SQL query) {
+        return query.getCapture_count() * query.getCost();
+
     }
 
     public ArrayList<SQL> getTableSubsetBySize(int size, ArrayList<SQL> tablesCheck) {
         ArrayList<SQL> tableSubset = new ArrayList<>();
         for (SQL workload : this.capturedQueries) {
-            BigInteger temp = new BigInteger(String.valueOf(this.treshold));
-            if ((workload.getTablesQuery().size() == size) && (this.TS_Cost(workload).compareTo( temp ) >= 0 )) {
+            if ((workload.getTablesQuery().size() == size) && (this.TS_Cost(workload) >= this.treshold)) {
                 if (tablesCheck.isEmpty()) {
                     this.maxTables = workload.getSchemaDataBase().tables.size();
                     tableSubset.add(workload);

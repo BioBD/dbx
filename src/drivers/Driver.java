@@ -36,7 +36,6 @@ public class Driver extends Base {
     public void createStatement() {
         try {
             this.statement = Driver.connection.createStatement();
-            log.msgPrint("criou statement", this.getClass().toString());
         } catch (SQLException e) {
             log.errorPrint(e, this.getClass().toString());
         }

@@ -95,9 +95,8 @@ public abstract class ObserverMV extends Observer implements IObserverMV {
                             log.dmlPrint(this.queries.getSqlClauseToInsertDDLCreateMV(), this.getClass().toString());
                             preparedStatement.setInt(1, query.getId());
                             preparedStatement.setString(2, ddlCreateMV);
-                            BigDecimal temp = new BigDecimal(query.getHypoCreationCost());
-                            preparedStatement.setBigDecimal(3, temp);
-                            preparedStatement.setBigDecimal(4, query.getHypoGainAC());
+                            preparedStatement.setLong(3, query.getHypoCreationCost());
+                            preparedStatement.setDouble(4, query.getHypoGainAC());
                             preparedStatement.setString(5, "H");
                             preparedStatement.setInt(6, query.getId());
                             query.setAnalyze_count(1);
@@ -107,7 +106,7 @@ public abstract class ObserverMV extends Observer implements IObserverMV {
                             log.dmlPrint(this.queries.getSqlClauseToIncrementBenefictDDLCreateMV(), this.getClass().toString());
                             BigDecimal temp = new BigDecimal(query.getHypoCreationCost());
                             preparedStatement.setBigDecimal(1, temp);
-                            preparedStatement.setBigDecimal(2, query.getHypoGainAC());
+                            preparedStatement.setDouble(2, query.getHypoGainAC());
                             preparedStatement.setInt(3, query.getId());
                             driver.executeUpdate(preparedStatement);
                         }

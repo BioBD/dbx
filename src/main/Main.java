@@ -13,7 +13,7 @@ public class Main {
         PredictorFactory predictor = new PredictorFactory();
         Thread threadPredictor = new Thread(predictor);
         threadPredictor.start();
-
+//
 //        ReactorFactory reactor = new ReactorFactory();
 //        Thread threadReactor = new Thread(reactor);
 //        threadReactor.start();

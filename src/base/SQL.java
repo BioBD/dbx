@@ -6,7 +6,6 @@ package base;
 
 import drivers.Schema;
 import drivers.Table;
-import java.math.BigInteger;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -27,9 +26,9 @@ public class SQL extends Base {
     private ArrayList<Table> tablesQuery;
     private ArrayList<String> fieldsQuery;
     private Schema schemaDataBase;
-    protected BigInteger cost;
+    protected long cost;
 
-    public BigInteger getCost() {
+    public long getCost() {
         return cost;
     }
 

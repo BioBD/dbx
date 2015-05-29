@@ -6,8 +6,6 @@ package drivers.postgresql;
 
 import algorithms.mv.CalculateHypoCostPostgres;
 import base.MaterializedView;
-import java.math.BigDecimal;
-import java.math.BigInteger;
 
 /**
  *
@@ -20,7 +18,7 @@ public class MaterializedViewPostgreSQL extends MaterializedView {
         if (!this.getPlan().isEmpty()) {
             int ini = this.getPlan().indexOf("..") + 2;
             int end = this.getPlan().substring(ini).indexOf(".") + ini;
-            this.cost = new BigInteger(this.getPlan().substring(ini, end));
+            this.cost = Long.valueOf(this.getPlan().substring(ini, end));
         }
     }
 
@@ -28,7 +26,7 @@ public class MaterializedViewPostgreSQL extends MaterializedView {
     public void setHypoNumRow() {
         int ini = this.getHypoPlan().indexOf("rows=") + 5;
         int end = this.getHypoPlan().substring(ini).indexOf(" ") + ini;
-        this.hypoNumRow = new BigInteger(this.getHypoPlan().substring(ini, end));
+        this.hypoNumRow = Long.valueOf(this.getHypoPlan().substring(ini, end));
     }
 
     @Override
@@ -38,15 +36,14 @@ public class MaterializedViewPostgreSQL extends MaterializedView {
         this.hypoSizeRow = Integer.valueOf(this.getHypoPlan().substring(ini, end));
     }
 
+    @Override
     public void setHypoCost() {
-        BigInteger numPages;
-        BigDecimal numPagesTemp = new BigDecimal(this.hypoNumRow);
-        numPagesTemp = numPagesTemp.multiply(BigDecimal.valueOf(this.hypoSizeRow));
-        numPagesTemp = numPagesTemp.multiply(BigDecimal.valueOf(fillfactory));
-        numPagesTemp = numPagesTemp.divide(BigDecimal.valueOf(this.getPageSize()));
-        numPages = numPagesTemp.toBigInteger();
-        if (numPages.intValue() < 1) {
-            numPages = BigInteger.valueOf(1);
+        double numPages = this.hypoNumRow;
+        numPages = numPages * this.hypoSizeRow;
+        numPages = numPages * fillfactory;
+        numPages = numPages / this.getPageSize();
+        if (numPages < 1) {
+            numPages = 1;
         }
 
         CalculateHypoCostPostgres hypoPostgres = new CalculateHypoCostPostgres();

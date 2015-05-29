@@ -40,6 +40,11 @@ public class DefineView extends Algorithms {
     }
 
     private String getDdlCreateViewComplete() {
+//        System.out.println(this.select);
+//        System.out.println(this.from);
+//        System.out.println(this.where);
+//        System.out.println(this.groupBy);
+//        System.out.println(this.orderBy);
         return this.treatComma(this.select) + " "
                 + treatComma(this.from) + " "
                 + treatComma(this.where) + " "
@@ -56,7 +61,7 @@ public class DefineView extends Algorithms {
     }
 
     public void gerateClauseSelectForDDLView(MaterializedView query) {
-        this.select = query.getClauseFromSql("select").trim();
+        this.select = query.getClauseFromSql("select").trim().replace("TOP 100", "");
         String fields = ", ";
         if (!this.select.equals("select *")) {
 //            for (Table table : query.getTablesQuery()) {

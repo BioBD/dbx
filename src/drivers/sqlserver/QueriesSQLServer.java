@@ -96,6 +96,7 @@ public class QueriesSQLServer extends Queries {
         try {
             ResultSet resultset = null;
             Statement statement = driver.getStatement();
+            System.out.println(query);
             statement.execute(this.getSignatureToDifferentiate() + "SET SHOWPLAN_TEXT OFF");
             statement.execute(this.getSignatureToDifferentiate() + "SET SHOWPLAN_XML ON");
             resultset = statement.executeQuery(this.getSignatureToDifferentiate() + " " + query);
@@ -105,7 +106,7 @@ public class QueriesSQLServer extends Queries {
             statement.execute(this.getSignatureToDifferentiate() + "SET SHOWPLAN_XML OFF");
             statement.execute(this.getSignatureToDifferentiate() + "SET SHOWPLAN_TEXT OFF");
         } catch (SQLException ex) {
-            log.errorPrint(ex, query);
+            log.msgPrint(ex, query);
         }
 
         return plan;
