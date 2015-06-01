@@ -61,7 +61,7 @@ public class DefineView extends Algorithms {
     }
 
     public void gerateClauseSelectForDDLView(MaterializedView query) {
-        this.select = query.getClauseFromSql("select").trim().replace("TOP 100", "");
+        this.select = query.getClauseFromSql("select").trim().replace("top 100", "");
         String fields = ", ";
         if (!this.select.equals("select *")) {
 //            for (Table table : query.getTablesQuery()) {

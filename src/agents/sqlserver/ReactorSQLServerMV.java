@@ -6,8 +6,12 @@
 package agents.sqlserver;
 
 import agents.Reactor;
+import static base.Base.log;
+import base.MaterializedView;
 import drivers.sqlserver.DriverSQLServer;
+import drivers.sqlserver.MaterializedViewSQLServer;
 import drivers.sqlserver.QueriesSQLServer;
+import java.sql.SQLException;
 
 /**
  *
@@ -22,7 +26,22 @@ public class ReactorSQLServerMV extends Reactor {
 
     @Override
     public void getDDLNotAnalized() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        try {
+            driver.createStatement();
+            this.capturedQueriesForAnalyses.clear();
+            this.resultset = driver.executeQuery(this.queries.getSqlDDLNotAnalizedReactor());
+            if (this.resultset != null) {
+                while (this.resultset.next()) {
+                    MaterializedView currentQuery = new MaterializedViewSQLServer();
+                    currentQuery.setResultSet(this.resultset);
+                    currentQuery.setSchemaDataBase(this.schema);
+                    this.capturedQueriesForAnalyses.add(currentQuery);
+                }
+            }
+            log.msgPrint("Quantidade de DDLs encontradas para materialização: " + this.capturedQueriesForAnalyses.size(), this.getClass().toString());
+            driver.closeStatement();
+        } catch (SQLException e) {
+            log.errorPrint(e, this.getClass().toString());
+        }
     }
-
 }

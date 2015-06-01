@@ -19,7 +19,12 @@ public class MaterializedViewSQLServer extends MaterializedView {
             int ini = this.getPlan().toLowerCase().indexOf("statementsubtreecost=") + 22;
             int end = this.getPlan().substring(ini).indexOf('"') + ini;
             String numero = this.getPlan().substring(ini, end);
-            this.cost = Math.round(Double.valueOf(numero).intValue());
+            try {
+                this.cost = Math.round(Double.valueOf(numero).intValue());
+            } catch (Exception e) {
+                this.valid = false;
+                log.msgPrint(e.getMessage(), this.getClass().toString());
+            }
         }
     }
 
@@ -58,6 +63,15 @@ public class MaterializedViewSQLServer extends MaterializedView {
         numPagesTemp = (numPagesTemp / this.getPageSize());
         this.hypoCost = Math.round(numPagesTemp);
         this.printStatistics();
+    }
+
+    @Override
+    protected void checkValid() {
+        String query = this.getHypoPlan().toLowerCase();
+        this.valid = (query.contains("avgrowsize")
+                && query.contains("avgrowsize")
+                && query.contains("statementsubtreecost")
+                && query.contains("statementestrows"));
     }
 
 }

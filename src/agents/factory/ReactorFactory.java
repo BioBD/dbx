@@ -5,6 +5,7 @@
 package agents.factory;
 
 import agents.postgresql.ReactorPostgreSQLMV;
+import agents.sqlserver.ReactorSQLServerMV;
 import base.Base;
 import static base.Base.log;
 
@@ -22,6 +23,11 @@ public class ReactorFactory extends Base implements Runnable {
                     reactor.run();
                 }
                 break;
+            case 3:
+                if (Integer.parseInt(this.propertiesFile.getProperty("executionMode")) == 2) {
+                    ReactorSQLServerMV reactor = new ReactorSQLServerMV();
+                    reactor.run();
+                }
             default:
                 log.errorPrint("Banco de dados configurado incorreamente.", this.getClass().toString());
         }

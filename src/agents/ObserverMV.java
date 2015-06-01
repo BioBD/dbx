@@ -13,6 +13,7 @@ import static java.lang.Thread.sleep;
 import java.math.BigDecimal;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.util.ArrayList;
 
 /**
  *
@@ -75,10 +76,18 @@ public abstract class ObserverMV extends Observer implements IObserverMV {
     public void getPlanDDLViews() {
         driver.createStatement();
         MaterializedView query;
-        for (int i = 0; i < this.capturedQueriesForAnalyses.size(); ++i) {
-            query = this.capturedQueriesForAnalyses.get(i);
+        ArrayList<MaterializedView> tempQueryForAnalyses = new ArrayList<>();
+        tempQueryForAnalyses.addAll(this.capturedQueriesForAnalyses);
+        this.capturedQueriesForAnalyses.clear();
+        for (int i = 0; i < tempQueryForAnalyses.size(); ++i) {
+            query = tempQueryForAnalyses.get(i);
             query.setHypoPlan(this.getPlanQuery(query.getHypoMaterializedView()));
-            this.capturedQueriesForAnalyses.set(i, query);
+            if (query.isValid()) {
+                this.capturedQueriesForAnalyses.add(query);
+                log.msgPrint("Query valida: " + query.getSql(), this.getClass().toString());
+            } else {
+                log.msgPrint("Query descartada: " + query.getSql(), this.getClass().toString());
+            }
         }
     }
 

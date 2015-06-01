@@ -28,12 +28,15 @@ public abstract class MaterializedView extends SQL implements IMaterializedView 
     protected int hypoSizeRow;
     protected long hypoNumRow;
 
+    protected boolean valid = true;
+
     public String getHypoPlan() {
         return hypoPlan;
     }
 
     public void setHypoPlan(String hypoPlan) {
         this.hypoPlan = hypoPlan;
+        this.checkValid();
         this.setPageSize();
         this.setFillfactory();
         this.setHypoNumRow();
@@ -178,6 +181,14 @@ public abstract class MaterializedView extends SQL implements IMaterializedView 
                 || clause.contains("." + field + "=")
                 || clause.contains("." + field + ">")
                 || clause.contains("." + field + "<");
+    }
+
+    protected void checkValid() {
+        this.valid = true;
+    }
+
+    public boolean isValid() {
+        return this.valid;
     }
 
 }
