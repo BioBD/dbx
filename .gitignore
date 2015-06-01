@@ -9,3 +9,8 @@ nb-configuration.xml
 .nb-gradle/
 *.csv
 .gitignore
+manifest.mf
+nbbuild.mf
+nbbuild.xml
+nbproject/
+*.properties
