@@ -64,16 +64,6 @@ public class DefineView extends Algorithms {
         this.select = query.getClauseFromSql("select").trim().replace("top 100", "");
         String fields = ", ";
         if (!this.select.equals("select *")) {
-//            for (Table table : query.getTablesQuery()) {
-//                for (String field : table.getFields()) {
-//                    if ((query.getSql().contains(field)) && (query.getSql().contains(table.getName())) && !select.contains(field)) {
-//                        if (!fields.equals(", ")) {
-//                            fields += ", ";
-//                        }
-//                        fields += field;
-//                    }
-//                }
-//            }
             fields = this.getAllFieldsWhere(query);
         }
         this.select = query.getComents() + this.select + fields;

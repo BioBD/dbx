@@ -17,4 +17,7 @@ public interface IMaterializedView {
     public void setHypoSizeRow();
 
     public void setHypoCost();
+
+    public boolean isValidHypoView();
+
 }

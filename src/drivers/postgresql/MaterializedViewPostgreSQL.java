@@ -51,4 +51,9 @@ public class MaterializedViewPostgreSQL extends MaterializedView {
         this.printStatistics();
     }
 
+    @Override
+    public boolean isValidHypoView() {
+        return true;
+    }
+
 }
