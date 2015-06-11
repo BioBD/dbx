@@ -165,23 +165,4 @@ public abstract class MaterializedView extends SQL implements IMaterializedView 
         this.setCost();
     }
 
-    public boolean containsField(String clause, String field) {
-        return clause.contains(" " + field + " ")
-                || clause.contains(" " + field + ",")
-                || clause.contains(" " + field + ";")
-                || clause.contains(" " + field + "=")
-                || clause.contains(" " + field + ">")
-                || clause.contains(" " + field + "<")
-                || clause.contains("," + field + ",")
-                || clause.contains("," + field + ";")
-                || clause.contains("," + field + "=")
-                || clause.contains("," + field + ">")
-                || clause.contains("," + field + "<")
-                || clause.contains("." + field + ",")
-                || clause.contains("." + field + ";")
-                || clause.contains("." + field + "=")
-                || clause.contains("." + field + ">")
-                || clause.contains("." + field + "<");
-    }
-
 }

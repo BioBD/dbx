@@ -15,6 +15,15 @@ import java.util.List;
 public class Table extends Base {
 
     private String name;
+    private String schema;
+
+    public String getSchema() {
+        return schema;
+    }
+
+    public void setSchema(String schema) {
+        this.schema = schema;
+    }
     protected ArrayList<String> fields;
 
     public Table() {

@@ -40,6 +40,7 @@ public class Agent extends Base {
                 while (this.resultset.next()) {
                     Table currentTable = new Table();
                     currentTable.setName(this.resultset.getString(1));
+                    currentTable.setSchema(this.resultset.getString(3));
                     currentTable.setFields(Arrays.asList(this.resultset.getString(2).split("\\s*,\\s*")));
                     this.schema.tables.add(currentTable);
                     log.msgPrint(currentTable.getName() + ": " + currentTable.getFields(), this.getClass().toString());

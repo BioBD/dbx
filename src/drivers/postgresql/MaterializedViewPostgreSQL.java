@@ -56,4 +56,9 @@ public class MaterializedViewPostgreSQL extends MaterializedView {
         return true;
     }
 
+    @Override
+    public String getDDLCreateMV() {
+        return this.getSignatureToDifferentiate() + "CREATE VIEW dbo." + this.getNameMaterizedView() + " WITH SCHEMABINDING AS " + this.getHypoMaterializedView() + "GO;";
+    }
+
 }

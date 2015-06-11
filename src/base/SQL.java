@@ -9,6 +9,7 @@ import drivers.Table;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Arrays;
 
 /**
  *
@@ -24,9 +25,14 @@ public class SQL extends Base {
     private int relevance;
     private String type;
     private ArrayList<Table> tablesQuery;
-    private ArrayList<String> fieldsQuery;
+    public ArrayList<String> fieldsSelect;
+    public ArrayList<String> fieldsWhere;
+
+    private String where;
+
     private Schema schemaDataBase;
     protected long cost;
+    private String select;
 
     public long getCost() {
         return cost;
@@ -39,14 +45,6 @@ public class SQL extends Base {
     public void setSchemaDataBase(Schema schemaDataBase) {
         this.schemaDataBase = schemaDataBase;
         this.setTablesQuery();
-    }
-
-    public ArrayList<String> getFieldsQuery() {
-        return fieldsQuery;
-    }
-
-    public void setFieldsQuery(ArrayList<String> fieldsQuery) {
-        this.fieldsQuery = fieldsQuery;
     }
 
     public int getId() {
@@ -67,6 +65,8 @@ public class SQL extends Base {
             this.setRelevance(resultset.getInt("wld_relevance"));
             this.setType(resultset.getString("wld_type").toLowerCase());
             this.setPlan(resultset.getString("wld_plan").toLowerCase());
+            this.readAllFieldsWhere();
+            this.readAllFieldsSelect();
         } catch (SQLException e) {
             log.errorPrint(e, this.getClass().toString());
         }
@@ -228,7 +228,7 @@ public class SQL extends Base {
             } else {
                 clauseComplete = this.getSqlCommLess().substring(ini).trim();
             }
-            return " " + clause + " " + clauseComplete;
+            return (" " + clause + " " + clauseComplete).trim();
         } else {
             return "";
         }
@@ -268,4 +268,49 @@ public class SQL extends Base {
         return this.getSql().toLowerCase().contains(clause);
     }
 
+    private void readAllFieldsWhere() {
+        this.where = this.getClauseFromSql("where");
+        this.fieldsWhere = new ArrayList<>();
+        if (!this.where.isEmpty()) {
+            for (Table table : this.getTablesQuery()) {
+                for (String field : table.getFields()) {
+                    if (this.containsField(this.where, field)) {
+                        int end = this.where.indexOf(field) + field.length();
+                        String temp = this.where.substring(0, end);
+                        int ini = temp.lastIndexOf(" ");
+                        if (!temp.substring(ini - 1, ini + 1).equals("=")) {
+                            this.fieldsWhere.add(this.where.substring(ini, end));
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    private void readAllFieldsSelect() {
+        this.select = this.getClauseFromSql("select");
+        this.fieldsSelect = new ArrayList<>();
+        if (!this.select.isEmpty()) {
+            this.fieldsSelect.addAll(Arrays.asList(this.select.replace("select ", "").split(",")));
+        }
+    }
+
+    public boolean containsField(String clause, String field) {
+        return clause.contains(" " + field + " ")
+                || clause.contains(" " + field + ",")
+                || clause.contains(" " + field + ";")
+                || clause.contains(" " + field + "=")
+                || clause.contains(" " + field + ">")
+                || clause.contains(" " + field + "<")
+                || clause.contains("," + field + ",")
+                || clause.contains("," + field + ";")
+                || clause.contains("," + field + "=")
+                || clause.contains("," + field + ">")
+                || clause.contains("," + field + "<")
+                || clause.contains("." + field + ",")
+                || clause.contains("." + field + ";")
+                || clause.contains("." + field + "=")
+                || clause.contains("." + field + ">")
+                || clause.contains("." + field + "<");
+    }
 }

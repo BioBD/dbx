@@ -7,7 +7,6 @@ package agents.sqlserver;
 import agents.ObserverMV;
 import agents.interfaces.IObserverMV;
 import static base.Base.log;
-import base.MaterializedView;
 import drivers.sqlserver.DriverSQLServer;
 import drivers.sqlserver.MaterializedViewSQLServer;
 import drivers.sqlserver.QueriesSQLServer;
@@ -33,7 +32,7 @@ public class ObserverSQLServerMV extends ObserverMV implements IObserverMV {
             this.resultset = driver.executeQuery(this.queries.getSqlQueriesNotAnalized());
             if (this.resultset != null) {
                 while (this.resultset.next()) {
-                    MaterializedView currentQuery = new MaterializedViewSQLServer();
+                    MaterializedViewSQLServer currentQuery = new MaterializedViewSQLServer();
                     currentQuery.setResultSet(this.resultset);
                     currentQuery.setSchemaDataBase(this.schema);
                     this.capturedQueriesForAnalyses.add(currentQuery);

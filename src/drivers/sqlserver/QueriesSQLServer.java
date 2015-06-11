@@ -31,13 +31,16 @@ public class QueriesSQLServer extends Queries {
     @Override
     public String getSqlTableNames(String database) {
         return this.getSignatureToDifferentiate() + "USE " + database
-                + " SELECT t.name AS table_name, "
-                + "(SELECT STUFF(( SELECT ', ' + c.name "
-                + "       FROM sys.columns c where t.OBJECT_ID = c.OBJECT_ID "
-                + "        FOR XML PATH('') ), 1,1,'') AS activities ) AS f "
-                + "FROM sys.tables AS t "
-                + "INNER JOIN sys.columns c ON t.OBJECT_ID = c.OBJECT_ID "
-                + "group by t.name, t.OBJECT_ID ";
+                + " SELECT \n"
+                + "t.name AS table_name, \n"
+                + "(SELECT STUFF(( SELECT ', ' + c.name \n"
+                + "FROM sys.columns c where t.OBJECT_ID = c.OBJECT_ID \n"
+                + "FOR XML PATH('') ), 1,1,'') AS activities ) AS f, \n"
+                + "s.name AS schemas_name \n"
+                + "FROM sys.tables AS t \n"
+                + "INNER JOIN sys.columns c ON t.OBJECT_ID = c.OBJECT_ID \n"
+                + "INNER JOIN sys.schemas s ON t.schema_id = s.schema_id \n"
+                + "group by t.name, t.OBJECT_ID, s.name ";
     }
 
     @Override

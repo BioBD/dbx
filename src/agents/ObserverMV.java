@@ -7,6 +7,7 @@ package agents;
 import agents.interfaces.IObserverMV;
 import algorithms.mv.Agrawal;
 import algorithms.mv.DefineView;
+import algorithms.mv.DefineViewSQLServer;
 import static base.Base.log;
 import base.MaterializedView;
 import static java.lang.Thread.sleep;
@@ -67,7 +68,15 @@ public abstract class ObserverMV extends Observer implements IObserverMV {
 
     @Override
     public void executeDefineView() {
-        DefineView defineView = new DefineView();
+        DefineView defineView;
+        switch (this.propertiesFile.getProperty("database")) {
+            case "3":
+                defineView = new DefineViewSQLServer();
+                break;
+            default:
+                defineView = new DefineView();
+
+        }
         this.capturedQueriesForAnalyses = defineView.getWorkloadSelected(this.capturedQueriesForAnalyses);
         this.getPlanDDLViews();
         this.persistDDLCreateMV();
@@ -99,7 +108,9 @@ public abstract class ObserverMV extends Observer implements IObserverMV {
                     log.msgPrint(query.getComents(), this.getClass().toString());
                     if (!query.getHypoMaterializedView().isEmpty()) {
                         if (query.getAnalyze_count() == 0) {
-                            String ddlCreateMV = this.queries.getSqlClauseToCreateMV(query.getHypoMaterializedView(), query.getNameMaterizedView());
+                            String ddlCreateMV = query.getDDLCreateMV();
+                            System.out.println(ddlCreateMV);
+                            System.exit(0);
                             PreparedStatement preparedStatement = driver.prepareStatement(this.queries.getSqlClauseToInsertDDLCreateMV());
                             log.dmlPrint(this.queries.getSqlClauseToInsertDDLCreateMV(), this.getClass().toString());
                             preparedStatement.setInt(1, query.getId());

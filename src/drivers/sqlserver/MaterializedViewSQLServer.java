@@ -76,4 +76,9 @@ public class MaterializedViewSQLServer extends MaterializedView {
                 && query.contains("statementestrows"));
     }
 
+    @Override
+    public String getDDLCreateMV() {
+        return this.getSignatureToDifferentiate() + "CREATE VIEW dbo." + this.getNameMaterizedView() + " WITH SCHEMABINDING AS " + this.getHypoMaterializedView() + "GO;";
+    }
+
 }
