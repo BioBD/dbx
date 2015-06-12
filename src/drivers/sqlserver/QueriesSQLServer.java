@@ -59,6 +59,7 @@ public class QueriesSQLServer extends Queries {
         try {
             ResultSet resultset = this.getResultPlanQuery(driver, query);
             while (resultset.next()) {
+                System.out.println("STEP 1.1: " + resultset.getString(1));
                 partitionedPlan += " " + resultset.getString(1);
             }
             if (partitionedPlan.isEmpty()) {
@@ -67,10 +68,12 @@ public class QueriesSQLServer extends Queries {
         } catch (SQLException ex) {
             log.errorPrint(ex, query);
         }
+        System.out.println("STEP 2: " + partitionedPlan);
         return partitionedPlan;
     }
 
     private ResultSet getResultPlanQuery(Driver driver, String query) {
+        System.out.println("STEP 1: " + query);
         String queryGetPlan = "SELECT "
                 + "qp.query_plan AS QueryPlan "
                 + "FROM sys.dm_exec_cached_plans AS cp "

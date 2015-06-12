@@ -90,6 +90,9 @@ public abstract class ObserverMV extends Observer implements IObserverMV {
         this.capturedQueriesForAnalyses.clear();
         for (int i = 0; i < tempQueryForAnalyses.size(); ++i) {
             query = tempQueryForAnalyses.get(i);
+            System.out.println("antes da consulta: " + query.getSql());
+            System.out.println("PLANO: " + this.getPlanQuery(query.getHypoMaterializedView()));
+            System.exit(0);
             query.setHypoPlan(this.getPlanQuery(query.getHypoMaterializedView()));
             if (query.isValidHypoView()) {
                 this.capturedQueriesForAnalyses.add(query);

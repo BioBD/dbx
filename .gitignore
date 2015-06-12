@@ -14,3 +14,5 @@ nbbuild.mf
 nbbuild.xml
 nbproject/
 *.properties
+build.xml
+*rafael.txt

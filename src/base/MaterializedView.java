@@ -37,6 +37,7 @@ public abstract class MaterializedView extends SQL implements IMaterializedView 
     }
 
     public void setHypoPlan(String hypoPlan) {
+        System.out.println("PLANO: " + hypoPlan);
         this.hypoPlan = hypoPlan;
         this.setPageSize();
         this.setFillfactory();
@@ -54,7 +55,7 @@ public abstract class MaterializedView extends SQL implements IMaterializedView 
         try {
             super.setResultSet(resultset);
             if (this.checkColumnName(resultset, "cmv_ddl_create")) {
-                this.setHypoMaterializedView(resultset.getString("cmv_ddl_create").toLowerCase());
+                this.setHypoMaterializedView(resultset.getString("cmv_ddl_create"));
             }
         } catch (SQLException e) {
             log.errorPrint(e, this.getClass().toString());

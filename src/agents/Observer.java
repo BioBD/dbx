@@ -39,6 +39,7 @@ public abstract class Observer extends Agent {
     public void processQueries() {
         try {
             while (this.resultset.next()) {
+                System.out.println(this.resultset.getRow());
                 String currentQuery = this.resultset.getString("sql");
                 if (this.isQueryValid(currentQuery)) {
                     this.capturedQueriesWorkload.add(currentQuery);

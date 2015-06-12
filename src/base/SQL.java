@@ -59,12 +59,12 @@ public class SQL extends Base {
         try {
             this.tablesQuery = new ArrayList<>();
             this.setId(resultset.getInt("wld_id"));
-            this.setSql(resultset.getString("wld_sql").toLowerCase());
+            this.setSql(resultset.getString("wld_sql"));
             this.setCapture_count(resultset.getInt("wld_capture_count"));
             this.setAnalyze_count(resultset.getInt("wld_analyze_count"));
             this.setRelevance(resultset.getInt("wld_relevance"));
-            this.setType(resultset.getString("wld_type").toLowerCase());
-            this.setPlan(resultset.getString("wld_plan").toLowerCase());
+            this.setType(resultset.getString("wld_type"));
+            this.setPlan(resultset.getString("wld_plan"));
             this.readAllFieldsWhere();
             this.readAllFieldsSelect();
         } catch (SQLException e) {
