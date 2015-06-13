@@ -1,4 +1,4 @@
-/*
+ /*
  * Automatic Creation Materialized Views
  * Authors: rpoliveira@inf.puc-rio.br, sergio@inf.puc-rio.br  *
  */
@@ -58,7 +58,7 @@ public class MaterializedViewPostgreSQL extends MaterializedView {
 
     @Override
     public String getDDLCreateMV() {
-        return this.getSignatureToDifferentiate() + "CREATE VIEW dbo." + this.getNameMaterizedView() + " WITH SCHEMABINDING AS " + this.getHypoMaterializedView() + "GO;";
+        return "CREATE VIEW dbo." + this.getNameMaterizedView() + " WITH SCHEMABINDING AS " + this.getHypoMaterializedView() + "GO;";
     }
 
 }

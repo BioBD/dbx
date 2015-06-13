@@ -75,7 +75,7 @@ public class DefineView extends Algorithms {
 
     protected void gerateClauseFromForDDLView(MaterializedView query) {
         this.from = query.getClauseFromSql("from");
-        for (Table table : query.getTablesQuery()) {
+        for (Table table : query.getTablesSQL()) {
             if (!this.from.contains(table.getName())) {
                 this.from += ", " + table.getName();
             }

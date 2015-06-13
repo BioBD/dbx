@@ -68,7 +68,7 @@ public class DefineViewSQLServer extends DefineView {
     @Override
     protected void gerateClauseFromForDDLView(MaterializedView query) {
         this.from = query.getClauseFromSql("from");
-        for (Table table : query.getTablesQuery()) {
+        for (Table table : query.getTablesSQL()) {
             if (!this.from.contains(table.getName())) {
                 this.from += ", " + table.getSchema() + "." + table.getName();
             } else {

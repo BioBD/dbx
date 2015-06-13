@@ -5,6 +5,7 @@
 package base;
 
 import static base.Base.log;
+import bib.sgbd.SQL;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
@@ -21,12 +22,18 @@ public abstract class MaterializedView extends SQL implements IMaterializedView 
     private long hypoGain;
     private long hypoNumPages;
     private long hypoCreationCost;
-    private int pageSize;
     private double hypoGainAC;
 
-    protected double fillfactory;
     protected int hypoSizeRow;
     protected long hypoNumRow;
+
+    protected final double fillfactory;
+    private final int pageSize;
+
+    public MaterializedView(double fillfactory, int pageSize) {
+        this.fillfactory = fillfactory;
+        this.pageSize = pageSize;
+    }
 
     public String getHypoPlan() {
         if (this.hypoPlan != null) {
@@ -39,8 +46,6 @@ public abstract class MaterializedView extends SQL implements IMaterializedView 
     public void setHypoPlan(String hypoPlan) {
         System.out.println("PLANO: " + hypoPlan);
         this.hypoPlan = hypoPlan;
-        this.setPageSize();
-        this.setFillfactory();
         this.setHypoNumRow();
         this.setHypoSizeRow();
         this.setHypoNumPages();
@@ -50,7 +55,6 @@ public abstract class MaterializedView extends SQL implements IMaterializedView 
         this.setHypoCreationCost();
     }
 
-    @Override
     public void setResultSet(ResultSet resultset) {
         try {
             super.setResultSet(resultset);
@@ -64,10 +68,6 @@ public abstract class MaterializedView extends SQL implements IMaterializedView 
 
     public double getFillfactory() {
         return fillfactory;
-    }
-
-    public void setFillfactory() {
-        this.fillfactory = Float.valueOf(this.propertiesFile.getProperty("fillfactorydb"));
     }
 
     public long getHypoCost() {
@@ -120,10 +120,6 @@ public abstract class MaterializedView extends SQL implements IMaterializedView 
 
     public void setHypoMaterializedView(String hypoMaterializedView) {
         this.hypoMaterializedView = hypoMaterializedView;
-    }
-
-    private void setPageSize() {
-        this.pageSize = Integer.valueOf(this.propertiesFile.getProperty("sizepagedb"));
     }
 
     public int getPageSize() {

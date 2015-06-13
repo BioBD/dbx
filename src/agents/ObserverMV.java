@@ -47,7 +47,7 @@ public abstract class ObserverMV extends Observer implements IObserverMV {
         int num_tuples = 1;
         try {
             driver.createStatement();
-            PreparedStatement preparedStatement = driver.prepareStatement(this.removerNl(this.queries.getSqlTableLength()));
+            PreparedStatement preparedStatement = driver.prepareStatement(this.queries.getSqlTableLength());
             preparedStatement.setString(1, tableName);
             this.resultset = driver.executeQuery(preparedStatement);
             if (this.resultset.next()) {

@@ -105,7 +105,7 @@ public class SQL extends Base {
     }
 
     public void setSql(String sql) {
-        this.sql = this.removerNl(sql);
+        this.sql = sql;
     }
 
     public String getPlan() {
