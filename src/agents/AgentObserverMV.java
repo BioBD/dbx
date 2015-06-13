@@ -4,12 +4,14 @@
  */
 package agents;
 
-import agents.interfaces.IObserverMV;
 import algorithms.mv.Agrawal;
 import algorithms.mv.DefineView;
 import algorithms.mv.DefineViewSQLServer;
-import static base.Base.log;
 import base.MaterializedView;
+import bib.base.Base;
+import bib.driver.Driver;
+import bib.sgbd.Observer;
+import bib.sgbd.SQL;
 import static java.lang.Thread.sleep;
 import java.math.BigDecimal;
 import java.sql.PreparedStatement;
@@ -20,57 +22,45 @@ import java.util.ArrayList;
  *
  * @author Rafael
  */
-public abstract class ObserverMV extends Observer implements IObserverMV {
+public abstract class AgentObserverMV extends Base implements Runnable {
+
+    private Driver driver;
+    private final Observer observer;
+    ArrayList<MaterializedView> MVCandiates;
+
+    public AgentObserverMV() {
+        this.observer = new Observer();
+    }
 
     @Override
     public void run() {
-        this.getSchemaDataBase();
         while (true) {
             try {
-                this.getLastExecutedQueries();
                 this.analyzeQueriesCaptured();
                 sleep(200);
             } catch (InterruptedException e) {
-                log.errorPrint(e, this.getClass().toString());
+                log.errorPrint(e);
             }
         }
     }
 
     private void analyzeQueriesCaptured() {
-        this.getQueriesNotAnalized();
-        this.executeAgrawal();
+        ArrayList<SQL> sql = observer.getLastExecutedSQL();
+        this.executeAgrawal(sql);
         this.executeDefineView();
+        this.getPlanDDLViews();
+        this.persistDDLCreateMV();
     }
 
-    @Override
-    public int getTableLength(String tableName) {
-        int num_tuples = 1;
-        try {
-            driver.createStatement();
-            PreparedStatement preparedStatement = driver.prepareStatement(this.queries.getSqlTableLength());
-            preparedStatement.setString(1, tableName);
-            this.resultset = driver.executeQuery(preparedStatement);
-            if (this.resultset.next()) {
-                num_tuples = this.resultset.getInt(1);
-            }
-            driver.closeStatement();
-        } catch (SQLException e) {
-            log.errorPrint(e, this.getClass().toString());
-        }
-        return num_tuples;
+    public void executeAgrawal(ArrayList<SQL> sql) {
+        Agrawal agrawal = new Agrawal();
+        this.capturedQueriesForAnalyses = agrawal.getWorkloadSelected(sql);
     }
 
-    @Override
-    public void executeAgrawal() {
-        Agrawal agrawal = new Agrawal(this);
-        this.capturedQueriesForAnalyses = agrawal.getWorkloadSelected(this.capturedQueriesForAnalyses);
-    }
-
-    @Override
     public void executeDefineView() {
         DefineView defineView;
-        switch (this.propertiesFile.getProperty("database")) {
-            case "3":
+        switch (prop.getProperty("database")) {
+            case "sqlserver":
                 defineView = new DefineViewSQLServer();
                 break;
             default:
@@ -78,14 +68,12 @@ public abstract class ObserverMV extends Observer implements IObserverMV {
 
         }
         this.capturedQueriesForAnalyses = defineView.getWorkloadSelected(this.capturedQueriesForAnalyses);
-        this.getPlanDDLViews();
-        this.persistDDLCreateMV();
     }
 
     public void getPlanDDLViews() {
         driver.createStatement();
-        MaterializedView query;
-        ArrayList<MaterializedView> tempQueryForAnalyses = new ArrayList<>();
+        SQL query;
+        ArrayList<SQL> tempQueryForAnalyses = new ArrayList<>();
         tempQueryForAnalyses.addAll(this.capturedQueriesForAnalyses);
         this.capturedQueriesForAnalyses.clear();
         for (int i = 0; i < tempQueryForAnalyses.size(); ++i) {

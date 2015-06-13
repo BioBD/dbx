@@ -15,7 +15,7 @@ import base.Base;
 public class ObserverFactory extends Base implements Runnable {
 
     public void run() {
-        switch (Integer.parseInt(this.propertiesFile.getProperty("database"))) {
+        switch (Integer.parseInt(this.prop.getProperty("database"))) {
             case 2:
                 ObserverPostgreSQLMV woPG = new ObserverPostgreSQLMV();
                 woPG.run();

@@ -4,7 +4,7 @@
  */
 package agents.postgresql;
 
-import agents.ObserverMV;
+import agents.AgentObserverMV;
 import agents.interfaces.IObserverMV;
 import static base.Base.log;
 import base.MaterializedView;
@@ -13,7 +13,7 @@ import drivers.postgresql.MaterializedViewPostgreSQL;
 import drivers.postgresql.QueriesPostgreSQL;
 import java.sql.SQLException;
 
-public class ObserverPostgreSQLMV extends ObserverMV implements IObserverMV {
+public class ObserverPostgreSQLMV extends AgentObserverMV implements IObserverMV {
 
     public ObserverPostgreSQLMV() {
         super();

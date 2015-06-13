@@ -4,16 +4,17 @@
  */
 package algorithms.mv;
 
-import algorithms.Algorithms;
 import base.MaterializedView;
-import drivers.Table;
+import bib.base.Base;
+import bib.sgbd.SQL;
+import bib.sgbd.Table;
 import java.util.ArrayList;
 
 /**
  *
  * @author Rafael
  */
-public class DefineView extends Algorithms {
+public class DefineView extends Base {
 
     protected String select = "";
     protected String from = "";
@@ -22,7 +23,7 @@ public class DefineView extends Algorithms {
     protected String orderBy = "";
     protected ArrayList<String> fieldsWhere = new ArrayList<>();
 
-    public ArrayList<MaterializedView> getWorkloadSelected(ArrayList<MaterializedView> capturedQueries) {
+    public ArrayList<SQL> getWorkloadSelected(ArrayList<SQL> capturedQueries) {
         for (int i = 0; i < capturedQueries.size(); i++) {
             MaterializedView current = (MaterializedView) capturedQueries.get(i);
             current.setHypoMaterializedView(this.getDdlCreateViewFromQuery(current));
@@ -41,11 +42,6 @@ public class DefineView extends Algorithms {
     }
 
     protected String getDdlCreateViewComplete() {
-//        System.out.println(this.select);
-//        System.out.println(this.from);
-//        System.out.println(this.where);
-//        System.out.println(this.groupBy);
-//        System.out.println(this.orderBy);
         return this.treatComma(this.select) + " "
                 + treatComma(this.from) + " "
                 + treatComma(this.where) + " "
@@ -61,11 +57,11 @@ public class DefineView extends Algorithms {
         return query;
     }
 
-    protected void gerateClauseSelectForDDLView(MaterializedView query) {
+    protected void gerateClauseSelectForDDLView(SQL query) {
         this.select = query.getClauseFromSql("select");
         String fields = "";
         if (!this.select.equals("select *")) {
-            for (String fieldWhere : query.fieldsWhere) {
+            for (String fieldWhere : query.getAllFields("where")) {
                 fields += ", " + fieldWhere;
             }
         }
@@ -73,7 +69,7 @@ public class DefineView extends Algorithms {
         this.groupBy = fields;
     }
 
-    protected void gerateClauseFromForDDLView(MaterializedView query) {
+    protected void gerateClauseFromForDDLView(SQL query) {
         this.from = query.getClauseFromSql("from");
         for (Table table : query.getTablesSQL()) {
             if (!this.from.contains(table.getName())) {
@@ -82,7 +78,7 @@ public class DefineView extends Algorithms {
         }
     }
 
-    protected void gerateClauseGroupByForDDLView(MaterializedView query) {
+    protected void gerateClauseGroupByForDDLView(SQL query) {
         if (!this.groupBy.isEmpty() && query.existClause("group by")) {
             this.groupBy = query.getClauseFromSql("group by") + this.groupBy;
         } else {

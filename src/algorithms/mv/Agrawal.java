@@ -4,56 +4,51 @@
  */
 package algorithms.mv;
 
-import agents.ObserverMV;
-import algorithms.Algorithms;
-import static base.Base.log;
 import base.MaterializedView;
-import base.SQL;
+import bib.base.Base;
+import bib.sgbd.SQL;
+import drivers.sqlserver.MaterializedViewSQLServer;
 import java.util.ArrayList;
 
 /**
  *
  * @author Rafael
  */
-public class Agrawal extends Algorithms {
+public class Agrawal extends Base {
 
-    private final ObserverMV observer;
-    private ArrayList<MaterializedView> capturedQueries;
+    private ArrayList<SQL> capturedQueries;
     private final int treshold;
     private int maxTables;
 
-    public Agrawal(ObserverMV observer) {
-        this.observer = observer;
-        this.treshold = Integer.parseInt(this.propertiesFile.getProperty("threshold"));
+    public Agrawal() {
+        this.treshold = Integer.parseInt(prop.getProperty("threshold"));
     }
 
-    public ArrayList<MaterializedView> getWorkloadSelected(ArrayList<MaterializedView> capturedQueries) {
+    public ArrayList<MaterializedView> getWorkloadSelected(ArrayList<SQL> capturedQueries) {
         try {
-            this.capturedQueries = capturedQueries;
-            int i = 1;
-            ArrayList<SQL> tables = new ArrayList<>();
-            ArrayList<ArrayList<SQL>> S = new ArrayList<>();
-            ArrayList<SQL> G = this.getTableSubsetBySize(i, tables);
-            S.add(G);
-            while (i < this.maxTables && !G.isEmpty()) {
-                i++;
-                G = this.getTableSubsetBySize(i, S.get(i - 2));
-                if (!G.isEmpty()) {
-                    S.add(G);
-                }
+//            this.capturedQueries = capturedQueries;
+//            int i = 1;
+//            ArrayList<SQL> tables = new ArrayList<>();
+//            ArrayList<ArrayList<SQL>> S = new ArrayList<>();
+//            ArrayList<SQL> G = this.getTableSubsetBySize(i, tables);
+//            S.add(G);
+//            while (i < this.maxTables && !G.isEmpty()) {
+//                i++;
+//                G = this.getTableSubsetBySize(i, S.get(i - 2));
+//                if (!G.isEmpty()) {
+//                    S.add(G);
+//                }
+//            }
+            ArrayList<MaterializedView> result = new ArrayList<>();
+            for (SQL capturedQuery : capturedQueries) {
+                MaterializedView temp = new MaterializedViewSQLServer();
+                temp.setSql(capturedQuery.getSql());
+                temp.setPlan(capturedQuery.getPlan());
             }
         } catch (Exception e) {
-            log.errorPrint(e, this.getClass().toString());
+            log.errorPrint(e);
         }
         return this.capturedQueries;
-    }
-
-    public int TS_Weight(ArrayList<String> tables) {
-        int num_tuples = 0;
-        for (String table : tables) {
-            num_tuples += observer.getTableLength(table);
-        }
-        return num_tuples;
     }
 
     public long TS_Cost(SQL query) {
@@ -64,13 +59,13 @@ public class Agrawal extends Algorithms {
     public ArrayList<SQL> getTableSubsetBySize(int size, ArrayList<SQL> tablesCheck) {
         ArrayList<SQL> tableSubset = new ArrayList<>();
         for (SQL workload : this.capturedQueries) {
-            if ((workload.getTablesQuery().size() == size) && (this.TS_Cost(workload) >= this.treshold)) {
+            if ((workload.getTablesSQL().size() == size) && (this.TS_Cost(workload) >= this.treshold)) {
                 if (tablesCheck.isEmpty()) {
                     this.maxTables = workload.getSchemaDataBase().tables.size();
                     tableSubset.add(workload);
                 } else {
                     for (SQL table : tablesCheck) {
-                        if (workload.haveTableInTableQuery(table.getTablesQuery())) {
+                        if (workload.haveTableInTableQuery(table.getTablesSQL())) {
                             tableSubset.add(workload);
                         }
                     }

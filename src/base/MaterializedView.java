@@ -23,10 +23,8 @@ public abstract class MaterializedView extends SQL implements IMaterializedView 
     private long hypoNumPages;
     private long hypoCreationCost;
     private double hypoGainAC;
-
     protected int hypoSizeRow;
     protected long hypoNumRow;
-
     protected final double fillfactory;
     private final int pageSize;
 

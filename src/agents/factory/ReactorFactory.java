@@ -16,15 +16,15 @@ import static base.Base.log;
 public class ReactorFactory extends Base implements Runnable {
 
     public void run() {
-        switch (Integer.parseInt(this.propertiesFile.getProperty("database"))) {
+        switch (Integer.parseInt(this.prop.getProperty("database"))) {
             case 2:
-                if (Integer.parseInt(this.propertiesFile.getProperty("executionMode")) == 2) {
+                if (Integer.parseInt(this.prop.getProperty("executionMode")) == 2) {
                     ReactorPostgreSQLMV reactor = new ReactorPostgreSQLMV();
                     reactor.run();
                 }
                 break;
             case 3:
-                if (Integer.parseInt(this.propertiesFile.getProperty("executionMode")) == 2) {
+                if (Integer.parseInt(this.prop.getProperty("executionMode")) == 2) {
                     ReactorSQLServerMV reactor = new ReactorSQLServerMV();
                     reactor.run();
                 }

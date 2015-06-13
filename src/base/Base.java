@@ -11,7 +11,7 @@ public class Base {
 
     public static Log log;
     private String signatureToDifferentiate;
-    public Properties propertiesFile;
+    public Properties prop;
 
     public Base() {
         Base.log = new Log();
@@ -27,15 +27,15 @@ public class Base {
             Properties prop = new Properties();
             prop.load(Log.class.getResourceAsStream("database.properties"));
             this.signatureToDifferentiate = String.valueOf(prop.getProperty("signature"));
-            this.propertiesFile = prop;
-            switch (this.propertiesFile.getProperty("database")) {
+            this.prop = prop;
+            switch (this.prop.getProperty("database")) {
                 case "2":
                     prop.load(Log.class.getResourceAsStream("database_postgresql.properties"));
-                    this.propertiesFile.putAll(prop);
+                    this.prop.putAll(prop);
                     break;
                 case "3":
                     prop.load(Log.class.getResourceAsStream("database_sqlserver.properties"));
-                    this.propertiesFile.putAll(prop);
+                    this.prop.putAll(prop);
                     break;
 
             }

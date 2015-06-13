@@ -4,17 +4,15 @@
  */
 package algorithms.mv;
 
-import algorithms.Algorithms;
-import base.MaterializedView;
+import bib.base.Base;
 
-public class CalculateHypoCostPostgres extends Algorithms {
+public class CalculateHypoCostPostgres extends Base {
 
-    public long calculateHypoCostPostgres(MaterializedView view, double numPages, long numRows) {
+    public long calculateHypoCostPostgres(double numPages, long numRows) {
         double temp = numPages;
         long tempRows = numRows;
-        long seq_page_cost = Long.valueOf(view.propertiesFile.getProperty("seq_page_cost"));
-        long cpu_tuple_cost = Long.valueOf(view.propertiesFile.getProperty("cpu_tuple_cost"));
-
+        long seq_page_cost = Long.valueOf(prop.getProperty("seq_page_cost"));
+        long cpu_tuple_cost = Long.valueOf(prop.getProperty("cpu_tuple_cost"));
         temp = temp * seq_page_cost; /* numPages*seq_page_cost */
 
         tempRows = tempRows * cpu_tuple_cost; /* numRows*cpu_tuple_cost */

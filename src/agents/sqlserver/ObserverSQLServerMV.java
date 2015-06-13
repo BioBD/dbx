@@ -4,7 +4,7 @@
  */
 package agents.sqlserver;
 
-import agents.ObserverMV;
+import agents.AgentObserverMV;
 import agents.interfaces.IObserverMV;
 import static base.Base.log;
 import drivers.sqlserver.DriverSQLServer;
@@ -16,7 +16,7 @@ import java.sql.SQLException;
  *
  * @author Rafael
  */
-public class ObserverSQLServerMV extends ObserverMV implements IObserverMV {
+public class ObserverSQLServerMV extends AgentObserverMV implements IObserverMV {
 
     public ObserverSQLServerMV() {
         super();

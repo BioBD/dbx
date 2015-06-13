@@ -16,9 +16,9 @@ import static base.Base.log;
 public class PredictorFactory extends Base implements Runnable {
 
     public void run() {
-        switch (Integer.parseInt(this.propertiesFile.getProperty("database"))) {
+        switch (Integer.parseInt(this.prop.getProperty("database"))) {
             case 2:
-                if (Integer.parseInt(this.propertiesFile.getProperty("executionMode")) == 2) {
+                if (Integer.parseInt(this.prop.getProperty("executionMode")) == 2) {
                     PredictorMVPostgreSQLMV pr = new PredictorMVPostgreSQLMV();
                     pr.run();
                 }
