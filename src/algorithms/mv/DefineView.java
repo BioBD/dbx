@@ -23,7 +23,7 @@ public class DefineView extends Base {
     protected String orderBy = "";
     protected ArrayList<String> fieldsWhere = new ArrayList<>();
 
-    public ArrayList<SQL> getWorkloadSelected(ArrayList<SQL> capturedQueries) {
+    public ArrayList<MaterializedView> getWorkloadSelected(ArrayList<MaterializedView> capturedQueries) {
         for (int i = 0; i < capturedQueries.size(); i++) {
             MaterializedView current = (MaterializedView) capturedQueries.get(i);
             current.setHypoMaterializedView(this.getDdlCreateViewFromQuery(current));

@@ -4,6 +4,7 @@
  */
 package agents;
 
+import java.sql.ResultSet;
 import java.sql.SQLException;
 
 /**
@@ -12,8 +13,10 @@ import java.sql.SQLException;
  */
 public abstract class Predictor extends Agent {
 
+    private ResultSet resultset;
+
     public int getSizeSpaceToTuning() {
-        int sizeTotal = Integer.parseInt(this.propertiesFile.getProperty("sizespacetotuning"));
+        int sizeTotal = Integer.parseInt(prop.getProperty("sizespacetotuning"));
         int occupied = this.getDiskSpaceOccupied();
         sizeTotal = sizeTotal - occupied;
         if (sizeTotal < 0) {
@@ -27,7 +30,7 @@ public abstract class Predictor extends Agent {
         int result = 0;
         try {
             driver.createStatement();
-            this.resultset = driver.executeQuery(this.queries.getSqlClauseToGetDiskSpaceOccupied());
+            this.resultset = driver.executeQuery(prop.getProperty("getSqlClauseToGetDiskSpaceOccupied"));
             if (this.resultset != null) {
                 while (this.resultset.next()) {
                     result = this.resultset.getInt(1);
@@ -36,7 +39,7 @@ public abstract class Predictor extends Agent {
             }
             driver.closeStatement();
         } catch (SQLException e) {
-            log.errorPrint(e, this.getClass().toString());
+            log.errorPrint(e);
         }
 
         return result;

@@ -6,7 +6,7 @@
 package algorithms.mv;
 
 import base.MaterializedView;
-import drivers.Table;
+import bib.sgbd.Table;
 import java.util.ArrayList;
 
 /**
@@ -49,13 +49,12 @@ public class DefineViewSQLServer extends DefineView {
         return result;
     }
 
-    @Override
     protected void gerateClauseSelectForDDLView(MaterializedView query) {
         this.select = query.getClauseFromSql("select");
         this.select = this.formatClauseSUM(query);
         String fields = "";
         if (!this.select.equals("select *")) {
-            for (String fieldWhere : query.fieldsWhere) {
+            for (String fieldWhere : query.getAllFields("where")) {
                 fields += ", " + fieldWhere;
             }
         }
@@ -65,7 +64,6 @@ public class DefineViewSQLServer extends DefineView {
         this.groupBy = fields;
     }
 
-    @Override
     protected void gerateClauseFromForDDLView(MaterializedView query) {
         this.from = query.getClauseFromSql("from");
         for (Table table : query.getTablesSQL()) {
@@ -77,7 +75,6 @@ public class DefineViewSQLServer extends DefineView {
         }
     }
 
-    @Override
     protected void gerateClauseGroupByForDDLView(MaterializedView query) {
         if (!this.groupBy.isEmpty() && query.existClause("group by")) {
             this.groupBy = query.getClauseFromSql("group by") + this.groupBy;
@@ -97,14 +94,15 @@ public class DefineViewSQLServer extends DefineView {
 
     private String formatClauseSUM(MaterializedView query) {
         this.select = query.getClauseFromSql("select");
-        for (int i = 0; i < query.fieldsSelect.size(); i++) {
-            String selectBefore = query.fieldsSelect.get(i);
-            if ((query.fieldsSelect.get(i).toLowerCase().contains("sum(")) && !query.fieldsSelect.get(i).toLowerCase().contains("sum(isnull(")) {
-                String fieldTemp = query.fieldsSelect.get(i).replace("sum(", "sum(isnull(");
+        ArrayList<String> fieldsSelect = query.getAllFields("select");
+        for (int i = 0; i < fieldsSelect.size(); i++) {
+            String selectBefore = fieldsSelect.get(i);
+            if ((fieldsSelect.get(i).toLowerCase().contains("sum(")) && !fieldsSelect.get(i).toLowerCase().contains("sum(isnull(")) {
+                String fieldTemp = fieldsSelect.get(i).replace("sum(", "sum(isnull(");
                 fieldTemp = fieldTemp.substring(0, fieldTemp.lastIndexOf(")")) + ", 0)" + fieldTemp.substring(fieldTemp.lastIndexOf(")"));
-                query.fieldsSelect.set(i, fieldTemp);
+                fieldsSelect.set(i, fieldTemp);
             }
-            this.select = this.select.replace(selectBefore, query.fieldsSelect.get(i));
+            this.select = this.select.replace(selectBefore, fieldsSelect.get(i));
         }
         return this.select;
     }

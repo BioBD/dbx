@@ -25,6 +25,7 @@ public class Agrawal extends Base {
     }
 
     public ArrayList<MaterializedView> getWorkloadSelected(ArrayList<SQL> capturedQueries) {
+        ArrayList<MaterializedView> result = new ArrayList<>();
         try {
 //            this.capturedQueries = capturedQueries;
 //            int i = 1;
@@ -39,16 +40,15 @@ public class Agrawal extends Base {
 //                    S.add(G);
 //                }
 //            }
-            ArrayList<MaterializedView> result = new ArrayList<>();
             for (SQL capturedQuery : capturedQueries) {
-                MaterializedView temp = new MaterializedViewSQLServer();
-                temp.setSql(capturedQuery.getSql());
-                temp.setPlan(capturedQuery.getPlan());
+                MaterializedView temp = new MaterializedViewSQLServer(0, 0);
+                temp.copy(capturedQuery);
+                result.add(temp);
             }
         } catch (Exception e) {
             log.errorPrint(e);
         }
-        return this.capturedQueries;
+        return result;
     }
 
     public long TS_Cost(SQL query) {

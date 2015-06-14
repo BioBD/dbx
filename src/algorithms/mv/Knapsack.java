@@ -12,7 +12,7 @@ import java.util.ArrayList;
  *
  * @author Rafael
  */
-public class Knapsack extends algorithms.Algorithms {
+public class Knapsack {
 
     @SuppressWarnings("empty-statement")
     public ArrayList<BigDecimal> exec(ArrayList<ItemBag> itemsBag, int capacityBag) {

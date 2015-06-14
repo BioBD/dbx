@@ -20,6 +20,4 @@ public interface IMaterializedView {
 
     public boolean isValidHypoView();
 
-    public String getDDLCreateMV();
-
 }

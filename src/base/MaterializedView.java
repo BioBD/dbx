@@ -160,4 +160,16 @@ public abstract class MaterializedView extends SQL implements IMaterializedView 
         this.setCost();
     }
 
+    public void copy(SQL sql) {
+        this.setId(sql.getId());
+        this.setPid(sql.getPid());
+        this.setStartTime(sql.getStartTime());
+        this.setType();
+        this.setTablesSQL(sql.getTablesSQL());
+    }
+
+    public String getDDLCreateMV() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
 }

@@ -5,6 +5,7 @@
 package drivers.sqlserver;
 
 import base.MaterializedView;
+import static bib.base.Base.log;
 import java.math.BigDecimal;
 
 /**
@@ -12,6 +13,10 @@ import java.math.BigDecimal;
  * @author Rafael
  */
 public class MaterializedViewSQLServer extends MaterializedView {
+
+    public MaterializedViewSQLServer(double fillfactory, int pageSize) {
+        super(fillfactory, pageSize);
+    }
 
     @Override
     public void setCost() {
@@ -22,7 +27,7 @@ public class MaterializedViewSQLServer extends MaterializedView {
             try {
                 this.cost = Math.round(Double.valueOf(numero).intValue());
             } catch (Exception e) {
-                log.msgPrint(e.getMessage(), this.getClass().toString());
+                log.msgPrint(e.getMessage());
             }
         }
     }
@@ -54,7 +59,6 @@ public class MaterializedViewSQLServer extends MaterializedView {
             int ini = this.getHypoPlan().toLowerCase().indexOf("avgrowsize=") + 12;
             int end = this.getHypoPlan().substring(ini).indexOf('"') + ini;
             this.hypoSizeRow = Integer.valueOf(this.getHypoPlan().substring(ini, end));
-            log.writeToFile(this.getHypoPlan(), "lografael.txt");
         }
     }
 
@@ -74,11 +78,6 @@ public class MaterializedViewSQLServer extends MaterializedView {
                 && query.contains("avgrowsize")
                 && query.contains("statementsubtreecost")
                 && query.contains("statementestrows"));
-    }
-
-    @Override
-    public String getDDLCreateMV() {
-        return this.getSignatureToDifferentiate() + "CREATE VIEW dbo." + this.getNameMaterizedView() + " WITH SCHEMABINDING AS " + this.getHypoMaterializedView() + "GO;";
     }
 
 }

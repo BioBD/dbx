@@ -4,8 +4,8 @@
  */
 package base;
 
-import drivers.Schema;
-import drivers.Table;
+import bib.sgbd.Schema;
+import bib.sgbd.Table;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;

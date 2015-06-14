@@ -7,10 +7,10 @@ package agents;
 import agents.interfaces.IPredictorMV;
 import algorithms.mv.ItemBag;
 import algorithms.mv.Knapsack;
-import static base.Base.log;
 import static java.lang.Thread.sleep;
 import java.math.BigDecimal;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 
@@ -22,6 +22,7 @@ public abstract class PredictorMV extends Predictor implements IPredictorMV {
 
     protected ArrayList<ItemBag> itemsBag;
     protected ArrayList<BigDecimal> idDDLForMaterialization;
+    private ResultSet resultset;
 
     @Override
     public void run() {
@@ -32,26 +33,26 @@ public abstract class PredictorMV extends Predictor implements IPredictorMV {
                 this.updateDDLForMaterialization();
                 sleep(4000);
             } catch (InterruptedException e) {
-                log.errorPrint(e, this.getClass().toString());
+                log.errorPrint(e);
             }
         }
     }
 
     public void updateDDLForMaterialization() {
-        log.msgPrint(this.idDDLForMaterialization, this.getClass().toString());
+        log.msgPrint(this.idDDLForMaterialization);
         try {
             if (this.idDDLForMaterialization.size() > 0) {
-                log.title("Persist update ddl create MV", this.getClass().toString());
+                log.title("Persist update ddl create MV");
                 for (BigDecimal item : this.idDDLForMaterialization) {
-                    PreparedStatement preparedStatement = driver.prepareStatement(this.queries.getSqlClauseToUpdateDDLCreateMVToMaterialization("M"));
-                    log.dmlPrint(this.queries.getSqlClauseToUpdateDDLCreateMVToMaterialization("M"), this.getClass().toString());
+                    PreparedStatement preparedStatement = driver.prepareStatement(prop.getProperty("getSqlClauseToUpdateDDLCreateMVToMaterialization"));
+                    log.dmlPrint(prop.getProperty("getSqlClauseToUpdateDDLCreateMVToMaterialization"));
                     preparedStatement.setBigDecimal(1, item);
                     driver.executeUpdate(preparedStatement);
                 }
-                log.endTitle(this.getClass().toString());
+                log.endTitle();
             }
         } catch (SQLException e) {
-            log.errorPrint(e, this.getClass().toString());
+            log.errorPrint(e);
         }
     }
 
@@ -72,7 +73,7 @@ public abstract class PredictorMV extends Predictor implements IPredictorMV {
         this.itemsBag.clear();
         try {
             driver.createStatement();
-            this.resultset = driver.executeQuery(this.queries.getSqlDDLNotAnalizedPredictor());
+            this.resultset = driver.executeQuery(prop.getProperty("getSqlDDLNotAnalizedPredictor"));
             if (this.resultset != null) {
                 while (this.resultset.next()) {
                     BigDecimal cost = new BigDecimal(String.valueOf(this.resultset.getInt(2)));
@@ -82,7 +83,7 @@ public abstract class PredictorMV extends Predictor implements IPredictorMV {
                 }
             }
         } catch (SQLException e) {
-            log.errorPrint(e, this.getClass().toString());
+            log.errorPrint(e);
         }
     }
 
