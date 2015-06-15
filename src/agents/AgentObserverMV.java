@@ -15,6 +15,8 @@ import java.math.BigDecimal;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
@@ -43,10 +45,14 @@ public class AgentObserverMV extends Agent implements Runnable {
 
     private void analyzeQueriesCaptured() {
         ArrayList<SQL> sql = observer.getLastExecutedSQL();
-        this.executeAgrawal(sql);
-        this.executeDefineView();
-        this.getPlanDDLViews();
-        this.persistDDLCreateMV();
+        for (SQL sql1 : sql) {
+            sql1.print();
+        }
+//        this.persistWorkload(sql);
+//        this.executeAgrawal(sql);
+//        this.executeDefineView();
+//        this.getPlanDDLViews();
+//        this.persistDDLCreateMV();
     }
 
     public void executeAgrawal(ArrayList<SQL> sql) {
@@ -56,7 +62,7 @@ public class AgentObserverMV extends Agent implements Runnable {
 
     public void executeDefineView() {
         DefineView defineView;
-        switch (prop.getProperty("database")) {
+        switch (prop.getProperty("sgbd")) {
             case "sqlserver":
                 defineView = new DefineViewSQLServer();
                 break;
@@ -75,9 +81,9 @@ public class AgentObserverMV extends Agent implements Runnable {
         this.MVCandiates.clear();
         for (int i = 0; i < tempQueryForAnalyses.size(); ++i) {
             mvTemp = tempQueryForAnalyses.get(i);
-            System.out.println("antes da consulta: " + mvTemp.getSql());
-            System.out.println("PLANO: " + observer.getPlanExecution(mvTemp.getHypoMaterializedView()));
-            System.exit(0);
+            System.out.println("CONSULTA ORIGINAL: " + mvTemp.getSql());
+            System.out.println("VISAO HYPOTETICA: " + mvTemp.getHypoMaterializedView());
+            System.out.println("PLANO HYPOTETICO: " + observer.getPlanExecution(mvTemp.getHypoMaterializedView()));
             mvTemp.setHypoPlan(observer.getPlanExecution(mvTemp.getHypoMaterializedView()));
             if (mvTemp.isValidHypoView()) {
                 this.MVCandiates.add(mvTemp);
@@ -90,18 +96,17 @@ public class AgentObserverMV extends Agent implements Runnable {
 
     public void persistDDLCreateMV() {
         try {
-            log.title("Persist ddl create MV");
+            if (this.MVCandiates.size() > 0) {
+                log.title("Persist ddl create MV");
+            }
             for (MaterializedView query : this.MVCandiates) {
                 log.msgPrint(query.getComents());
                 if (!query.getHypoMaterializedView().isEmpty()) {
-                    if (query.getAnalyze_count() == 0) {
-                        String ddlCreateMV = query.getDDLCreateMV();
-                        System.out.println(ddlCreateMV);
-                        System.exit(0);
+                    if (query.getAnalyze_count() < 1) {
                         PreparedStatement preparedStatement = driver.prepareStatement(prop.getProperty("getSqlClauseToInsertDDLCreateMV"));
                         log.dmlPrint(prop.getProperty("getSqlClauseToInsertDDLCreateMV"));
                         preparedStatement.setInt(1, query.getId());
-                        preparedStatement.setString(2, ddlCreateMV);
+                        preparedStatement.setString(2, query.getDDLCreateMV(prop.getProperty("sgbd")));
                         preparedStatement.setLong(3, query.getHypoCreationCost());
                         preparedStatement.setDouble(4, query.getHypoGainAC());
                         preparedStatement.setString(5, "H");
@@ -125,10 +130,29 @@ public class AgentObserverMV extends Agent implements Runnable {
         }
     }
 
-    protected void updateQueryAnalizedCount() {
+    private void updateQueryAnalizedCount() {
         PreparedStatement preparedStatement = driver.prepareStatement(prop.getProperty("getSqlClauseToUpdateWldAnalyzeCount"));
         log.dmlPrint(prop.getProperty("getSqlClauseToUpdateWldAnalyzeCount"));
         driver.executeUpdate(preparedStatement);
+    }
+
+    private void persistWorkload(ArrayList<SQL> workload) {
+        for (SQL sql : workload) {
+            if (!observer.isQueryAlreadyCaptured(sql.getSql())) {
+                try {
+                    PreparedStatement preparedStatement = driver.prepareStatement(prop.getProperty("getSqlClauseToInsertQueryTbWorkload"));
+                    log.dmlPrint(prop.getProperty("getSqlClauseToInsertQueryTbWorkload"));
+                    preparedStatement.setString(1, sql.getSql());
+                    preparedStatement.setString(2, sql.getPlan());
+                    preparedStatement.setLong(3, sql.getCapture_count());
+                    preparedStatement.setDouble(4, sql.getAnalyze_count());
+                    preparedStatement.setString(5, sql.getType());
+                    driver.executeUpdate(preparedStatement);
+                } catch (SQLException ex) {
+                    Logger.getLogger(AgentObserverMV.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
+        }
     }
 
 }

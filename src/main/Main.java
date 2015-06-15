@@ -11,17 +11,7 @@ public class Main {
                 Thread threadObserver = new Thread(observer);
                 threadObserver.start();
             }
-//            if ((args.length > 1) && (args[1].equals("1"))) {
-//                PredictorFactory predictor = new PredictorFactory();
-//                Thread threadPredictor = new Thread(predictor);
-//                threadPredictor.start();
-//            }
-//            if ((args.length > 2) && (args[2].equals("1"))) {
-//                ReactorFactory reactor = new ReactorFactory();
-//                Thread threadReactor = new Thread(reactor);
-//                threadReactor.start();
-//            }
         }
-    }
 
+    }
 }

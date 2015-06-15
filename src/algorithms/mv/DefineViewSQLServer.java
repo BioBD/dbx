@@ -36,22 +36,21 @@ public class DefineViewSQLServer extends DefineView {
 
     @Override
     protected String getDdlCreateViewComplete() {
-        System.out.println(this.select);
-        System.out.println(this.from);
-        System.out.println(this.where);
-        System.out.println(this.groupBy);
-        System.out.println(this.orderBy);
+        System.out.println("SELECT: " + this.select);
+        System.out.println("FROM: " + this.from);
+        System.out.println("WHERE: " + this.where);
+        System.out.println("GROUP BY: " + this.groupBy);
+        System.out.println("ORDER BY: " + this.orderBy);
         String result = this.treatComma(this.select) + " "
                 + treatComma(this.from) + " "
                 + treatComma(this.where) + " "
                 + treatComma(this.groupBy);
-        System.out.println(result);
+        System.out.println("COMPLETA: " + result);
         return result;
     }
 
     protected void gerateClauseSelectForDDLView(MaterializedView query) {
         this.select = query.getClauseFromSql("select");
-        this.select = this.formatClauseSUM(query);
         String fields = "";
         if (!this.select.equals("select *")) {
             for (String fieldWhere : query.getAllFields("where")) {
@@ -59,8 +58,6 @@ public class DefineViewSQLServer extends DefineView {
             }
         }
         this.select = query.getComents() + "\n" + this.select + fields;
-        this.select = this.select.replace("top 100", "");
-        this.select += ", COUNT_BIG(*) as id ";
         this.groupBy = fields;
     }
 
@@ -92,19 +89,18 @@ public class DefineViewSQLServer extends DefineView {
         return !this.groupBy.trim().isEmpty() && !this.groupBy.trim().equals(",") && (this.select.contains("sum(") || this.select.contains("count("));
     }
 
-    private String formatClauseSUM(MaterializedView query) {
-        this.select = query.getClauseFromSql("select");
-        ArrayList<String> fieldsSelect = query.getAllFields("select");
-        for (int i = 0; i < fieldsSelect.size(); i++) {
-            String selectBefore = fieldsSelect.get(i);
-            if ((fieldsSelect.get(i).toLowerCase().contains("sum(")) && !fieldsSelect.get(i).toLowerCase().contains("sum(isnull(")) {
-                String fieldTemp = fieldsSelect.get(i).replace("sum(", "sum(isnull(");
-                fieldTemp = fieldTemp.substring(0, fieldTemp.lastIndexOf(")")) + ", 0)" + fieldTemp.substring(fieldTemp.lastIndexOf(")"));
-                fieldsSelect.set(i, fieldTemp);
-            }
-            this.select = this.select.replace(selectBefore, fieldsSelect.get(i));
-        }
-        return this.select;
-    }
-
+//    private String formatClauseSUM(MaterializedView query) {
+////        this.select = query.getClauseFromSql("select");
+////        ArrayList<String> fieldsSelect = query.getAllFields("select");
+////        for (int i = 0; i < fieldsSelect.size(); i++) {
+////            String selectBefore = fieldsSelect.get(i);
+////            if ((fieldsSelect.get(i).toLowerCase().contains("sum(")) && !fieldsSelect.get(i).toLowerCase().contains("sum(isnull(")) {
+////                String fieldTemp = fieldsSelect.get(i).replace("sum(", "sum(isnull(");
+////                fieldTemp = fieldTemp.substring(0, fieldTemp.lastIndexOf(")")) + ", 0)" + fieldTemp.substring(fieldTemp.lastIndexOf(")"));
+////                fieldsSelect.set(i, fieldTemp);
+////            }
+////            this.select = this.select.replace(selectBefore, fieldsSelect.get(i));
+////        }
+//        return this.select;
+//    }
 }

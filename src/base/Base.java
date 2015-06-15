@@ -28,7 +28,7 @@ public class Base {
             prop.load(Log.class.getResourceAsStream("database.properties"));
             this.signatureToDifferentiate = String.valueOf(prop.getProperty("signature"));
             this.prop = prop;
-            switch (this.prop.getProperty("database")) {
+            switch (this.prop.getProperty("sgbd")) {
                 case "2":
                     prop.load(Log.class.getResourceAsStream("database_postgresql.properties"));
                     this.prop.putAll(prop);

@@ -4,7 +4,7 @@
  */
 package base;
 
-import static base.Base.log;
+import static bib.base.Base.log;
 import bib.sgbd.SQL;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
@@ -60,7 +60,7 @@ public abstract class MaterializedView extends SQL implements IMaterializedView 
                 this.setHypoMaterializedView(resultset.getString("cmv_ddl_create"));
             }
         } catch (SQLException e) {
-            log.errorPrint(e, this.getClass().toString());
+            log.errorPrint(e);
         }
     }
 
@@ -136,22 +136,22 @@ public abstract class MaterializedView extends SQL implements IMaterializedView 
             }
             return false;
         } catch (SQLException e) {
-            log.errorPrint(e, this.getClass().toString());
+            log.errorPrint(e);
             return false;
         }
 
     }
 
     protected void printStatistics() {
-        log.title("custo hypotético visão " + this.getComents(), this.getClass().toString());
-        log.msgPrint("hypoNumRow: " + this.hypoNumRow, this.getClass().toString());
-        log.msgPrint("hypoSizeRow: " + this.hypoSizeRow, this.getClass().toString());
-        log.msgPrint("hypoCost: " + this.hypoCost, this.getClass().toString());
-        log.msgPrint("fillFactory: " + this.fillfactory, this.getClass().toString());
-        log.msgPrint("pageSize: " + this.getPageSize(), this.getClass().toString());
-        log.msgPrint("Cost: " + this.getCost(), this.getClass().toString());
-        log.msgPrint("Cost - hypoCost: " + (this.getCost() - this.hypoCost), this.getClass().toString());
-        log.endTitle(this.getClass().toString());
+        log.title("custo hypotético visão " + this.getComents());
+        log.msgPrint("hypoNumRow: " + this.hypoNumRow);
+        log.msgPrint("hypoSizeRow: " + this.hypoSizeRow);
+        log.msgPrint("hypoCost: " + this.hypoCost);
+        log.msgPrint("fillFactory: " + this.fillfactory);
+        log.msgPrint("pageSize: " + this.getPageSize());
+        log.msgPrint("Cost: " + this.getCost());
+        log.msgPrint("Cost - hypoCost: " + (this.getCost() - this.hypoCost));
+        log.endTitle();
     }
 
     @Override
@@ -163,13 +163,31 @@ public abstract class MaterializedView extends SQL implements IMaterializedView 
     public void copy(SQL sql) {
         this.setId(sql.getId());
         this.setPid(sql.getPid());
+        this.setSql(sql.getSql());
+        this.setPlan(sql.getPlan());
         this.setStartTime(sql.getStartTime());
         this.setType();
         this.setTablesSQL(sql.getTablesSQL());
     }
 
-    public String getDDLCreateMV() {
+    public String getDDLCreateMV(String database) {
+        switch (database) {
+            case "sqlserver":
+                return "select into dbo." + this.getNameMaterizedView() + " from " + this.getHypoMaterializedView() + " GO;";
+            case "postgresql":
+                this.erro();
+                break;
+
+        }
+        return erro().toString();
+    }
+
+    private Object erro() {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    public String getNameMaterizedView() {
+        return "v_ot_workload_" + String.valueOf(this.getId());
     }
 
 }

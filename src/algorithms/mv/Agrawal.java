@@ -41,7 +41,9 @@ public class Agrawal extends Base {
 //                }
 //            }
             for (SQL capturedQuery : capturedQueries) {
-                MaterializedView temp = new MaterializedViewSQLServer(0, 0);
+                System.out.println(capturedQuery.getSql());
+                MaterializedView temp = new MaterializedViewSQLServer(1, 1);
+
                 temp.copy(capturedQuery);
                 result.add(temp);
             }
