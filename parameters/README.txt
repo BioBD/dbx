@@ -1,0 +1,1 @@
+Para criar os arquivos de configuração, renomeie os arquivos *.properperties.template para *.properperties e altere-os com os dados de conexão necessários
