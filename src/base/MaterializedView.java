@@ -27,6 +27,23 @@ public abstract class MaterializedView extends SQL implements IMaterializedView 
     protected long hypoNumRow;
     protected final double fillfactory;
     private final int pageSize;
+    private int analyze_count;
+
+    public int getHypoSizeRow() {
+        return hypoSizeRow;
+    }
+
+    public void setHypoSizeRow(int hypoSizeRow) {
+        this.hypoSizeRow = hypoSizeRow;
+    }
+
+    public int getAnalyze_count() {
+        return analyze_count;
+    }
+
+    public void setAnalyze_count(int analyze_count) {
+        this.analyze_count = analyze_count;
+    }
 
     public MaterializedView(double fillfactory, int pageSize) {
         this.fillfactory = fillfactory;
@@ -55,7 +72,6 @@ public abstract class MaterializedView extends SQL implements IMaterializedView 
 
     public void setResultSet(ResultSet resultset) {
         try {
-            super.setResultSet(resultset);
             if (this.checkColumnName(resultset, "cmv_ddl_create")) {
                 this.setHypoMaterializedView(resultset.getString("cmv_ddl_create"));
             }
@@ -85,19 +101,11 @@ public abstract class MaterializedView extends SQL implements IMaterializedView 
     }
 
     public void setHypoGainAC() {
-        this.hypoGainAC = this.getHypoGain() * this.getCapture_count();
+        this.hypoGainAC = this.getHypoGain() * this.getCaptureCount();
     }
 
     public long getHypoNumRow() {
         return hypoNumRow;
-    }
-
-    public long getHypoSizeRow() {
-        return hypoSizeRow;
-    }
-
-    public long getHypoNumPages() {
-        return hypoNumPages;
     }
 
     public void setHypoNumPages() {
@@ -110,6 +118,10 @@ public abstract class MaterializedView extends SQL implements IMaterializedView 
 
     public void setHypoCreationCost() {
         this.hypoCreationCost = (this.getHypoNumPages() * 2) + this.getCost();
+    }
+
+    public long getHypoNumPages() {
+        return hypoNumPages;
     }
 
     public String getHypoMaterializedView() {
@@ -158,16 +170,6 @@ public abstract class MaterializedView extends SQL implements IMaterializedView 
     public void setPlan(String plan) {
         super.setPlan(plan);
         this.setCost();
-    }
-
-    public void copy(SQL sql) {
-        this.setId(sql.getId());
-        this.setPid(sql.getPid());
-        this.setSql(sql.getSql());
-        this.setPlan(sql.getPlan());
-        this.setStartTime(sql.getStartTime());
-        this.setType();
-        this.setTablesSQL(sql.getTablesSQL());
     }
 
     public String getDDLCreateMV(String database) {

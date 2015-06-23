@@ -6,7 +6,6 @@ package agents;
 
 import algorithms.mv.Agrawal;
 import algorithms.mv.DefineView;
-import algorithms.mv.DefineViewSQLServer;
 import base.MaterializedView;
 import bib.sgbd.Observer;
 import bib.sgbd.SQL;
@@ -63,14 +62,11 @@ public class AgentObserverMV extends Agent implements Runnable {
     public void executeDefineView() {
         DefineView defineView;
         switch (prop.getProperty("sgbd")) {
-            case "sqlserver":
-                defineView = new DefineViewSQLServer();
-                break;
-            default:
+            case "postgresql":
                 defineView = new DefineView();
-
+                this.MVCandiates = defineView.getWorkloadSelected(this.MVCandiates);
+                break;
         }
-        this.MVCandiates = defineView.getWorkloadSelected(this.MVCandiates);
     }
 
     public void getPlanDDLViews() {
@@ -144,8 +140,8 @@ public class AgentObserverMV extends Agent implements Runnable {
                     log.dmlPrint(prop.getProperty("getSqlClauseToInsertQueryTbWorkload"));
                     preparedStatement.setString(1, sql.getSql());
                     preparedStatement.setString(2, sql.getPlan());
-                    preparedStatement.setLong(3, sql.getCapture_count());
-                    preparedStatement.setDouble(4, sql.getAnalyze_count());
+                    preparedStatement.setLong(3, sql.getCaptureCount());
+                    preparedStatement.setDouble(4, sql.getCaptureCount());
                     preparedStatement.setString(5, sql.getType());
                     driver.executeUpdate(preparedStatement);
                 } catch (SQLException ex) {

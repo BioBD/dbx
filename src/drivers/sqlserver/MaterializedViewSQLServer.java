@@ -25,7 +25,7 @@ public class MaterializedViewSQLServer extends MaterializedView {
             int end = this.getPlan().substring(ini).indexOf('"') + ini;
             String numero = this.getPlan().substring(ini, end);
             try {
-                this.cost = Math.round(Double.valueOf(numero).intValue());
+                this.setCost(Math.round(Double.valueOf(numero).intValue()));
             } catch (Exception e) {
                 log.msgPrint(e.getMessage());
             }
@@ -78,6 +78,10 @@ public class MaterializedViewSQLServer extends MaterializedView {
                 && query.contains("avgrowsize")
                 && query.contains("statementsubtreecost")
                 && query.contains("statementestrows"));
+    }
+
+    private void setCost(int round) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
 }

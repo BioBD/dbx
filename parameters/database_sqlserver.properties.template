@@ -1,5 +1,3 @@
-# Database Name
-databaseNameSqlserver=tpc_ds_100gb
 # Dados de conexao do Postgres
 driverSQLServer=net.sourceforge.jtds.jdbc.Driver
 urlSQLServer=jdbc:sqlserver://localhost:1433;

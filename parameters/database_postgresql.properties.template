@@ -1,5 +1,3 @@
-# Database Name
-databaseName=postgresql_tpch_5gb
 # Dados de conexao do Postgres
 driverPostgres=org.postgresql.Driver
 urlPostgres=jdbc:postgresql://***.**.***.***:5432/

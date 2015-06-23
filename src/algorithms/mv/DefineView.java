@@ -6,6 +6,7 @@ package algorithms.mv;
 
 import base.MaterializedView;
 import bib.base.Base;
+import bib.sgbd.Column;
 import bib.sgbd.SQL;
 import bib.sgbd.Table;
 import java.util.ArrayList;
@@ -61,8 +62,8 @@ public class DefineView extends Base {
         this.select = query.getClauseFromSql("select");
         String fields = "";
         if (!this.select.equals("select *")) {
-            for (String fieldWhere : query.getAllFields("where")) {
-                fields += ", " + fieldWhere;
+            for (Column fieldWhere : query.getFieldsQuery()) {
+                fields += ", " + fieldWhere.getName();
             }
         }
         this.select = query.getComents() + "\n" + this.select + fields;
@@ -71,7 +72,7 @@ public class DefineView extends Base {
 
     protected void gerateClauseFromForDDLView(SQL query) {
         this.from = query.getClauseFromSql("from");
-        for (Table table : query.getTablesSQL()) {
+        for (Table table : query.getTablesQuery()) {
             if (!this.from.contains(table.getName())) {
                 this.from += ", " + table.getName();
             }
