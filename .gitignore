@@ -8,11 +8,10 @@ nbactions.xml
 nb-configuration.xml
 .nb-gradle/
 *.csv
-.gitignore
 manifest.mf
 nbbuild.mf
 nbbuild.xml
 nbproject/
-*.properties
+database*
 build.xml
 *rafael.txt
