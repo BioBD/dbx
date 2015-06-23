@@ -5,9 +5,13 @@
 package agents;
 
 import base.MaterializedView;
+import static bib.base.Base.log;
+import static bib.base.Base.prop;
 import bib.sgbd.Captor;
 import bib.sgbd.SQL;
 import static java.lang.Thread.sleep;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
 
 /**
@@ -16,17 +20,18 @@ import java.util.ArrayList;
  */
 public class AgentObserverMV extends Agent implements Runnable {
 
-    private final Captor observer;
+    private final Captor captor;
     ArrayList<MaterializedView> MVCandiates;
 
     public AgentObserverMV() {
-        this.observer = new Captor();
+        this.captor = new Captor();
     }
 
     @Override
     public void run() {
         while (true) {
             try {
+                this.getLastExecutedSQL();
                 this.analyzeQueriesCaptured();
                 sleep(200);
             } catch (InterruptedException e) {
@@ -36,18 +41,15 @@ public class AgentObserverMV extends Agent implements Runnable {
     }
 
     private void analyzeQueriesCaptured() {
-        ArrayList<SQL> sql = observer.getLastExecutedSQL();
-        for (SQL sql1 : sql) {
-            sql1.print();
-        }
-//        this.executeAgrawal();
+        this.executeAgrawal();
 //        this.executeDefineView();
     }
 //
-//    public void executeAgrawal() {
-//        Agrawal agrawal = new Agrawal();
-//        this.capturedQueriesForAnalyses = agrawal.getWorkloadSelected(this.capturedQueriesForAnalyses);
-//    }
+
+    public void executeAgrawal() {
+        Agrawal agrawal = new Agrawal();
+        this.capturedQueriesForAnalyses = agrawal.getWorkloadSelected(this.capturedQueriesForAnalyses);
+    }
 //
 //    public void executeDefineView() {
 //        DefineView defineView = new DefineView();
@@ -116,5 +118,27 @@ public class AgentObserverMV extends Agent implements Runnable {
 //        log.dmlPrint(this.queries.getSqlClauseToUpdateWldAnalyzeCount(), this.getClass().toString());
 //        driver.executeUpdate(preparedStatement);
 //    }
+
+    private void getLastExecutedSQL() {
+        ArrayList<SQL> workload = captor.getLastExecutedSQL();
+        this.MVCandiates.clear();
+        for (SQL sql : workload) {
+            this.MVCandiates.add(this.getNewMVCandidate(sql));
+        }
+    }
+
+    private MaterializedView getNewMVCandidate(SQL sql) {
+        try {
+            driver.createStatement();
+            ResultSet result = driver.executeQuery(prop.getProperty("signature") + " EXPLAIN " + query + ";");
+            while (result.next()) {
+                partitionedPlan += "\n" + result.getString(1);
+            }
+        } catch (SQLException ex) {
+            log.errorPrint(ex);
+        }
+
+        return null;
+    }
 
 }

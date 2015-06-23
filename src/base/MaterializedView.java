@@ -27,7 +27,6 @@ public abstract class MaterializedView extends SQL implements IMaterializedView 
     protected long hypoNumRow;
     protected final double fillfactory;
     private final int pageSize;
-    private int analyze_count;
 
     public int getHypoSizeRow() {
         return hypoSizeRow;
@@ -35,14 +34,6 @@ public abstract class MaterializedView extends SQL implements IMaterializedView 
 
     public void setHypoSizeRow(int hypoSizeRow) {
         this.hypoSizeRow = hypoSizeRow;
-    }
-
-    public int getAnalyze_count() {
-        return analyze_count;
-    }
-
-    public void setAnalyze_count(int analyze_count) {
-        this.analyze_count = analyze_count;
     }
 
     public MaterializedView(double fillfactory, int pageSize) {
