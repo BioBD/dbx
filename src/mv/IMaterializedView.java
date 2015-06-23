@@ -2,7 +2,7 @@
  * Automatic Creation Materialized Views
  * Authors: rpoliveira@inf.puc-rio.br, sergio@inf.puc-rio.br  *
  */
-package base;
+package mv;
 
 /**
  *
@@ -10,14 +10,12 @@ package base;
  */
 public interface IMaterializedView {
 
-    public void setCost();
+    void setHypoNumRow();
 
-    public void setHypoNumRow();
+    void setHypoSizeRow();
 
-    public void setHypoSizeRow();
+    void setHypoCost();
 
-    public void setHypoCost();
-
-    public boolean isValidHypoView();
+    void setCost();
 
 }

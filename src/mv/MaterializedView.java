@@ -2,19 +2,20 @@
  * Automatic Creation Materialized Views
  * Authors: rpoliveira@inf.puc-rio.br, sergio@inf.puc-rio.br  *
  */
-package base;
+package mv;
 
+import bib.base.Base;
 import static bib.base.Base.log;
+import static bib.base.Base.prop;
 import bib.sgbd.SQL;
 import java.sql.ResultSet;
-import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 
 /**
  *
  * @author Rafael
  */
-public abstract class MaterializedView extends SQL implements IMaterializedView {
+public class MaterializedView extends SQL {
 
     private String hypoPlan;
     private String hypoMaterializedView;
@@ -25,8 +26,6 @@ public abstract class MaterializedView extends SQL implements IMaterializedView 
     private double hypoGainAC;
     protected int hypoSizeRow;
     protected long hypoNumRow;
-    protected final double fillfactory;
-    private final int pageSize;
 
     public int getHypoSizeRow() {
         return hypoSizeRow;
@@ -36,9 +35,7 @@ public abstract class MaterializedView extends SQL implements IMaterializedView 
         this.hypoSizeRow = hypoSizeRow;
     }
 
-    public MaterializedView(double fillfactory, int pageSize) {
-        this.fillfactory = fillfactory;
-        this.pageSize = pageSize;
+    public MaterializedView() {
     }
 
     public String getHypoPlan() {
@@ -50,12 +47,8 @@ public abstract class MaterializedView extends SQL implements IMaterializedView 
     }
 
     public void setHypoPlan(String hypoPlan) {
-        System.out.println("PLANO: " + hypoPlan);
         this.hypoPlan = hypoPlan;
-        this.setHypoNumRow();
-        this.setHypoSizeRow();
         this.setHypoNumPages();
-        this.setHypoCost();
         this.setHypoGain();
         this.setHypoGainAC();
         this.setHypoCreationCost();
@@ -63,16 +56,16 @@ public abstract class MaterializedView extends SQL implements IMaterializedView 
 
     public void setResultSet(ResultSet resultset) {
         try {
-            if (this.checkColumnName(resultset, "cmv_ddl_create")) {
-                this.setHypoMaterializedView(resultset.getString("cmv_ddl_create"));
-            }
+            this.setId(resultset.getInt("wld_id"));
+            this.setSql(resultset.getString("wld_sql").toLowerCase());
+            this.setCaptureCount(resultset.getInt("wld_capture_count"));
+            this.setAnalyzeCount(resultset.getInt("wld_analyze_count"));
+            this.setRelevance(resultset.getInt("wld_relevance"));
+            this.setPlan(resultset.getString("wld_plan").toLowerCase(), Base.prop.getProperty("sgbd"));
+            this.setHypoMaterializedView(resultset.getString("cmv_ddl_create"));
         } catch (SQLException e) {
             log.errorPrint(e);
         }
-    }
-
-    public double getFillfactory() {
-        return fillfactory;
     }
 
     public long getHypoCost() {
@@ -100,7 +93,9 @@ public abstract class MaterializedView extends SQL implements IMaterializedView 
     }
 
     public void setHypoNumPages() {
-        this.hypoNumPages = (long) (this.hypoSizeRow * fillfactory) / this.getPageSize();
+        double fillfactory = Double.valueOf(prop.getProperty("fillfactory" + prop.getProperty("sgbd")));
+        int pagesize = Integer.valueOf(prop.getProperty("sizepagedb" + prop.getProperty("sgbd")));
+        this.hypoNumPages = (long) (this.hypoSizeRow * fillfactory) / pagesize;
     }
 
     public long getHypoCreationCost() {
@@ -123,44 +118,14 @@ public abstract class MaterializedView extends SQL implements IMaterializedView 
         this.hypoMaterializedView = hypoMaterializedView;
     }
 
-    public int getPageSize() {
-        return this.pageSize;
-    }
-
-    private boolean checkColumnName(ResultSet resultset, String name) {
-        try {
-            ResultSetMetaData meta = resultset.getMetaData();
-            int numCol = meta.getColumnCount();
-
-            for (int i = 1; i < numCol + 1; i++) {
-                if (meta.getColumnName(i).equals(name)) {
-                    return true;
-                }
-            }
-            return false;
-        } catch (SQLException e) {
-            log.errorPrint(e);
-            return false;
-        }
-
-    }
-
     protected void printStatistics() {
         log.title("custo hypotético visão " + this.getComents());
         log.msgPrint("hypoNumRow: " + this.hypoNumRow);
         log.msgPrint("hypoSizeRow: " + this.hypoSizeRow);
         log.msgPrint("hypoCost: " + this.hypoCost);
-        log.msgPrint("fillFactory: " + this.fillfactory);
-        log.msgPrint("pageSize: " + this.getPageSize());
         log.msgPrint("Cost: " + this.getCost());
         log.msgPrint("Cost - hypoCost: " + (this.getCost() - this.hypoCost));
         log.endTitle();
-    }
-
-    @Override
-    public void setPlan(String plan) {
-        super.setPlan(plan);
-        this.setCost();
     }
 
     public String getDDLCreateMV(String database) {
@@ -183,4 +148,22 @@ public abstract class MaterializedView extends SQL implements IMaterializedView 
         return "v_ot_workload_" + String.valueOf(this.getId());
     }
 
+    public boolean containsField(String clause, String field) {
+        return clause.contains(" " + field + " ")
+                || clause.contains(" " + field + ",")
+                || clause.contains(" " + field + ";")
+                || clause.contains(" " + field + "=")
+                || clause.contains(" " + field + ">")
+                || clause.contains(" " + field + "<")
+                || clause.contains("," + field + ",")
+                || clause.contains("," + field + ";")
+                || clause.contains("," + field + "=")
+                || clause.contains("," + field + ">")
+                || clause.contains("," + field + "<")
+                || clause.contains("." + field + ",")
+                || clause.contains("." + field + ";")
+                || clause.contains("." + field + "=")
+                || clause.contains("." + field + ">")
+                || clause.contains("." + field + "<");
+    }
 }

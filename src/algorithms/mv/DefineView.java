@@ -4,7 +4,7 @@
  */
 package algorithms.mv;
 
-import base.MaterializedView;
+import mv.MaterializedView;
 import bib.base.Base;
 import bib.sgbd.Column;
 import bib.sgbd.SQL;
@@ -141,7 +141,7 @@ public class DefineView extends Base {
     }
 
     protected boolean containNumber(String word) {
-        if (word.contains("0")
+        return word.contains("0")
                 || word.contains("1")
                 || word.contains("2")
                 || word.contains("3")
@@ -150,10 +150,7 @@ public class DefineView extends Base {
                 || word.contains("6")
                 || word.contains("7")
                 || word.contains("8")
-                || word.contains("9")) {
-            return true;
-        }
-        return false;
+                || word.contains("9");
     }
 
 }

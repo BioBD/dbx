@@ -5,7 +5,7 @@
 package agents;
 
 import agents.interfaces.IReactor;
-import base.MaterializedView;
+import mv.MaterializedView;
 import static java.lang.Thread.sleep;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;

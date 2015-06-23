@@ -1,9 +1,10 @@
-# Arquivo de configura\u00c3\u00a7\u00c3\u00a3o do Sistema
+# Arquivo de configuracoes do Sistema
+versao=0.1
 # Informacoes de controle =================================================
-# 1 = Oracle
-# 2 = Postgres
-# 3 = SQLServer
-database=3
+# 1 = oracle
+# 2 = postgresql
+# 3 = sqlserver
+sgbd=postgresql
 # Database Name
 databaseName=pg_tpch_1gb
 # Niveis de Debug ===========================================================
@@ -13,9 +14,46 @@ databaseName=pg_tpch_1gb
 # 0001 = CRIAR ARQUIVO LOG NO DISCO
 debug=1111
 signature=/*AGENT_DBX*/
-
-# Modo de Execu\u00c3\u00a7\u00c3\u00a3o
+# Modo de Execucao
 # 1 = Indices
-# 2 = Vis\u00c3\u00b5es materializadas
+# 2 = VisÃµes materializadas
 executionMode=2
 
+# ============================================================== SQL SERVER ===============================================================
+# Dados de conexao do Postgres
+driverSQLServer=net.sourceforge.jtds.jdbc.Driver
+urlSQLServer=jdbc:sqlserver://localhost:1433;
+userSQLServer=***
+pwdSQLServer=***
+
+# Materialized Views =========================================================
+thresholdsqlserver=1
+# Tamanho da pagina do banco de dados
+sizepagedbsqlserver=8192
+# Tamanho do espaco maximo para uso dos agentes de tuning
+sizespacetotuningsqlserver=1000
+
+# fator de preenchimento do banco
+fillfactorysqlserver=1
+# Informacoes para calculo do custo da consulta no postgres
+seq_page_costsqlserver=1.0
+cpu_tuple_costsqlserver=0.01
+
+# ============================================================== POSTGRESQL ===============================================================
+# Dados de conexao do Postgres
+driverPostgres=org.postgresql.Driver
+urlPostgres=jdbc:postgresql://localhost:5432/
+userPostgres=****
+pwdPostgres=****
+
+# Materialized Views =========================================================
+thresholdpostgres=1
+# Tamanho da pagina do banco de dados
+sizepagedbpostgres=8192
+# Tamanho do espaco maximo para uso dos agentes de tuning
+sizespacetotuningpostgres=1000
+# fator de preenchimento do banco
+fillfactorypostgres=1
+# Informacoes para calculo do custo da consulta no postgres
+seq_page_costpostgres =1.0
+cpu_tuple_costpostgres =0.01

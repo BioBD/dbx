@@ -4,7 +4,7 @@
  */
 package algorithms.mv;
 
-import base.MaterializedView;
+import mv.MaterializedView;
 import bib.base.Base;
 import bib.sgbd.SQL;
 import bib.sgbd.Table;

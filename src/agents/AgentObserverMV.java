@@ -4,15 +4,18 @@
  */
 package agents;
 
-import base.MaterializedView;
+import algorithms.mv.Agrawal;
+import algorithms.mv.DefineView;
 import static bib.base.Base.log;
 import static bib.base.Base.prop;
 import bib.sgbd.Captor;
 import bib.sgbd.SQL;
 import static java.lang.Thread.sleep;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import mv.MaterializedView;
 
 /**
  *
@@ -21,7 +24,6 @@ import java.util.ArrayList;
 public class AgentObserverMV extends Agent implements Runnable {
 
     private final Captor captor;
-    ArrayList<MaterializedView> MVCandiates;
 
     public AgentObserverMV() {
         this.captor = new Captor();
@@ -41,104 +43,165 @@ public class AgentObserverMV extends Agent implements Runnable {
     }
 
     private void analyzeQueriesCaptured() {
-        this.executeAgrawal();
-//        this.executeDefineView();
-    }
-//
-
-    public void executeAgrawal() {
+        DefineView defineView = new DefineView();
         Agrawal agrawal = new Agrawal();
-        this.capturedQueriesForAnalyses = agrawal.getWorkloadSelected(this.capturedQueriesForAnalyses);
-    }
-//
-//    public void executeDefineView() {
-//        DefineView defineView = new DefineView();
-//        this.capturedQueriesForAnalyses = defineView.getWorkloadSelected(this.capturedQueriesForAnalyses);
-//        this.getPlanDDLViews();
-//        this.persistDDLCreateMV();
-//    }
-//
-//    public void getPlanDDLViews() {
-//        driver.createStatement();
-//        MaterializedView query;
-//        ArrayList<MaterializedView> tempQueryForAnalyses = new ArrayList<>();
-//        tempQueryForAnalyses.addAll(this.capturedQueriesForAnalyses);
-//        this.capturedQueriesForAnalyses.clear();
-//        for (int i = 0; i < tempQueryForAnalyses.size(); ++i) {
-//            query = tempQueryForAnalyses.get(i);
-//            query.setHypoPlan(this.getPlanQuery(query.getHypoMaterializedView()));
-//            if (query.isValid()) {
-//                this.capturedQueriesForAnalyses.add(query);
-//                log.msgPrint("Query valida: " + query.getSql(), this.getClass().toString());
-//            } else {
-//                log.msgPrint("Query descartada: " + query.getSql(), this.getClass().toString());
-//            }
-//        }
-//    }
-//
-//    public void persistDDLCreateMV() {
-//        try {
-//            if (this.capturedQueriesForAnalyses.size() > 0) {
-//                log.title("Persist ddl create MV", this.getClass().toString());
-//                for (MaterializedView query : this.capturedQueriesForAnalyses) {
-//                    log.msgPrint(query.getComents(), this.getClass().toString());
-//                    if (!query.getHypoMaterializedView().isEmpty()) {
-//                        if (query.getAnalyze_count() == 0) {
-//                            String ddlCreateMV = this.queries.getSqlClauseToCreateMV(query.getHypoMaterializedView(), query.getNameMaterizedView());
-//                            PreparedStatement preparedStatement = driver.prepareStatement(this.queries.getSqlClauseToInsertDDLCreateMV());
-//                            log.dmlPrint(this.queries.getSqlClauseToInsertDDLCreateMV(), this.getClass().toString());
-//                            preparedStatement.setInt(1, query.getId());
-//                            preparedStatement.setString(2, ddlCreateMV);
-//                            preparedStatement.setLong(3, query.getHypoCreationCost());
-//                            preparedStatement.setDouble(4, query.getHypoGainAC());
-//                            preparedStatement.setString(5, "H");
-//                            preparedStatement.setInt(6, query.getId());
-//                            query.setAnalyze_count(1);
-//                            driver.executeUpdate(preparedStatement);
-//                        } else {
-//                            PreparedStatement preparedStatement = driver.prepareStatement(this.queries.getSqlClauseToIncrementBenefictDDLCreateMV());
-//                            log.dmlPrint(this.queries.getSqlClauseToIncrementBenefictDDLCreateMV(), this.getClass().toString());
-//                            BigDecimal temp = new BigDecimal(query.getHypoCreationCost());
-//                            preparedStatement.setBigDecimal(1, temp);
-//                            preparedStatement.setDouble(2, query.getHypoGainAC());
-//                            preparedStatement.setInt(3, query.getId());
-//                            driver.executeUpdate(preparedStatement);
-//                        }
-//                    }
-//                }
-//                log.endTitle(this.getClass().toString());
-//            }
-//        } catch (SQLException e) {
-//            log.errorPrint(e, this.getClass().toString());
-//        }
-//    }
-//
-//    protected void updateQueryAnalizedCount() {
-//        PreparedStatement preparedStatement = driver.prepareStatement(this.queries.getSqlClauseToUpdateWldAnalyzeCount());
-//        log.dmlPrint(this.queries.getSqlClauseToUpdateWldAnalyzeCount(), this.getClass().toString());
-//        driver.executeUpdate(preparedStatement);
-//    }
-
-    private void getLastExecutedSQL() {
-        ArrayList<SQL> workload = captor.getLastExecutedSQL();
-        this.MVCandiates.clear();
-        for (SQL sql : workload) {
-            this.MVCandiates.add(this.getNewMVCandidate(sql));
+        ArrayList<MaterializedView> MVCandiates = this.getQueriesNotAnalized();
+        for (MaterializedView MVCandiate : MVCandiates) {
+            System.out.println(MVCandiate.getSql());
         }
+
+        MVCandiates = agrawal.getWorkloadSelected(MVCandiates);
+        MVCandiates = defineView.getWorkloadSelected(MVCandiates);
+        MVCandiates = this.getPlanDDLViews(MVCandiates);
+        this.persistDDLCreateMV(MVCandiates);
     }
 
-    private MaterializedView getNewMVCandidate(SQL sql) {
+    private ArrayList<MaterializedView> getQueriesNotAnalized() {
+        ArrayList<MaterializedView> MVCandiates = new ArrayList<>();
         try {
             driver.createStatement();
-            ResultSet result = driver.executeQuery(prop.getProperty("signature") + " EXPLAIN " + query + ";");
-            while (result.next()) {
-                partitionedPlan += "\n" + result.getString(1);
+            ResultSet resultset = driver.executeQuery(prop.getProperty("getSqlQueriesNotAnalized"));
+            if (resultset != null) {
+                while (resultset.next()) {
+                    MaterializedView currentQuery = new MaterializedView();
+                    currentQuery.setResultSet(resultset);
+                    currentQuery.setSchemaDataBase(captor.getSchemaDataBase());
+                    System.out.println(currentQuery.getSql());
+                    System.exit(0);
+                    MVCandiates.add(currentQuery);
+                }
+                if (!MVCandiates.isEmpty()) {
+                    this.updateQueryAnalizedCount();
+                }
             }
-        } catch (SQLException ex) {
-            log.errorPrint(ex);
+            driver.closeStatement();
+        } catch (SQLException e) {
+            log.errorPrint(e);
         }
-
-        return null;
+        return MVCandiates;
     }
 
+    protected void updateQueryAnalizedCount() {
+        PreparedStatement preparedStatement = driver.prepareStatement(prop.getProperty("getSqlClauseToUpdateWldAnalyzeCount"));
+        log.dmlPrint(prop.getProperty("getSqlClauseToUpdateWldAnalyzeCount"));
+        driver.executeUpdate(preparedStatement);
+    }
+
+    private void getLastExecutedSQL() {
+        ArrayList<SQL> sqlCaptured = captor.getLastExecutedSQL();
+        this.insertWorkload(sqlCaptured);
+    }
+
+    public void persistDDLCreateMV(ArrayList<MaterializedView> MVCandiates) {
+        try {
+            if (!MVCandiates.isEmpty()) {
+                log.title("Persist ddl create MV");
+                this.updateQueryAnalizedCount();
+                for (MaterializedView query : MVCandiates) {
+                    log.msgPrint(query.getComents());
+                    if (!query.getHypoMaterializedView().isEmpty()) {
+                        if (query.getAnalyzeCount() == 0) {
+                            String ddlCreateMV = this.getSqlClauseToCreateMV(query.getHypoMaterializedView(), query.getNameMaterizedView());
+                            PreparedStatement preparedStatement = driver.prepareStatement(prop.getProperty("getSqlClauseToInsertDDLCreateMV"));
+                            log.dmlPrint(prop.getProperty("getSqlClauseToInsertDDLCreateMV"));
+                            preparedStatement.setInt(1, query.getId());
+                            preparedStatement.setString(2, ddlCreateMV);
+                            preparedStatement.setLong(3, query.getHypoCreationCost());
+                            preparedStatement.setDouble(4, query.getHypoGainAC());
+                            preparedStatement.setString(5, "H");
+                            preparedStatement.setInt(6, query.getId());
+                            query.setAnalyzeCount(1);
+                            driver.executeUpdate(preparedStatement);
+                        } else {
+                            PreparedStatement preparedStatement = driver.prepareStatement(prop.getProperty("getSqlClauseToIncrementBenefictDDLCreateMV"));
+                            log.dmlPrint(prop.getProperty("getSqlClauseToIncrementBenefictDDLCreateMV"));
+                            preparedStatement.setLong(1, query.getHypoCreationCost());
+                            preparedStatement.setDouble(2, query.getHypoGainAC());
+                            preparedStatement.setInt(3, query.getId());
+                            driver.executeUpdate(preparedStatement);
+                        }
+                    }
+                }
+                log.endTitle();
+            }
+        } catch (SQLException e) {
+            log.errorPrint(e);
+        }
+    }
+
+    private String getSqlClauseToCreateMV(String hypoMaterializedView, String nameMaterizedView) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    private void insertWorkload(ArrayList<SQL> sqlCaptured) {
+        if (!sqlCaptured.isEmpty()) {
+            log.title("Insert / update TB_WORKLOAD");
+            for (int i = 0; i < sqlCaptured.size(); ++i) {
+                SQL query = sqlCaptured.get(i);
+                sqlCaptured.remove(i);
+                int queryId = this.getIdWorkload(query);
+                log.dmlPrint(query.getSql());
+                if (queryId == 0) {
+                    this.insertQueryTbWorkload(query);
+                } else {
+                    query.setId(queryId);
+                    this.updateQueryData(query);
+                }
+            }
+            log.endTitle();
+        }
+    }
+
+    public int getIdWorkload(SQL query) {
+        try {
+            String queryTemp = prop.getProperty("getSqlClauseToCheckIfQueryIsAlreadyCaptured");
+            PreparedStatement preparedStatement = driver.prepareStatement(queryTemp);
+            preparedStatement.setString(1, query.getSql());
+            ResultSet result = driver.executeQuery(preparedStatement);
+            if (result.next()) {
+                return result.getInt("wld_id");
+            } else {
+                return 0;
+            }
+        } catch (SQLException e) {
+            log.errorPrint(e.getMessage());
+            return 1;
+        }
+    }
+
+    public void insertQueryTbWorkload(SQL query) {
+        try {
+            try (PreparedStatement preparedStatement = driver.prepareStatement(prop.getProperty("getSqlClauseToInsertQueryTbWorkload"))) {
+                log.dmlPrint(prop.getProperty("getSqlClauseToInsertQueryTbWorkload") + " value of " + query);
+                preparedStatement.setString(1, query.getSql());
+                preparedStatement.setString(2, query.getPlan());
+                preparedStatement.setInt(3, 1);
+                preparedStatement.setInt(4, 0);
+                preparedStatement.setString(5, query.getType());
+                driver.executeUpdate(preparedStatement);
+            }
+        } catch (SQLException e) {
+            log.errorPrint(e);
+        }
+    }
+
+    public void updateQueryData(SQL query) {
+        try {
+            try (PreparedStatement preparedStatement = driver.prepareStatement(prop.getProperty("getSqlClauseToUpdateQueryTbWorkload"))) {
+                log.dmlPrint(prop.getProperty("getSqlClauseToUpdateQueryTbWorkload") + " value of " + query);
+                preparedStatement.setString(1, query.getPlan());
+                preparedStatement.setInt(2, query.getId());
+                driver.executeUpdate(preparedStatement);
+            }
+        } catch (SQLException e) {
+            log.errorPrint(e);
+        }
+    }
+
+    private ArrayList<MaterializedView> getPlanDDLViews(ArrayList<MaterializedView> MVCandiates) {
+        for (MaterializedView MVCandiate : MVCandiates) {
+            MVCandiate.setHypoPlan(captor.getPlanExecution(MVCandiate));
+        }
+        return MVCandiates;
+    }
 }
