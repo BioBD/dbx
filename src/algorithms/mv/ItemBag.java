@@ -3,7 +3,6 @@
  * Authors: rpoliveira@inf.puc-rio.br, sergio@inf.puc-rio.br  *
  */
 package algorithms.mv;
-import java.math.BigDecimal;
 
 /**
  *
@@ -12,10 +11,10 @@ import java.math.BigDecimal;
 public class ItemBag {
 
     int id;
-    BigDecimal cost;
-    BigDecimal gain;
+    long cost;
+    long gain;
 
-    public ItemBag(int id, BigDecimal cost, BigDecimal gain) {
+    public ItemBag(int id, long cost, long gain) {
         this.id = id;
         this.cost = cost;
         this.gain = gain;
@@ -25,11 +24,11 @@ public class ItemBag {
         return id;
     }
 
-    public BigDecimal getCost() {
+    public long getCost() {
         return cost;
     }
 
-    public BigDecimal getGain() {
+    public long getGain() {
         return gain;
     }
 

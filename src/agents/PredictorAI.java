@@ -8,6 +8,6 @@ package agents;
  *
  * @author Rafael
  */
-public abstract class PredictorAI extends Predictor {
+public abstract class PredictorAI {
 
 }

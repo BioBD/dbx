@@ -81,15 +81,8 @@ public class MaterializedView extends SQL {
 
     public void setHypoNumPages() {
         double fillfactory = Double.valueOf(prop.getProperty("fillfactory" + prop.getProperty("sgbd")));
-        int pagesize = Integer.valueOf(prop.getProperty("sizepagedb" + prop.getProperty("sgbd")));
-        System.out.println((this.hypoPlan.getNumRow() * ((this.hypoPlan.getSizeRow() * fillfactory) / pagesize)));
-        System.out.println((this.hypoPlan.getNumRow() * this.hypoPlan.getSizeRow() * fillfactory) / pagesize);
-        System.out.println((this.hypoPlan.getSizeRow() * fillfactory) / pagesize);
-        System.out.println(this.hypoPlan.getSizeRow());
-        System.out.println(pagesize);
-        System.out.println(fillfactory);
-        System.out.println(this.hypoPlan.getNumRow());
-        this.hypoNumPages = (long) (this.hypoPlan.getNumRow() * ((this.hypoPlan.getSizeRow() * fillfactory) / pagesize));
+        int pagesize = Integer.valueOf(prop.getProperty("pagesize" + prop.getProperty("sgbd")));
+        this.hypoNumPages = (long) ((this.hypoPlan.getNumRow() * this.hypoPlan.getSizeRow() * fillfactory) / pagesize);
         if (this.hypoNumPages < 1) {
             this.hypoNumPages = 1;
         }
@@ -141,11 +134,11 @@ public class MaterializedView extends SQL {
             default:
                 erro();
         }
-        return erro().toString();
+        return null;
     }
 
     private Object erro() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        throw new UnsupportedOperationException("Not supported yet.");
     }
 
     public String getNameMaterizedView() {

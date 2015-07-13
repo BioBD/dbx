@@ -46,9 +46,6 @@ public class AgentObserverMV extends Agent implements Runnable {
         DefineView defineView = new DefineView();
         Agrawal agrawal = new Agrawal();
         ArrayList<MaterializedView> MVCandiates = this.getQueriesNotAnalized();
-        for (MaterializedView MVCandiate : MVCandiates) {
-            System.out.println(MVCandiate.getSql());
-        }
         MVCandiates = agrawal.getWorkloadSelected(MVCandiates);
         MVCandiates = defineView.getWorkloadSelected(MVCandiates);
         MVCandiates = this.getPlanDDLViews(MVCandiates);

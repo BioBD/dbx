@@ -34,13 +34,11 @@ public class DefineView extends Base {
     }
 
     protected String getDdlCreateViewFromQuery(MaterializedView query) {
-        System.out.println(query.getSql());
         this.gerateClauseSelectForDDLView(query);
         this.gerateClauseFromForDDLView(query);
         this.gerateClauseWhereForDDLView(query);
         this.gerateClauseGroupByForDDLView(query);
         this.gerateClauseOrderByForDDLView(query);
-        System.out.println(getDdlCreateViewComplete());
         return this.getDdlCreateViewComplete();
     }
 

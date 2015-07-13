@@ -61,7 +61,6 @@ public class Agrawal extends Base {
                     this.maxTables = workload.getSchemaDataBase().tables.size();
                     tableSubset.add(workload);
                 } else {
-                    System.out.println("nao");
                     for (SQL table : tablesCheck) {
                         if (this.haveTableInTableQuery(workload, table.getTablesQuery())) {
                             tableSubset.add(workload);
