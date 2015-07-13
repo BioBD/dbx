@@ -49,7 +49,6 @@ public class AgentObserverMV extends Agent implements Runnable {
         for (MaterializedView MVCandiate : MVCandiates) {
             System.out.println(MVCandiate.getSql());
         }
-
         MVCandiates = agrawal.getWorkloadSelected(MVCandiates);
         MVCandiates = defineView.getWorkloadSelected(MVCandiates);
         MVCandiates = this.getPlanDDLViews(MVCandiates);
@@ -66,8 +65,6 @@ public class AgentObserverMV extends Agent implements Runnable {
                     MaterializedView currentQuery = new MaterializedView();
                     currentQuery.setResultSet(resultset);
                     currentQuery.setSchemaDataBase(captor.getSchemaDataBase());
-                    System.out.println(currentQuery.getSql());
-                    System.exit(0);
                     MVCandiates.add(currentQuery);
                 }
                 if (!MVCandiates.isEmpty()) {
@@ -101,7 +98,7 @@ public class AgentObserverMV extends Agent implements Runnable {
                     log.msgPrint(query.getComents());
                     if (!query.getHypoMaterializedView().isEmpty()) {
                         if (query.getAnalyzeCount() == 0) {
-                            String ddlCreateMV = this.getSqlClauseToCreateMV(query.getHypoMaterializedView(), query.getNameMaterizedView());
+                            String ddlCreateMV = query.getDDLCreateMV(prop.getProperty("sgbd"));
                             PreparedStatement preparedStatement = driver.prepareStatement(prop.getProperty("getSqlClauseToInsertDDLCreateMV"));
                             log.dmlPrint(prop.getProperty("getSqlClauseToInsertDDLCreateMV"));
                             preparedStatement.setInt(1, query.getId());
@@ -127,10 +124,6 @@ public class AgentObserverMV extends Agent implements Runnable {
         } catch (SQLException e) {
             log.errorPrint(e);
         }
-    }
-
-    private String getSqlClauseToCreateMV(String hypoMaterializedView, String nameMaterizedView) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
     private void insertWorkload(ArrayList<SQL> sqlCaptured) {

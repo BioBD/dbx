@@ -4,11 +4,11 @@
  */
 package algorithms.mv;
 
-import mv.MaterializedView;
 import bib.base.Base;
 import bib.sgbd.SQL;
 import bib.sgbd.Table;
 import java.util.ArrayList;
+import mv.MaterializedView;
 
 /**
  *
@@ -56,17 +56,17 @@ public class Agrawal extends Base {
     public ArrayList<SQL> getTableSubsetBySize(int size, ArrayList<SQL> tablesCheck) {
         ArrayList<SQL> tableSubset = new ArrayList<>();
         for (SQL workload : this.capturedQueries) {
-            if ((workload.getTablesQuery().size() == size) && (this.TS_Cost(workload) >= Integer.valueOf(prop.getProperty("treshold")))) {
+            if ((workload.getTablesQuery().size() == size) && (this.TS_Cost(workload) >= Integer.valueOf(prop.getProperty("threshold" + prop.getProperty(("sgbd")))))) {
                 if (tablesCheck.isEmpty()) {
                     this.maxTables = workload.getSchemaDataBase().tables.size();
                     tableSubset.add(workload);
                 } else {
+                    System.out.println("nao");
                     for (SQL table : tablesCheck) {
                         if (this.haveTableInTableQuery(workload, table.getTablesQuery())) {
                             tableSubset.add(workload);
                         }
                     }
-
                 }
             }
         }

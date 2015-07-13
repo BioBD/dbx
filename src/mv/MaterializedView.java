@@ -62,7 +62,6 @@ public class MaterializedView extends SQL {
             this.setAnalyzeCount(resultset.getInt("wld_analyze_count"));
             this.setRelevance(resultset.getInt("wld_relevance"));
             this.setPlan(resultset.getString("wld_plan").toLowerCase(), Base.prop.getProperty("sgbd"));
-            this.setHypoMaterializedView(resultset.getString("cmv_ddl_create"));
         } catch (SQLException e) {
             log.errorPrint(e);
         }
@@ -133,9 +132,9 @@ public class MaterializedView extends SQL {
             case "sqlserver":
                 return "select into dbo." + this.getNameMaterizedView() + " from " + this.getHypoMaterializedView() + " GO;";
             case "postgresql":
-                this.erro();
-                break;
-
+                return " create materialized view " + this.getNameMaterizedView() + " as " + this.getHypoMaterializedView() + ";";
+            default:
+                erro();
         }
         return erro().toString();
     }
