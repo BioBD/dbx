@@ -94,27 +94,28 @@ public class AgentObserverMV extends Agent implements Runnable {
             if (!MVCandiates.isEmpty()) {
                 log.title("Persist ddl create MV");
                 this.updateQueryAnalizedCount();
-                for (MaterializedView query : MVCandiates) {
-                    log.msgPrint(query.getComents());
-                    if (!query.getHypoMaterializedView().isEmpty()) {
-                        if (query.getAnalyzeCount() == 0) {
-                            String ddlCreateMV = query.getDDLCreateMV(prop.getProperty("sgbd"));
+                for (MaterializedView mvQuery : MVCandiates) {
+                    log.msgPrint(mvQuery.getComents());
+                    if (!mvQuery.getHypoMaterializedView().isEmpty()) {
+                        mvQuery.print();
+                        if (mvQuery.getAnalyzeCount() == 0) {
+                            String ddlCreateMV = mvQuery.getDDLCreateMV(prop.getProperty("sgbd"));
                             PreparedStatement preparedStatement = driver.prepareStatement(prop.getProperty("getSqlClauseToInsertDDLCreateMV"));
                             log.dmlPrint(prop.getProperty("getSqlClauseToInsertDDLCreateMV"));
-                            preparedStatement.setInt(1, query.getId());
+                            preparedStatement.setInt(1, mvQuery.getId());
                             preparedStatement.setString(2, ddlCreateMV);
-                            preparedStatement.setLong(3, query.getHypoCreationCost());
-                            preparedStatement.setDouble(4, query.getHypoGainAC());
+                            preparedStatement.setLong(3, mvQuery.getHypoCreationCost());
+                            preparedStatement.setDouble(4, mvQuery.getHypoGainAC());
                             preparedStatement.setString(5, "H");
-                            preparedStatement.setInt(6, query.getId());
-                            query.setAnalyzeCount(1);
+                            preparedStatement.setInt(6, mvQuery.getId());
+                            mvQuery.setAnalyzeCount(1);
                             driver.executeUpdate(preparedStatement);
                         } else {
                             PreparedStatement preparedStatement = driver.prepareStatement(prop.getProperty("getSqlClauseToIncrementBenefictDDLCreateMV"));
                             log.dmlPrint(prop.getProperty("getSqlClauseToIncrementBenefictDDLCreateMV"));
-                            preparedStatement.setLong(1, query.getHypoCreationCost());
-                            preparedStatement.setDouble(2, query.getHypoGainAC());
-                            preparedStatement.setInt(3, query.getId());
+                            preparedStatement.setLong(1, mvQuery.getHypoCreationCost());
+                            preparedStatement.setDouble(2, mvQuery.getHypoGainAC());
+                            preparedStatement.setInt(3, mvQuery.getId());
                             driver.executeUpdate(preparedStatement);
                         }
                     }
@@ -193,7 +194,7 @@ public class AgentObserverMV extends Agent implements Runnable {
 
     private ArrayList<MaterializedView> getPlanDDLViews(ArrayList<MaterializedView> MVCandiates) {
         for (MaterializedView MVCandiate : MVCandiates) {
-            MVCandiate.setHypoPlan(captor.getPlanExecution(MVCandiate));
+            MVCandiate.setHypoPlan(captor.getPlanExecution(MVCandiate.getHypoMaterializedView()));
         }
         return MVCandiates;
     }

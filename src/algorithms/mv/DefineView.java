@@ -4,12 +4,12 @@
  */
 package algorithms.mv;
 
-import mv.MaterializedView;
 import bib.base.Base;
 import bib.sgbd.Column;
 import bib.sgbd.SQL;
 import bib.sgbd.Table;
 import java.util.ArrayList;
+import mv.MaterializedView;
 
 /**
  *
@@ -34,11 +34,13 @@ public class DefineView extends Base {
     }
 
     protected String getDdlCreateViewFromQuery(MaterializedView query) {
+        System.out.println(query.getSql());
         this.gerateClauseSelectForDDLView(query);
         this.gerateClauseFromForDDLView(query);
         this.gerateClauseWhereForDDLView(query);
         this.gerateClauseGroupByForDDLView(query);
         this.gerateClauseOrderByForDDLView(query);
+        System.out.println(getDdlCreateViewComplete());
         return this.getDdlCreateViewComplete();
     }
 
