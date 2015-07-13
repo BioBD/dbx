@@ -16,11 +16,10 @@ import java.util.ArrayList;
  *
  * @author Rafael
  */
-public class AgentPredictorMV extends Agent implements Runnable {
+public class AgentPredictorMV extends Agent {
 
     protected ArrayList<ItemBag> itemsBag;
     protected ArrayList<Long> idDDLForMaterialization;
-    private ResultSet resultset;
 
     private int getSizeSpaceToTuning() {
         int sizeTotal = Integer.parseInt(prop.getProperty("sizespacetotuning" + prop.getProperty("sgbd")));
@@ -39,10 +38,10 @@ public class AgentPredictorMV extends Agent implements Runnable {
         long result = 0;
         try {
             driver.createStatement();
-            this.resultset = driver.executeQuery(prop.getProperty("getSqlClauseToGetDiskSpaceOccupied"));
-            if (this.resultset != null) {
-                while (this.resultset.next()) {
-                    result = this.resultset.getLong(1);
+            ResultSet resultset = driver.executeQuery(prop.getProperty("getSqlClauseToGetDiskSpaceOccupied"));
+            if (resultset != null) {
+                while (resultset.next()) {
+                    result = resultset.getLong(1);
                 }
             }
             driver.closeStatement();
@@ -108,13 +107,13 @@ public class AgentPredictorMV extends Agent implements Runnable {
             PreparedStatement preparedStatement = driver.prepareStatement(prop.getProperty("getSqlClauseToUpdateTemporaryDDLCreateMVToMaterialization"));
             driver.executeUpdate(preparedStatement);
             log.msgPrint("Space for tuning remainder: " + (this.getSizeSpaceToTuning() / 1024 / 1024) + "GB");
-            this.resultset = driver.executeQuery(prop.getProperty("getSqlDDLNotAnalizedPredictor"));
-            if (this.resultset != null) {
-                while (this.resultset.next()) {
+            ResultSet resultset = driver.executeQuery(prop.getProperty("getSqlDDLNotAnalizedPredictor"));
+            if (resultset != null) {
+                while (resultset.next()) {
                     int pagesize = Integer.valueOf(prop.getProperty("pagesize" + prop.getProperty("sgbd")));
-                    long cost = (this.resultset.getLong(2) * pagesize) / 1024;
-                    long gain = (this.resultset.getLong(3) * pagesize) / 1024;
-                    ItemBag item = new ItemBag(this.resultset.getInt(1), cost, gain);
+                    long cost = (resultset.getLong(2) * pagesize) / 1024;
+                    long gain = (resultset.getLong(3) * pagesize) / 1024;
+                    ItemBag item = new ItemBag(resultset.getInt(1), cost, gain);
                     this.itemsBag.add(item);
                 }
             }

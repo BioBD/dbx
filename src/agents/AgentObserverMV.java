@@ -21,7 +21,7 @@ import mv.MaterializedView;
  *
  * @author Rafael
  */
-public class AgentObserverMV extends Agent implements Runnable {
+public class AgentObserverMV extends Agent {
 
     private final Captor captor;
 
@@ -56,7 +56,7 @@ public class AgentObserverMV extends Agent implements Runnable {
         ArrayList<MaterializedView> MVCandiates = new ArrayList<>();
         try {
             driver.createStatement();
-            ResultSet resultset = driver.executeQuery(prop.getProperty("getSqlQueriesNotAnalized"));
+            ResultSet resultset = driver.executeQuery(prop.getProperty("getSqlDDLNotAnalizedReactor"));
             if (resultset != null) {
                 while (resultset.next()) {
                     MaterializedView currentQuery = new MaterializedView();

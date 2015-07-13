@@ -12,7 +12,7 @@ import bib.driver.Driver;
  *
  * @author Rafael
  */
-public class Agent extends Base {
+public abstract class Agent extends Base implements Runnable {
 
     protected Driver driver;
 
