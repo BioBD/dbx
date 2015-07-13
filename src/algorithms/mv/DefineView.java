@@ -62,14 +62,18 @@ public class DefineView extends Base {
 
     protected void gerateClauseSelectForDDLView(SQL query) {
         this.select = query.getClauseFromSql("select");
-        String fields = "";
+        String groupBySQL = query.getClauseFromSql("group by");
         if (!this.select.equals("select *")) {
             for (Column fieldWhere : query.getFieldsQuery()) {
-                fields += ", " + fieldWhere.getName();
+                if (!this.select.contains(fieldWhere.getName())) {
+                    this.select += ", " + fieldWhere.getName();
+                }
+                if (!groupBySQL.contains(fieldWhere.getName())) {
+                    this.groupBy += ", " + fieldWhere.getName();
+                }
             }
         }
-        this.select = query.getComents() + "\n" + this.select + fields;
-        this.groupBy = fields;
+        this.select = query.getComents() + "\n" + this.select;
     }
 
     protected void gerateClauseFromForDDLView(SQL query) {

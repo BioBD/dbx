@@ -68,7 +68,7 @@ public class MaterializedView extends SQL {
     }
 
     public void setHypoGain() {
-        this.hypoGain = (this.getCost() - this.hypoPlan.getCost());
+        this.hypoGain = (this.getCost() - this.getHypoCost());
     }
 
     public double getHypoGainAC() {
@@ -82,7 +82,17 @@ public class MaterializedView extends SQL {
     public void setHypoNumPages() {
         double fillfactory = Double.valueOf(prop.getProperty("fillfactory" + prop.getProperty("sgbd")));
         int pagesize = Integer.valueOf(prop.getProperty("sizepagedb" + prop.getProperty("sgbd")));
-        this.hypoNumPages = (long) (this.hypoPlan.getSizeRow() * fillfactory) / pagesize;
+        System.out.println((this.hypoPlan.getNumRow() * ((this.hypoPlan.getSizeRow() * fillfactory) / pagesize)));
+        System.out.println((this.hypoPlan.getNumRow() * this.hypoPlan.getSizeRow() * fillfactory) / pagesize);
+        System.out.println((this.hypoPlan.getSizeRow() * fillfactory) / pagesize);
+        System.out.println(this.hypoPlan.getSizeRow());
+        System.out.println(pagesize);
+        System.out.println(fillfactory);
+        System.out.println(this.hypoPlan.getNumRow());
+        this.hypoNumPages = (long) (this.hypoPlan.getNumRow() * ((this.hypoPlan.getSizeRow() * fillfactory) / pagesize));
+        if (this.hypoNumPages < 1) {
+            this.hypoNumPages = 1;
+        }
     }
 
     public long getHypoCreationCost() {
@@ -114,9 +124,9 @@ public class MaterializedView extends SQL {
         log.msgPrint("HypoNumPages: " + this.getHypoNumPages());
         log.msgPrint("hypoNumRow: " + this.hypoPlan.getNumRow());
         log.msgPrint("hypoSizeRow: " + this.hypoPlan.getSizeRow());
-        log.msgPrint("hypoCost: " + this.hypoPlan.getCost());
-        log.msgPrint("Cost: " + this.getCost());
-        log.msgPrint("Cost - hypoCost: " + (this.getCost() - this.hypoPlan.getCost()));
+        log.msgPrint("hypoCost: " + this.getHypoCost());
+        log.msgPrint("Cost - hypoCost: " + (this.getCost() - this.getHypoCost()));
+        log.msgPrint("HypoCreationCost: " + this.getHypoCreationCost());
         log.msgPrint("Hypo Plan: " + this.hypoPlan.getPlan());
         log.msgPrint("Hypo Query MV: " + this.hypoMaterializedView);
         log.endTitle();
@@ -159,6 +169,10 @@ public class MaterializedView extends SQL {
                 || clause.contains("." + field + "=")
                 || clause.contains("." + field + ">")
                 || clause.contains("." + field + "<");
+    }
+
+    private long getHypoCost() {
+        return this.getHypoNumPages();
     }
 
 }
