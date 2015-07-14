@@ -33,6 +33,7 @@ public class AgentObserverMV extends Agent {
     public void run() {
         while (true) {
             try {
+
                 this.getLastExecutedSQL();
                 this.analyzeQueriesCaptured();
                 sleep(200);
@@ -46,7 +47,7 @@ public class AgentObserverMV extends Agent {
         DefineView defineView = new DefineView();
         Agrawal agrawal = new Agrawal();
         ArrayList<MaterializedView> MVCandiates = this.getQueriesNotAnalized();
-        System.out.println("RPO");
+        System.out.println("RPO 3");
         MVCandiates = agrawal.getWorkloadSelected(MVCandiates);
         MVCandiates = defineView.getWorkloadSelected(MVCandiates);
         MVCandiates = this.getPlanDDLViews(MVCandiates);
