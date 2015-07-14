@@ -36,6 +36,7 @@ public class AgentReactorMV extends Agent {
 
     public AgentReactorMV() {
         this.capturedQueriesForAnalyses = new ArrayList<>();
+        this.MVCandiates = new ArrayList<>();
     }
 
     public void getLastExecutedDDL() {
@@ -46,7 +47,7 @@ public class AgentReactorMV extends Agent {
         try {
             driver.createStatement();
             this.capturedQueriesForAnalyses.clear();
-            ResultSet resultset = driver.executeQuery(prop.getProperty("getSqlClauseToUpdateDDLCreateMVToMaterialization"));
+            ResultSet resultset = driver.executeQuery(prop.getProperty("getSqlDDLNotAnalizedReactor"));
             if (resultset != null) {
                 while (resultset.next()) {
                     MaterializedView currentQuery = new MaterializedView();
