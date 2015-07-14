@@ -80,7 +80,8 @@ public class AgentReactorMV extends Agent {
             log.title("Persist update ddl create MV");
             for (MaterializedView currentQuery : this.MVCandiates) {
                 PreparedStatement preparedStatement = driver.prepareStatement(prop.getProperty("getSqlClauseToUpdateDDLCreateMVToMaterialization"));
-                preparedStatement.setLong(1, currentQuery.getId());
+                preparedStatement.setString(1, "R");
+                preparedStatement.setInt(2, currentQuery.getId());
                 driver.executeUpdate(preparedStatement);
                 log.msgPrint(currentQuery.getHypoMaterializedView());
                 log.dmlPrint(prop.getProperty("getSqlClauseToUpdateDDLCreateMVToMaterialization"));

@@ -54,6 +54,9 @@ public class MaterializedView extends SQL {
         try {
             this.setId(resultset.getInt("wld_id"));
             this.setSql(resultset.getString("wld_sql").toLowerCase());
+            if (resultset.getObject("cmv_ddl_create") != null) {
+                this.setHypoMaterializedView(resultset.getString("cmv_ddl_create").toLowerCase());
+            }
             this.setCaptureCount(resultset.getInt("wld_capture_count"));
             this.setAnalyzeCount(resultset.getInt("wld_analyze_count"));
             this.setRelevance(resultset.getInt("wld_relevance"));
@@ -125,16 +128,11 @@ public class MaterializedView extends SQL {
         log.endTitle();
     }
 
-    public String getDDLCreateMV(String database) {
-        switch (database) {
-            case "sqlserver":
-                return "select into dbo." + this.getNameMaterizedView() + " from " + this.getHypoMaterializedView() + " GO;";
-            case "postgresql":
-                return " create materialized view " + this.getNameMaterizedView() + " as " + this.getHypoMaterializedView() + ";";
-            default:
-                erro();
-        }
-        return null;
+    public String getDDLCreateMV() {
+        String ddl = prop.getProperty("getDDLCreateMV" + prop.getProperty("sgbd"));
+        ddl = ddl.replace("$nameMV$", this.getNameMaterizedView());
+        ddl = ddl.replace("$sqlMV$", this.getHypoMaterializedView());
+        return ddl;
     }
 
     private Object erro() {

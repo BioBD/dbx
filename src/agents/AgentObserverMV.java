@@ -97,7 +97,7 @@ public class AgentObserverMV extends Agent {
                     if (!mvQuery.getHypoMaterializedView().isEmpty()) {
                         mvQuery.print();
                         if (mvQuery.getAnalyzeCount() == 0) {
-                            String ddlCreateMV = mvQuery.getDDLCreateMV(prop.getProperty("sgbd"));
+                            String ddlCreateMV = mvQuery.getDDLCreateMV();
                             PreparedStatement preparedStatement = driver.prepareStatement(prop.getProperty("getSqlClauseToInsertDDLCreateMV"));
                             log.dmlPrint(prop.getProperty("getSqlClauseToInsertDDLCreateMV"));
                             preparedStatement.setInt(1, mvQuery.getId());
