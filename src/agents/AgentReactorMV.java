@@ -34,6 +34,10 @@ public class AgentReactorMV extends Agent {
         }
     }
 
+    public AgentReactorMV() {
+        this.capturedQueriesForAnalyses = new ArrayList<>();
+    }
+
     public void getLastExecutedDDL() {
         this.getDDLNotAnalized();
     }

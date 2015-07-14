@@ -36,7 +36,7 @@ public class AgentObserverMV extends Agent {
 
                 this.getLastExecutedSQL();
                 this.analyzeQueriesCaptured();
-                sleep(200);
+                sleep(2000);
             } catch (InterruptedException e) {
                 log.errorPrint(e);
             }
@@ -47,7 +47,6 @@ public class AgentObserverMV extends Agent {
         DefineView defineView = new DefineView();
         Agrawal agrawal = new Agrawal();
         ArrayList<MaterializedView> MVCandiates = this.getQueriesNotAnalized();
-        System.out.println("RPO 3");
         MVCandiates = agrawal.getWorkloadSelected(MVCandiates);
         MVCandiates = defineView.getWorkloadSelected(MVCandiates);
         MVCandiates = this.getPlanDDLViews(MVCandiates);
@@ -90,9 +89,7 @@ public class AgentObserverMV extends Agent {
 
     public void persistDDLCreateMV(ArrayList<MaterializedView> MVCandiates) {
         try {
-            System.out.println("passou aqui antes");
             if (!MVCandiates.isEmpty()) {
-                System.out.println("passou aqui não");
                 log.title("Persist ddl create MV");
                 this.updateQueryAnalizedCount();
                 for (MaterializedView mvQuery : MVCandiates) {

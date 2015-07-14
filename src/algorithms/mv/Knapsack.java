@@ -19,10 +19,10 @@ public class Knapsack {
         int[] weight = new int[numberItems + 1];
         int[] id = new int[numberItems + 1];
 
-        for (int i = 0; i < numberItems; i++) {
-            profit[i] = (int) itemsBag.get(i).gain;
-            weight[i] = (int) itemsBag.get(i).cost;
-            id[i] = (int) itemsBag.get(i).id;
+        for (int i = 1; i <= numberItems; i++) {
+            profit[i] = (int) itemsBag.get(i - 1).gain;
+            weight[i] = (int) itemsBag.get(i - 1).cost;
+            id[i] = (int) itemsBag.get(i - 1).id;
         }
 
         int[][] opt = new int[numberItems + 1][capacityBag + 1];
@@ -31,7 +31,7 @@ public class Knapsack {
         for (int n = 1; n <= numberItems; n++) {
             for (int w = 1; w <= capacityBag; w++) {
                 int option1 = opt[n - 1][w];
-                int option2 = Integer.MIN_VALUE;
+                int option2 = 0;
                 if (weight[n] <= w) {
                     option2 = profit[n] + opt[n - 1][w - weight[n]];
                 }
@@ -40,11 +40,9 @@ public class Knapsack {
             }
         }
         ArrayList<Integer> solutionScalled = new ArrayList<>();
-        int sum = 0;
         for (int n = numberItems, w = capacityBag; n > 0; n--) {
             if (sol[n][w]) {
                 solutionScalled.add(id[n]);
-                sum += weight[n];
                 w = w - weight[n];
             }
         }

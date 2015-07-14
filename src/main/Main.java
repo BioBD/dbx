@@ -18,7 +18,7 @@ public class Main {
                 Thread threadObserver = new Thread(predictor);
                 threadObserver.start();
             }
-            if (args.length > 2 && args[1].equals("1")) {
+            if (args.length > 2 && args[2].equals("1")) {
                 AgentReactorMV predictor = new AgentReactorMV();
                 Thread threadObserver = new Thread(predictor);
                 threadObserver.start();

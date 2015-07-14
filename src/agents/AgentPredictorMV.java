@@ -98,6 +98,7 @@ public class AgentPredictorMV extends Agent {
     private void executeKnapsack() {
         Knapsack knapsack = new Knapsack();
         this.idDDLForMaterialization = knapsack.exec(itemsBag, this.getSizeSpaceToTuning());
+
     }
 
     public void getLastExecutedDDL() {
@@ -114,6 +115,8 @@ public class AgentPredictorMV extends Agent {
                     long cost = (resultset.getLong(2) * pagesize) / 1024;
                     long gain = (resultset.getLong(3) * pagesize) / 1024;
                     ItemBag item = new ItemBag(resultset.getInt(1), cost, gain);
+                    System.out.println("cost: " + cost);
+                    System.out.println("space: " + this.getSizeSpaceToTuning());
                     this.itemsBag.add(item);
                 }
             }
