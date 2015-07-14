@@ -46,6 +46,7 @@ public class AgentObserverMV extends Agent {
         DefineView defineView = new DefineView();
         Agrawal agrawal = new Agrawal();
         ArrayList<MaterializedView> MVCandiates = this.getQueriesNotAnalized();
+        System.out.println("RPO");
         MVCandiates = agrawal.getWorkloadSelected(MVCandiates);
         MVCandiates = defineView.getWorkloadSelected(MVCandiates);
         MVCandiates = this.getPlanDDLViews(MVCandiates);
@@ -56,7 +57,7 @@ public class AgentObserverMV extends Agent {
         ArrayList<MaterializedView> MVCandiates = new ArrayList<>();
         try {
             driver.createStatement();
-            ResultSet resultset = driver.executeQuery(prop.getProperty("getSqlDDLNotAnalizedReactor"));
+            ResultSet resultset = driver.executeQuery(prop.getProperty("getSqlQueriesNotAnalizedObserver"));
             if (resultset != null) {
                 while (resultset.next()) {
                     MaterializedView currentQuery = new MaterializedView();
@@ -88,7 +89,9 @@ public class AgentObserverMV extends Agent {
 
     public void persistDDLCreateMV(ArrayList<MaterializedView> MVCandiates) {
         try {
+            System.out.println("passou aqui antes");
             if (!MVCandiates.isEmpty()) {
+                System.out.println("passou aqui não");
                 log.title("Persist ddl create MV");
                 this.updateQueryAnalizedCount();
                 for (MaterializedView mvQuery : MVCandiates) {
@@ -163,7 +166,7 @@ public class AgentObserverMV extends Agent {
     public void insertQueryTbWorkload(SQL query) {
         try {
             try (PreparedStatement preparedStatement = driver.prepareStatement(prop.getProperty("getSqlClauseToInsertQueryTbWorkload"))) {
-                log.dmlPrint(prop.getProperty("getSqlClauseToInsertQueryTbWorkload") + " value of " + query);
+                log.dmlPrint(prop.getProperty("getSqlClauseToInsertQueryTbWorkload") + " value of " + query.getSql());
                 preparedStatement.setString(1, query.getSql());
                 preparedStatement.setString(2, query.getPlan());
                 preparedStatement.setInt(3, 1);
@@ -179,7 +182,7 @@ public class AgentObserverMV extends Agent {
     public void updateQueryData(SQL query) {
         try {
             try (PreparedStatement preparedStatement = driver.prepareStatement(prop.getProperty("getSqlClauseToUpdateQueryTbWorkload"))) {
-                log.dmlPrint(prop.getProperty("getSqlClauseToUpdateQueryTbWorkload") + " value of " + query);
+                log.dmlPrint(prop.getProperty("getSqlClauseToUpdateQueryTbWorkload") + " value of " + query.getSql());
                 preparedStatement.setString(1, query.getPlan());
                 preparedStatement.setInt(2, query.getId());
                 driver.executeUpdate(preparedStatement);
