@@ -56,7 +56,6 @@ public class AgentObserverMV extends Agent {
     private ArrayList<MaterializedView> getQueriesNotAnalized() {
         ArrayList<MaterializedView> MVCandiates = new ArrayList<>();
         try {
-            driver.createStatement();
             ResultSet resultset = driver.executeQuery(prop.getProperty("getSqlQueriesNotAnalizedObserver"));
             if (resultset != null) {
                 while (resultset.next()) {
@@ -69,7 +68,7 @@ public class AgentObserverMV extends Agent {
                     this.updateQueryAnalizedCount();
                 }
             }
-            driver.closeStatement();
+            resultset.close();
         } catch (SQLException e) {
             log.errorPrint(e);
         }
@@ -151,8 +150,11 @@ public class AgentObserverMV extends Agent {
             preparedStatement.setString(1, query.getSql());
             ResultSet result = driver.executeQuery(preparedStatement);
             if (result.next()) {
-                return result.getInt("wld_id");
+                int number = result.getInt("wld_id");
+                result.close();
+                return number;
             } else {
+                result.close();
                 return 0;
             }
         } catch (SQLException e) {

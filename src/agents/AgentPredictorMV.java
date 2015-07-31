@@ -37,14 +37,13 @@ public class AgentPredictorMV extends Agent {
     private int getDiskSpaceOccupied() {
         long result = 0;
         try {
-            driver.createStatement();
             ResultSet resultset = driver.executeQuery(prop.getProperty("getSqlClauseToGetDiskSpaceOccupied"));
             if (resultset != null) {
                 while (resultset.next()) {
                     result = resultset.getLong(1);
                 }
             }
-            driver.closeStatement();
+            resultset.close();
         } catch (SQLException e) {
             log.errorPrint(e);
         }
@@ -104,7 +103,6 @@ public class AgentPredictorMV extends Agent {
     public void getLastExecutedDDL() {
         this.itemsBag.clear();
         try {
-            driver.createStatement();
             PreparedStatement preparedStatement = driver.prepareStatement(prop.getProperty("getSqlClauseToUpdateTemporaryDDLCreateMVToMaterialization"));
             driver.executeUpdate(preparedStatement);
             log.msgPrint("Space for tuning remainder: " + (this.getSizeSpaceToTuning() / 1024 / 1024) + "GB");
@@ -117,7 +115,9 @@ public class AgentPredictorMV extends Agent {
                     ItemBag item = new ItemBag(resultset.getInt(1), cost, gain);
                     this.itemsBag.add(item);
                 }
+                resultset.close();
             }
+            preparedStatement.close();
         } catch (SQLException e) {
             log.errorPrint(e);
         }

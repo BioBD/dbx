@@ -45,7 +45,6 @@ public class AgentReactorMV extends Agent {
 
     public void getDDLNotAnalized() {
         try {
-            driver.createStatement();
             this.capturedQueriesForAnalyses.clear();
             ResultSet resultset = driver.executeQuery(prop.getProperty("getSqlDDLNotAnalizedReactor"));
             if (resultset != null) {
@@ -58,7 +57,7 @@ public class AgentReactorMV extends Agent {
                 }
             }
             log.msgPrint("Quantidade de DDLs encontradas para materialização: " + this.capturedQueriesForAnalyses.size());
-            driver.closeStatement();
+            resultset.close();
         } catch (SQLException e) {
             log.errorPrint(e);
         }
