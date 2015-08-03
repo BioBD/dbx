@@ -82,8 +82,6 @@ public class AgentReactorMV extends Agent {
                 preparedStatement.setString(1, "R");
                 preparedStatement.setInt(2, currentQuery.getId());
                 driver.executeUpdate(preparedStatement);
-                log.msgPrint(currentQuery.getHypoMaterializedView());
-                log.dmlPrint(prop.getProperty("getSqlClauseToUpdateDDLCreateMVToMaterialization"));
             }
             log.endTitle();
         } catch (SQLException e) {

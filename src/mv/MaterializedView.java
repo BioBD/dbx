@@ -8,6 +8,7 @@ import static bib.base.Base.log;
 import static bib.base.Base.prop;
 import bib.sgbd.Plan;
 import bib.sgbd.SQL;
+import bib.sgbd.oracle.PlanOracle;
 import bib.sgbd.postgresql.PlanPostgreSQL;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -40,6 +41,9 @@ public class MaterializedView extends SQL {
         switch (prop.getProperty("sgbd")) {
             case "postgresql":
                 this.hypoPlan = new PlanPostgreSQL(hypoPlan);
+                break;
+            case "oracle":
+                this.hypoPlan = new PlanOracle(hypoPlan);
                 break;
             default:
                 erro();

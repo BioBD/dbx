@@ -92,21 +92,25 @@ public class AgentObserverMV extends Agent {
                 log.title("Persist ddl create MV");
                 this.updateQueryAnalizedCount();
                 for (MaterializedView mvQuery : MVCandiates) {
-                    log.msgPrint(mvQuery.getComents());
                     if (!mvQuery.getHypoMaterializedView().isEmpty()) {
                         mvQuery.print();
                         if (mvQuery.getAnalyzeCount() == 0) {
                             String ddlCreateMV = mvQuery.getDDLCreateMV();
-                            PreparedStatement preparedStatement = driver.prepareStatement(prop.getProperty("getSqlClauseToInsertDDLCreateMV"));
+                            String[] queries = prop.getProperty("getSqlClauseToInsertDDLCreateMV").split(";");
+                            System.out.println(queries[0]);
+                            System.out.println(queries[1]);
+                            PreparedStatement preparedStatementInsert = driver.prepareStatement(queries[0]);
                             log.dmlPrint(prop.getProperty("getSqlClauseToInsertDDLCreateMV"));
-                            preparedStatement.setInt(1, mvQuery.getId());
-                            preparedStatement.setString(2, ddlCreateMV);
-                            preparedStatement.setLong(3, mvQuery.getHypoCreationCost());
-                            preparedStatement.setDouble(4, mvQuery.getHypoGainAC());
-                            preparedStatement.setString(5, "H");
-                            preparedStatement.setInt(6, mvQuery.getId());
+                            preparedStatementInsert.setInt(1, mvQuery.getId());
+                            preparedStatementInsert.setString(2, ddlCreateMV);
+                            preparedStatementInsert.setLong(3, mvQuery.getHypoCreationCost());
+                            preparedStatementInsert.setDouble(4, mvQuery.getHypoGainAC());
+                            preparedStatementInsert.setString(5, "H");
                             mvQuery.setAnalyzeCount(1);
-                            driver.executeUpdate(preparedStatement);
+                            driver.executeUpdate(preparedStatementInsert);
+                            PreparedStatement preparedStatementUpdate = driver.prepareStatement(queries[1]);
+                            preparedStatementUpdate.setInt(1, mvQuery.getId());
+                            driver.executeUpdate(preparedStatementUpdate);
                         } else {
                             PreparedStatement preparedStatement = driver.prepareStatement(prop.getProperty("getSqlClauseToIncrementBenefictDDLCreateMV"));
                             log.dmlPrint(prop.getProperty("getSqlClauseToIncrementBenefictDDLCreateMV"));
@@ -166,12 +170,15 @@ public class AgentObserverMV extends Agent {
     public void insertQueryTbWorkload(SQL query) {
         try {
             try (PreparedStatement preparedStatement = driver.prepareStatement(prop.getProperty("getSqlClauseToInsertQueryTbWorkload"))) {
-                log.dmlPrint(prop.getProperty("getSqlClauseToInsertQueryTbWorkload") + " value of " + query.getSql());
+                log.dmlPrint("Query: " + query.getSql());
+                log.dmlPrint("Query: " + query.getPlan());
+                log.dmlPrint("Query: " + query.getType());
                 preparedStatement.setString(1, query.getSql());
                 preparedStatement.setString(2, query.getPlan());
                 preparedStatement.setInt(3, 1);
                 preparedStatement.setInt(4, 0);
-                preparedStatement.setString(5, query.getType());
+                preparedStatement.setInt(5, 0);
+                preparedStatement.setString(6, query.getType());
                 driver.executeUpdate(preparedStatement);
             }
         } catch (SQLException e) {
