@@ -33,7 +33,6 @@ public class AgentObserverMV extends Agent {
     public void run() {
         while (true) {
             try {
-
                 this.getLastExecutedSQL();
                 this.analyzeQueriesCaptured();
                 sleep(2000);
@@ -97,8 +96,6 @@ public class AgentObserverMV extends Agent {
                         if (mvQuery.getAnalyzeCount() == 0) {
                             String ddlCreateMV = mvQuery.getDDLCreateMV();
                             String[] queries = prop.getProperty("getSqlClauseToInsertDDLCreateMV").split(";");
-                            System.out.println(queries[0]);
-                            System.out.println(queries[1]);
                             PreparedStatement preparedStatementInsert = driver.prepareStatement(queries[0]);
                             log.dmlPrint(prop.getProperty("getSqlClauseToInsertDDLCreateMV"));
                             preparedStatementInsert.setInt(1, mvQuery.getId());

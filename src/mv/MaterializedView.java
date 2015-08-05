@@ -147,25 +147,6 @@ public class MaterializedView extends SQL {
         return "v_ot_workload_" + String.valueOf(this.getId());
     }
 
-    public boolean containsField(String clause, String field) {
-        return clause.contains(" " + field + " ")
-                || clause.contains(" " + field + ",")
-                || clause.contains(" " + field + ";")
-                || clause.contains(" " + field + "=")
-                || clause.contains(" " + field + ">")
-                || clause.contains(" " + field + "<")
-                || clause.contains("," + field + ",")
-                || clause.contains("," + field + ";")
-                || clause.contains("," + field + "=")
-                || clause.contains("," + field + ">")
-                || clause.contains("," + field + "<")
-                || clause.contains("." + field + ",")
-                || clause.contains("." + field + ";")
-                || clause.contains("." + field + "=")
-                || clause.contains("." + field + ">")
-                || clause.contains("." + field + "<");
-    }
-
     private long getHypoCost() {
         return this.getHypoNumPages();
     }
