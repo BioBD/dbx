@@ -127,7 +127,6 @@ public class MaterializedView extends SQL {
         log.msgPrint("hypoCost: " + this.getHypoCost());
         log.msgPrint("Cost - hypoCost: " + (this.getCost() - this.getHypoCost()));
         log.msgPrint("HypoCreationCost: " + this.getHypoCreationCost());
-        log.msgPrint("Hypo Plan: " + this.hypoPlan.getPlan());
         log.msgPrint("Hypo Query MV: " + this.hypoMaterializedView);
         log.endTitle();
     }

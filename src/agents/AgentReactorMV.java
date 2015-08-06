@@ -67,9 +67,14 @@ public class AgentReactorMV extends Agent {
         PreparedStatement preparedStatement;
         for (MaterializedView workload : this.MVCandiates) {
             if (!workload.getHypoMaterializedView().isEmpty()) {
-                log.ddlPrint("Materializando: " + workload.getHypoMaterializedView());
-                preparedStatement = driver.prepareStatement(workload.getHypoMaterializedView());
-                driver.executeUpdate(preparedStatement);
+                try {
+                    log.ddlPrint("Materializando: " + workload.getHypoMaterializedView());
+                    preparedStatement = driver.prepareStatement(workload.getHypoMaterializedView());
+                    driver.executeUpdate(preparedStatement);
+                    preparedStatement.close();
+                } catch (SQLException ex) {
+                    log.errorPrint(ex);
+                }
             }
         }
     }
@@ -82,6 +87,7 @@ public class AgentReactorMV extends Agent {
                 preparedStatement.setString(1, "R");
                 preparedStatement.setInt(2, currentQuery.getId());
                 driver.executeUpdate(preparedStatement);
+                preparedStatement.close();
             }
             log.endTitle();
         } catch (SQLException e) {

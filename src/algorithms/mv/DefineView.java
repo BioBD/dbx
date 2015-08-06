@@ -77,8 +77,8 @@ public class DefineView extends Base {
     protected void gerateClauseFromForDDLView(SQL query) {
         this.from = query.getClauseFromSql("from");
         for (Table table : query.getTablesQuery()) {
-            if (!this.from.contains(table.getName())) {
-                this.from += ", " + table.getName();
+            if (!this.from.toLowerCase().contains(table.getName().toLowerCase())) {
+                this.from += ", " + table.getName().toLowerCase();
             }
         }
     }

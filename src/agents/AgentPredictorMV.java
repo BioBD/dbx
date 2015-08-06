@@ -82,6 +82,7 @@ public class AgentPredictorMV extends Agent {
                     preparedStatement.setString(1, "M");
                     preparedStatement.setLong(2, item);
                     driver.executeUpdate(preparedStatement);
+                    preparedStatement.close();
                 }
                 log.endTitle();
             }
@@ -115,9 +116,10 @@ public class AgentPredictorMV extends Agent {
                     ItemBag item = new ItemBag(resultset.getInt(1), cost, gain);
                     this.itemsBag.add(item);
                 }
-                resultset.close();
             }
+            resultset.close();
             preparedStatement.close();
+
         } catch (SQLException e) {
             log.errorPrint(e);
         }
