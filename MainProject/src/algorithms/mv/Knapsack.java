@@ -1,6 +1,6 @@
 /*
  * Automatic Creation Materialized Views
- * Authors: rpoliveira@inf.puc-rio.br, sergio@inf.puc-rio.br, eric@aluno.puc-rio.br  *
+ *  , eric@aluno.puc-rio.br  *
  */
 package algorithms.mv;
 
