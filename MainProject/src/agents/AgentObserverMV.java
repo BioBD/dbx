@@ -8,9 +8,6 @@ import algorithms.mv.Agrawal;
 import algorithms.mv.DefineView;
 import static bib.base.Base.log;
 import static bib.base.Base.prop;
-import bib.sgbd.Captor;
-import bib.sgbd.SQL;
-import static java.lang.Thread.sleep;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -21,28 +18,10 @@ import mv.MaterializedView;
  *
  * @author Rafael
  */
-public class AgentObserverMV extends Agent {
-
-    private final Captor captor;
-
-    public AgentObserverMV() {
-        this.captor = new Captor();
-    }
+public class AgentObserverMV extends AgentObserver {
 
     @Override
-    public void run() {
-        while (true) {
-            try {
-                this.getLastExecutedSQL();
-                this.analyzeQueriesCaptured();
-                sleep(2000);
-            } catch (InterruptedException e) {
-                log.errorPrint(e);
-            }
-        }
-    }
-
-    private void analyzeQueriesCaptured() {
+    public void analyzeQueriesCaptured() {
         DefineView defineView = new DefineView();
         Agrawal agrawal = new Agrawal();
         ArrayList<MaterializedView> MVCandiates = this.getQueriesNotAnalized();
@@ -72,17 +51,6 @@ public class AgentObserverMV extends Agent {
             log.errorPrint(e);
         }
         return MVCandiates;
-    }
-
-    protected void updateQueryAnalizedCount() {
-        PreparedStatement preparedStatement = driver.prepareStatement(prop.getProperty("getSqlClauseToUpdateWldAnalyzeCount"));
-        log.dmlPrint(prop.getProperty("getSqlClauseToUpdateWldAnalyzeCount"));
-        driver.executeUpdate(preparedStatement);
-    }
-
-    private void getLastExecutedSQL() {
-        ArrayList<SQL> sqlCaptured = captor.getLastExecutedSQL();
-        this.insertWorkload(sqlCaptured);
     }
 
     public void persistDDLCreateMV(ArrayList<MaterializedView> MVCandiates) {
@@ -125,81 +93,11 @@ public class AgentObserverMV extends Agent {
         }
     }
 
-    private void insertWorkload(ArrayList<SQL> sqlCaptured) {
-        if (!sqlCaptured.isEmpty()) {
-            log.title("Insert / update TB_WORKLOAD");
-            for (int i = 0; i < sqlCaptured.size(); ++i) {
-                SQL query = sqlCaptured.get(i);
-                sqlCaptured.remove(i);
-                int queryId = this.getIdWorkload(query);
-                log.dmlPrint(query.getSql());
-                if (queryId == 0) {
-                    this.insertQueryTbWorkload(query);
-                } else {
-                    query.setId(queryId);
-                    this.updateQueryData(query);
-                }
-            }
-            log.endTitle();
-        }
-    }
-
-    public int getIdWorkload(SQL query) {
-        try {
-            String queryTemp = prop.getProperty("getSqlClauseToCheckIfQueryIsAlreadyCaptured");
-            PreparedStatement preparedStatement = driver.prepareStatement(queryTemp);
-            preparedStatement.setString(1, query.getSql());
-            ResultSet result = driver.executeQuery(preparedStatement);
-            if (result.next()) {
-                int number = result.getInt("wld_id");
-                result.close();
-                return number;
-            } else {
-                result.close();
-                return 0;
-            }
-        } catch (SQLException e) {
-            log.errorPrint(e.getMessage());
-            return 1;
-        }
-    }
-
-    public void insertQueryTbWorkload(SQL query) {
-        try {
-            try (PreparedStatement preparedStatement = driver.prepareStatement(prop.getProperty("getSqlClauseToInsertQueryTbWorkload"))) {
-                log.dmlPrint("Query: " + query.getSql());
-                log.dmlPrint("Query: " + query.getPlan());
-                log.dmlPrint("Query: " + query.getType());
-                preparedStatement.setString(1, query.getSql());
-                preparedStatement.setString(2, query.getPlan());
-                preparedStatement.setInt(3, 1);
-                preparedStatement.setInt(4, 0);
-                preparedStatement.setInt(5, 0);
-                preparedStatement.setString(6, query.getType());
-                driver.executeUpdate(preparedStatement);
-            }
-        } catch (SQLException e) {
-            log.errorPrint(e);
-        }
-    }
-
-    public void updateQueryData(SQL query) {
-        try {
-            try (PreparedStatement preparedStatement = driver.prepareStatement(prop.getProperty("getSqlClauseToUpdateQueryTbWorkload"))) {
-                log.dmlPrint(prop.getProperty("getSqlClauseToUpdateQueryTbWorkload") + " value of " + query.getSql());
-                preparedStatement.setString(1, query.getPlan());
-                preparedStatement.setInt(2, query.getId());
-                driver.executeUpdate(preparedStatement);
-            }
-        } catch (SQLException e) {
-            log.errorPrint(e);
-        }
-    }
-
     private ArrayList<MaterializedView> getPlanDDLViews(ArrayList<MaterializedView> MVCandiates) {
         for (MaterializedView MVCandiate : MVCandiates) {
-            MVCandiate.setHypoPlan(captor.getPlanExecution(MVCandiate.getHypoMaterializedView()));
+            MVCandiate.setHypoPlan(this.getPlanFromQuery(MVCandiate.getHypoMaterializedView()));
         }
         return MVCandiates;
     }
+
 }

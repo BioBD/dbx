@@ -4,7 +4,6 @@
  */
 package agents;
 
-import static java.lang.Thread.sleep;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -15,31 +14,18 @@ import mv.MaterializedView;
  *
  * @author Rafael
  */
-public class AgentReactorMV extends Agent {
+public class AgentReactorMV extends AgentReactor {
 
     ArrayList<MaterializedView> MVCandiates;
     protected ArrayList<MaterializedView> capturedQueriesForAnalyses;
-
-    @Override
-    public void run() {
-        while (true) {
-            try {
-                this.getLastExecutedDDL();
-                this.CreateMV();
-                this.updateDDLForMaterialization();
-                sleep(4000);
-            } catch (InterruptedException e) {
-                log.errorPrint(e);
-            }
-        }
-    }
 
     public AgentReactorMV() {
         this.capturedQueriesForAnalyses = new ArrayList<>();
         this.MVCandiates = new ArrayList<>();
     }
 
-    public void getLastExecutedDDL() {
+    @Override
+    public void getLastTuningActionsNotAnalyzed() {
         this.getDDLNotAnalized();
     }
 
@@ -63,7 +49,8 @@ public class AgentReactorMV extends Agent {
         }
     }
 
-    public void CreateMV() {
+    @Override
+    public void executeTuningActions() {
         PreparedStatement preparedStatement;
         for (MaterializedView workload : this.MVCandiates) {
             if (!workload.getHypoMaterializedView().isEmpty()) {
@@ -79,7 +66,8 @@ public class AgentReactorMV extends Agent {
         }
     }
 
-    public void updateDDLForMaterialization() {
+    @Override
+    public void updateStatusTuningActions() {
         try {
             log.title("Persist update ddl create MV");
             for (MaterializedView currentQuery : this.MVCandiates) {

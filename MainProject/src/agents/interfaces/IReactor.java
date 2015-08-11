@@ -10,8 +10,10 @@ package agents.interfaces;
  */
 public interface IReactor {
 
-    public void run();
+    public void getLastTuningActionsNotAnalyzed();
 
-    public void getDDLNotAnalized();
+    public void executeTuningActions();
+
+    public void updateStatusTuningActions();
 
 }
