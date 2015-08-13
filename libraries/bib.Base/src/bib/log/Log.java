@@ -37,16 +37,17 @@ public class Log {
 
     public static String getNameFileLog(String complement) {
         return complement + "_" + nameFileLog;
+
     }
 
     public static void setNameFileLog(String nameFileLog) {
-        if (nameFileLog == null) {
+        if (Log.nameFileLog == null) {
             Log.nameFileLog = nameFileLog;
         }
     }
 
     public final void createBundle() {
-        if (prop.containsKey("use_bundle") && prop.getProperty("use_bundle").equals("1")) {
+        if (useBundle()) {
             try {
                 if (bundle == null) {
                     locale = new Locale(prop.getProperty("language"), prop.getProperty("country"));
@@ -58,6 +59,10 @@ public class Log {
         }
     }
 
+    private boolean useBundle() {
+        return (prop.containsKey("use_bundle") && prop.getProperty("use_bundle").equals("1"));
+    }
+
     public Log(Properties properties) {
         Log.prop = properties;
         readDebug();
@@ -66,7 +71,7 @@ public class Log {
         Log.setNameFileLog(getDateTime("dd-MM-yyyy-'at'-hh-mm-ss-a"));
         gson = new Gson();
         try {
-            if (bundle == null) {
+            if ((bundle == null) && (useBundle())) {
                 locale = new Locale(prop.getProperty("language"), prop.getProperty("country"));
                 bundle = ResourceBundle.getBundle("base/messages", locale);
             }
@@ -89,18 +94,11 @@ public class Log {
 
     protected void print(Object msg) {
         String textToPrint = this.getDateTime("hh:mm:ss") + this.getDifTime(this.getDateTime("hh:mm:ss")) + " = " + msg;
-        System.out.println(textToPrint);
-        this.writeFile(getNameFileLog("log"), textToPrint);
-
-        System.out.println(this.getDateTime("hh:mm:ss") + " = " + msg);
-    }
-
-    protected void printToFile(Object msg) {
+        if (this.isPrint(0)) {
+            System.out.println(textToPrint);
+        }
         if (this.isPrint(1)) {
-            this.createFileLog();
-            Log.logFile.add(this.getDateTime("hh:mm:ss"));
-            Log.logFile.add(this.removerNl(String.valueOf(msg)));
-            Log.logFile.ln();
+            this.writeFile("log", textToPrint);
         }
     }
 
@@ -133,7 +131,7 @@ public class Log {
             for (int i = 0; i < size / 2; ++i) {
                 buf.append("=");
             }
-            this.msgPrint(buf.toString() + " " + msg + " " + buf.toString());
+            this.print(buf.toString() + " " + msg + " " + buf.toString());
         }
     }
 
@@ -143,21 +141,14 @@ public class Log {
 
     public void msg(Object msg) {
         if (hasBundle(msg.toString())) {
-            msgPrint(bundle.getString(msg.toString()));
+            this.print(bundle.getString(msg.toString()));
         } else {
-            msgPrint(msg);
+            this.print(msg);
         }
     }
 
     public void msg(String msg, String bundleMsg) {
-        msgPrint(bundle.getString(bundleMsg) + msg);
-    }
-
-    private void msgPrint(Object msg) {
-        this.printToFile(msg);
-        if (this.isPrint(0)) {
-            this.print(msg);
-        }
+        this.print(bundle.getString(bundleMsg) + msg);
     }
 
     public void error(Object error) {
@@ -218,9 +209,21 @@ public class Log {
                 case "reportexcel":
                     nameFile = "talk" + File.separatorChar + getNameFileLog(nameFile) + ".csv";
                     break;
+                case "log":
+                    nameFile = "log" + File.separatorChar + getNameFileLog(nameFile) + ".txt";
+                    append = true;
+                    break;
                 default:
                     nameFile = "talk" + File.separatorChar + nameFile + ".txt";
                     append = true;
+            }
+            File file = new File("talk");
+            if (!file.exists()) {
+                file.mkdir();
+            }
+            file = new File("log");
+            if (!file.exists()) {
+                file.mkdir();
             }
             writer = new OutputStreamWriter(new FileOutputStream(nameFile, append), "UTF-8");
             BufferedWriter fbw = new BufferedWriter(writer);

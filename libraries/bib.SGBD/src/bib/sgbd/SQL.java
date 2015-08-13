@@ -298,13 +298,15 @@ public class SQL {
     }
 
     public void setPlan(String plan, String sgbd) {
-        switch (sgbd) {
-            case "postgresql":
-                this.plan = new PlanPostgreSQL(plan);
-                break;
-            case "oracle":
-                this.plan = new PlanOracle(plan);
-                break;
+        if (!plan.isEmpty() && !sgbd.isEmpty()) {
+            switch (sgbd) {
+                case "postgresql":
+                    this.plan = new PlanPostgreSQL(plan);
+                    break;
+                case "oracle":
+                    this.plan = new PlanOracle(plan);
+                    break;
+            }
         }
     }
 
@@ -405,7 +407,7 @@ public class SQL {
     }
 
     public String getNameMaterizedView() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return "v_ot_workload_" + String.valueOf(this.getId());
     }
 
 }
