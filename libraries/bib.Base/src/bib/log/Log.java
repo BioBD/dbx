@@ -126,7 +126,7 @@ public class Log {
         if (hasBundle(msg)) {
             msg = bundle.getString(msg);
         }
-        if (this.isPrint(2)) {
+        if (this.isPrint(1)) {
             int size = 80 - msg.length();
             StringBuilder buf = new StringBuilder();
             buf.append("==");
