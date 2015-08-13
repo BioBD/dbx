@@ -1,6 +1,6 @@
 /*
  * Automatic Create Materialized Views
- *    *
+ * Authors: rpoliveira@inf.puc-rio.br, sergio@inf.puc-rio.br  *
  */
 package bib.base;
 
@@ -43,7 +43,7 @@ public class Base {
                     }
                 }
             } catch (IOException e) {
-                log.errorPrint(e);
+                log.error(e);
             }
         }
     }
@@ -65,4 +65,7 @@ public class Base {
         return res.replaceAll("(\n|\r)+", " ");
     }
 
+    public void setProperty(String key, String value) {
+        prop.setProperty(key, value);
+    }
 }

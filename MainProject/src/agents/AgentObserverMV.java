@@ -48,7 +48,7 @@ public class AgentObserverMV extends AgentObserver {
             }
             resultset.close();
         } catch (SQLException e) {
-            log.errorPrint(e);
+            log.error(e);
         }
         return MVCandiates;
     }
@@ -65,7 +65,7 @@ public class AgentObserverMV extends AgentObserver {
                             String ddlCreateMV = mvQuery.getDDLCreateMV();
                             String[] queries = prop.getProperty("getSqlClauseToInsertDDLCreateMV").split(";");
                             PreparedStatement preparedStatementInsert = driver.prepareStatement(queries[0]);
-                            log.dmlPrint(prop.getProperty("getSqlClauseToInsertDDLCreateMV"));
+                            log.msg(prop.getProperty("getSqlClauseToInsertDDLCreateMV"));
                             preparedStatementInsert.setInt(1, mvQuery.getId());
                             preparedStatementInsert.setString(2, ddlCreateMV);
                             preparedStatementInsert.setLong(3, mvQuery.getHypoCreationCost());
@@ -78,7 +78,7 @@ public class AgentObserverMV extends AgentObserver {
                             driver.executeUpdate(preparedStatementUpdate);
                         } else {
                             PreparedStatement preparedStatement = driver.prepareStatement(prop.getProperty("getSqlClauseToIncrementBenefictDDLCreateMV"));
-                            log.dmlPrint(prop.getProperty("getSqlClauseToIncrementBenefictDDLCreateMV"));
+                            log.msg(prop.getProperty("getSqlClauseToIncrementBenefictDDLCreateMV"));
                             preparedStatement.setLong(1, mvQuery.getHypoCreationCost());
                             preparedStatement.setDouble(2, mvQuery.getHypoGainAC());
                             preparedStatement.setInt(3, mvQuery.getId());
@@ -89,7 +89,7 @@ public class AgentObserverMV extends AgentObserver {
                 log.endTitle();
             }
         } catch (SQLException e) {
-            log.errorPrint(e);
+            log.error(e);
         }
     }
 

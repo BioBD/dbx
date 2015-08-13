@@ -1,6 +1,6 @@
 /*
  * Automatic Create Materialized Views
- *
+ * Authors: rpoliveira@inf.puc-rio.br, sergio@inf.puc-rio.br  *
  */
 package bib.driver;
 
@@ -27,23 +27,23 @@ public class Driver extends Base {
                 switch (prop.getProperty("sgbd")) {
                     case "sqlserver":
                         connection = DriverManager.getConnection(Driver.prop.getProperty("urlSQLServer") + "databaseName=" + Driver.prop.getProperty("databaseName") + ";", Driver.prop.getProperty("userSQLServer"), Driver.prop.getProperty("pwdSQLServer"));
-                        log.msgPrint("Conectado ao bd " + Driver.prop.getProperty("urlSQLServer") + ":" + Driver.prop.getProperty("databaseName"));
+                        log.msg("Conectado ao bd " + Driver.prop.getProperty("urlSQLServer") + ":" + Driver.prop.getProperty("databaseName"));
                         break;
                     case "postgresql":
                         connection = DriverManager.getConnection(Driver.prop.getProperty("urlPostgres") + Driver.prop.getProperty("databaseName"), Driver.prop.getProperty("userPostgres"), Driver.prop.getProperty("pwdPostgres"));
-                        log.msgPrint("Conectado ao bd " + Driver.prop.getProperty("urlPostgres") + ":" + Driver.prop.getProperty("databaseName"));
+                        log.msg("Conectado ao bd " + Driver.prop.getProperty("urlPostgres") + ":" + Driver.prop.getProperty("databaseName"));
                         break;
                     case "oracle":
                         connection = DriverManager.getConnection(Driver.prop.getProperty("urlOracle") + Driver.prop.getProperty("databaseName"), Driver.prop.getProperty("userOracle"), Driver.prop.getProperty("pwdOracle"));
-                        log.msgPrint("Conectado ao bd " + Driver.prop.getProperty("urlOracle") + Driver.prop.getProperty("databaseName"));
+                        log.msg("Conectado ao bd " + Driver.prop.getProperty("urlOracle") + Driver.prop.getProperty("databaseName"));
                         break;
                     default:
                         throw new UnsupportedOperationException("Atributo SGBD do arquivo de parâmetros (.properties) nao foi atribuido corretamente.");
                 }
-                log.msgPrint("Aplicação versão: " + Driver.prop.getProperty("versao"));
+                log.msg("Aplicação versão: " + Driver.prop.getProperty("versao"));
             }
         } catch (SQLException e) {
-            log.errorPrint(e);
+            log.error(e);
         }
     }
 
@@ -55,7 +55,7 @@ public class Driver extends Base {
         try {
             return Driver.connection.prepareStatement(prop.getProperty("signature") + " " + query);
         } catch (SQLException e) {
-            log.errorPrint(e);
+            log.error(e);
             return null;
         }
     }
@@ -66,8 +66,8 @@ public class Driver extends Base {
             statement.closeOnCompletion();
             return statement.executeQuery(prop.getProperty("signature") + " " + query);
         } catch (SQLException e) {
-            log.msgPrint(query);
-            log.errorPrint(e);
+            log.msg(query);
+            log.error(e);
             return null;
         }
     }
@@ -76,12 +76,12 @@ public class Driver extends Base {
         try {
             prepared.executeUpdate();
         } catch (SQLException e) {
-            log.errorPrint(e);
+            log.error(e);
         } finally {
             try {
                 prepared.close();
             } catch (SQLException ex) {
-                log.errorPrint(ex);
+                log.error(ex);
             }
         }
     }
@@ -91,13 +91,13 @@ public class Driver extends Base {
         try {
             prepared.executeUpdate();
         } catch (SQLException e) {
-            log.ddlPrint("Query com erro:" + query);
-            log.errorPrint(e);
+            log.msg("Query com erro:" + query);
+            log.error(e);
         } finally {
             try {
                 prepared.close();
             } catch (SQLException ex) {
-                log.errorPrint(ex);
+                log.error(ex);
             }
         }
     }
@@ -106,7 +106,7 @@ public class Driver extends Base {
         try {
             return prepared.executeQuery();
         } catch (SQLException e) {
-            log.errorPrint(e);
+            log.error(e);
             return null;
         }
     }
@@ -117,7 +117,7 @@ public class Driver extends Base {
             statement.closeOnCompletion();
             return statement;
         } catch (SQLException ex) {
-            log.errorPrint(ex);
+            log.error(ex);
             return null;
         }
     }

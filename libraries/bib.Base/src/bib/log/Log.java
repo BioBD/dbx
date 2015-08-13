@@ -1,80 +1,110 @@
 /*
  * Automatic Create Materialized Views
- *    *
+ * Authors: rpoliveira@inf.puc-rio.br, sergio@inf.puc-rio.br  *
  */
 package bib.log;
 
+import static bib.log.Log.getNameFileLog;
+import com.google.gson.Gson;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.OutputStreamWriter;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Enumeration;
+import java.util.Locale;
 import java.util.Properties;
+import java.util.ResourceBundle;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public final class Log {
+public class Log {
 
-    private static Properties properties = null;
-    private static String debug;
-    private static LogFile logFile;
+    protected static Properties prop = null;
+    protected static String debug;
+    protected static LogFile logFile;
+    private static ResourceBundle bundle;
+    private static Locale locale;
+    private static String lastDebug = "";
+    private static int difTime = 0;
+    protected static String nameFileLog;
+    protected static Gson gson;
 
-    public Log(Properties properties) {
-        Log.properties = properties;
-        this.readDebug();
-        this.createFileLog();
+    public static String getNameFileLog(String complement) {
+        return complement + "_" + nameFileLog;
     }
 
-    private void readDebug() {
-        if (Log.debug == null) {
-            Log.debug = String.valueOf(Log.properties.getProperty("debug"));
+    public static void setNameFileLog(String nameFileLog) {
+        if (nameFileLog == null) {
+            Log.nameFileLog = nameFileLog;
         }
     }
 
-    private void createFileLog() {
-        if (Log.logFile == null && this.isPrint(3)) {
+    public final void createBundle() {
+        if (prop.containsKey("use_bundle") && prop.getProperty("use_bundle").equals("1")) {
+            try {
+                if (bundle == null) {
+                    locale = new Locale(prop.getProperty("language"), prop.getProperty("country"));
+                    bundle = ResourceBundle.getBundle("language/messages", locale);
+                }
+            } catch (Error err) {
+                this.error(err);
+            }
+        }
+    }
+
+    public Log(Properties properties) {
+        Log.prop = properties;
+        readDebug();
+        createFileLog();
+        createBundle();
+        Log.setNameFileLog(getDateTime("dd-MM-yyyy-'at'-hh-mm-ss-a"));
+        gson = new Gson();
+        try {
+            if (bundle == null) {
+                locale = new Locale(prop.getProperty("language"), prop.getProperty("country"));
+                bundle = ResourceBundle.getBundle("base/messages", locale);
+            }
+        } catch (Error err) {
+            error(err);
+        }
+    }
+
+    protected final void readDebug() {
+        if (Log.debug == null) {
+            Log.debug = String.valueOf(Log.prop.getProperty("debug"));
+        }
+    }
+
+    protected final void createFileLog() {
+        if (Log.logFile == null && this.isPrint(1)) {
             Log.logFile = new LogFile("report/", this.getDateTime("dd-MM-yyyy-'at'-hh-mm-ss-SSS-a") + "_report.csv");
         }
     }
 
-    public void errorPrint(Object e) {
-        this.print(e);
-        throw new UnsupportedOperationException(e.toString());
-    }
+    protected void print(Object msg) {
+        String textToPrint = this.getDateTime("hh:mm:ss") + this.getDifTime(this.getDateTime("hh:mm:ss")) + " = " + msg;
+        System.out.println(textToPrint);
+        this.writeFile(getNameFileLog("log"), textToPrint);
 
-    public void ddlPrint(String msg) {
-        this.printToFile(msg);
-        if (this.isPrint(0)) {
-            this.print(msg);
-        }
-    }
-
-    public void dmlPrint(String msg) {
-        this.printToFile(msg);
-        if (this.isPrint(1)) {
-            this.print(this.removerNl(msg));
-        }
-    }
-
-    private void print(Object msg) {
         System.out.println(this.getDateTime("hh:mm:ss") + " = " + msg);
     }
 
-    public void msgPrint(Object msg) {
-        this.printToFile(msg);
-        if (this.isPrint(2)) {
-            this.print(msg);
-        }
-    }
-
-    private void printToFile(Object msg) {
-        if (this.isPrint(3)) {
+    protected void printToFile(Object msg) {
+        if (this.isPrint(1)) {
             this.createFileLog();
             Log.logFile.add(this.getDateTime("hh:mm:ss"));
             Log.logFile.add(this.removerNl(String.valueOf(msg)));
             Log.logFile.ln();
         }
-
     }
 
-    private boolean isPrint(int pos) {
+    protected boolean isPrint(int pos) {
         return Log.debug.substring(pos, pos + 1).equals("1");
     }
 
@@ -86,25 +116,166 @@ public final class Log {
         return res.replaceAll("(\n|\r)+", " ");
     }
 
-    private String getDateTime(String format) {
+    protected final String getDateTime(String format) {
         SimpleDateFormat ft = new SimpleDateFormat(format);
         Date today = new Date();
         return ft.format(today);
     }
 
     public void title(String msg) {
+        if (hasBundle(msg)) {
+            msg = bundle.getString(msg);
+        }
         if (this.isPrint(2)) {
-            int size = 60 - msg.length();
-            String bar = "==";
+            int size = 80 - msg.length();
+            StringBuilder buf = new StringBuilder();
+            buf.append("==");
             for (int i = 0; i < size / 2; ++i) {
-                bar += "=";
+                buf.append("=");
             }
-            this.msgPrint(bar + " " + msg + " " + bar);
+            this.msgPrint(buf.toString() + " " + msg + " " + buf.toString());
         }
     }
 
     public void endTitle() {
         this.title("fim");
+    }
+
+    public void msg(Object msg) {
+        if (hasBundle(msg.toString())) {
+            msgPrint(bundle.getString(msg.toString()));
+        } else {
+            msgPrint(msg);
+        }
+    }
+
+    public void msg(String msg, String bundleMsg) {
+        msgPrint(bundle.getString(bundleMsg) + msg);
+    }
+
+    private void msgPrint(Object msg) {
+        this.printToFile(msg);
+        if (this.isPrint(0)) {
+            this.print(msg);
+        }
+    }
+
+    public void error(Object error) {
+        if (hasBundle(error.toString())) {
+            errorPrint(bundle.getString(error.toString()));
+        } else {
+            errorPrint(error);
+        }
+    }
+
+    private void errorPrint(Object e) {
+        this.print(e);
+        throw new UnsupportedOperationException(e.toString());
+    }
+
+    public String getDifTime(String now) {
+        if (!now.isEmpty() && !lastDebug.isEmpty()) {
+            try {
+                SimpleDateFormat sdf = new SimpleDateFormat("hh:mm:ss");
+                Date nowDate = sdf.parse(now);
+                Date lastDate = sdf.parse(lastDebug);
+                long diff = nowDate.getTime() - lastDate.getTime();
+                difTime = (int) (diff / 1000);
+            } catch (ParseException ex) {
+                Logger.getLogger(Log.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+        this.setLastDebug(now);
+        String result = "= + " + difTime + "s";
+        if (difTime < 9) {
+            result += "  ";
+        } else {
+            result += " ";
+        }
+        return result;
+    }
+
+    public void setLastDebug(String last) {
+        lastDebug = last;
+    }
+
+    public String getLastDebug() {
+        return lastDebug;
+    }
+
+    public void setDifTime(int difTime) {
+        Log.difTime = difTime;
+    }
+
+    public void writeFile(String nameFile, String content) {
+        try {
+            OutputStreamWriter writer;
+            boolean append = false;
+            switch (nameFile) {
+                case "pid":
+                    nameFile = nameFile + ".txt";
+                    break;
+                case "reportexcel":
+                    nameFile = "talk" + File.separatorChar + getNameFileLog(nameFile) + ".csv";
+                    break;
+                default:
+                    nameFile = "talk" + File.separatorChar + nameFile + ".txt";
+                    append = true;
+            }
+            writer = new OutputStreamWriter(new FileOutputStream(nameFile, append), "UTF-8");
+            BufferedWriter fbw = new BufferedWriter(writer);
+            fbw.write(content);
+            fbw.newLine();
+            fbw.close();
+        } catch (IOException ex) {
+            this.errorPrint(ex);
+        }
+    }
+
+    private boolean hasBundle(String msg) {
+        if (bundle != null) {
+            Enumeration<String> keys = bundle.getKeys();
+            while (keys.hasMoreElements()) {
+                if (keys.nextElement().equals(msg)) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    public void writePID(long pid) {
+        msg("PID: " + pid);
+        writeFile("pid", String.valueOf(pid));
+    }
+
+    public void archiveLogFiles() {
+        File folder = new File(System.getProperty("user.dir") + File.separatorChar + "talk" + File.separatorChar);
+        File afile[] = folder.listFiles();
+        int i = 0;
+        for (int j = afile.length; i < j; i++) {
+            File arquivos = afile[i];
+            String nameFile = arquivos.getName();
+            if (nameFile.contains(".txt") || nameFile.contains(".csv") || (nameFile.equals("blackboard.properties") && prop.containsKey("blackboard") && prop.getProperty("blackboard").equals("1"))) {
+                String nameFolder = "talk/";
+                if (nameFile.contains("_")) {
+                    nameFolder += nameFile.substring(nameFile.indexOf("_") + 1, nameFile.indexOf("."));
+                } else {
+                    nameFolder += nameFile.substring(0, nameFile.indexOf("."));
+                }
+                new File(nameFolder).mkdir();
+                File diretorio = new File(nameFolder);
+                File destiny = new File(diretorio, arquivos.getName());
+                if (destiny.exists()) {
+                    destiny.delete();
+                }
+                arquivos.renameTo(new File(diretorio, arquivos.getName()));
+            }
+        }
+    }
+
+    public String getJson(Object obj) {
+        return gson.toJson(obj);
     }
 
 }

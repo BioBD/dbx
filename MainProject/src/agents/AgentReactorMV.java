@@ -42,10 +42,10 @@ public class AgentReactorMV extends AgentReactor {
                     this.capturedQueriesForAnalyses.add(currentQuery);
                 }
             }
-            log.msgPrint("Quantidade de DDLs encontradas para materialização: " + this.capturedQueriesForAnalyses.size());
+            log.msg("Quantidade de DDLs encontradas para materialização: " + this.capturedQueriesForAnalyses.size());
             resultset.close();
         } catch (SQLException e) {
-            log.errorPrint(e);
+            log.error(e);
         }
     }
 
@@ -55,12 +55,12 @@ public class AgentReactorMV extends AgentReactor {
         for (MaterializedView workload : this.MVCandiates) {
             if (!workload.getHypoMaterializedView().isEmpty()) {
                 try {
-                    log.ddlPrint("Materializando: " + workload.getHypoMaterializedView());
+                    log.msg("Materializando: " + workload.getHypoMaterializedView());
                     preparedStatement = driver.prepareStatement(workload.getHypoMaterializedView());
                     driver.executeUpdate(preparedStatement);
                     preparedStatement.close();
                 } catch (SQLException ex) {
-                    log.errorPrint(ex);
+                    log.error(ex);
                 }
             }
         }
@@ -79,7 +79,7 @@ public class AgentReactorMV extends AgentReactor {
             }
             log.endTitle();
         } catch (SQLException e) {
-            log.errorPrint(e);
+            log.error(e);
         }
     }
 

@@ -36,7 +36,7 @@ public abstract class AgentObserver extends Agent implements IObserver {
                 this.analyzeQueriesCaptured();
                 sleep(2000);
             } catch (InterruptedException e) {
-                log.errorPrint(e);
+                log.error(e);
             }
         }
     }
@@ -48,7 +48,7 @@ public abstract class AgentObserver extends Agent implements IObserver {
                 SQL query = sqlCaptured.get(i);
                 sqlCaptured.remove(i);
                 int queryId = this.getIdWorkload(query);
-                log.dmlPrint(query.getSql());
+                log.msg(query.getSql());
                 if (queryId == 0) {
                     this.insertQueryTbWorkload(query);
                 } else {
@@ -75,7 +75,7 @@ public abstract class AgentObserver extends Agent implements IObserver {
                 return 0;
             }
         } catch (SQLException e) {
-            log.errorPrint(e.getMessage());
+            log.error(e.getMessage());
             return 1;
         }
     }
@@ -83,9 +83,9 @@ public abstract class AgentObserver extends Agent implements IObserver {
     private void insertQueryTbWorkload(SQL query) {
         try {
             try (PreparedStatement preparedStatement = driver.prepareStatement(prop.getProperty("getSqlClauseToInsertQueryTbWorkload"))) {
-                log.dmlPrint("Query: " + query.getSql());
-                log.dmlPrint("Query: " + query.getPlan());
-                log.dmlPrint("Query: " + query.getType());
+                log.msg("Query: " + query.getSql());
+                log.msg("Query: " + query.getPlan());
+                log.msg("Query: " + query.getType());
                 preparedStatement.setString(1, query.getSql());
                 preparedStatement.setString(2, query.getPlan());
                 preparedStatement.setInt(3, 1);
@@ -95,20 +95,20 @@ public abstract class AgentObserver extends Agent implements IObserver {
                 driver.executeUpdate(preparedStatement);
             }
         } catch (SQLException e) {
-            log.errorPrint(e);
+            log.error(e);
         }
     }
 
     private void updateQueryTbWorkload(SQL query) {
         try {
             try (PreparedStatement preparedStatement = driver.prepareStatement(prop.getProperty("getSqlClauseToUpdateQueryTbWorkload"))) {
-                log.dmlPrint(prop.getProperty("getSqlClauseToUpdateQueryTbWorkload") + " value of " + query.getSql());
+                log.msg(prop.getProperty("getSqlClauseToUpdateQueryTbWorkload") + " value of " + query.getSql());
                 preparedStatement.setString(1, query.getPlan());
                 preparedStatement.setInt(2, query.getId());
                 driver.executeUpdate(preparedStatement);
             }
         } catch (SQLException e) {
-            log.errorPrint(e);
+            log.error(e);
         }
     }
 
@@ -119,7 +119,7 @@ public abstract class AgentObserver extends Agent implements IObserver {
 
     protected void updateQueryAnalizedCount() {
         PreparedStatement preparedStatement = driver.prepareStatement(prop.getProperty("getSqlClauseToUpdateWldAnalyzeCount"));
-        log.dmlPrint(prop.getProperty("getSqlClauseToUpdateWldAnalyzeCount"));
+        log.msg(prop.getProperty("getSqlClauseToUpdateWldAnalyzeCount"));
         driver.executeUpdate(preparedStatement);
     }
 

@@ -24,7 +24,7 @@ public abstract class AgentReactor extends Agent implements IReactor {
                 this.updateStatusTuningActions();
                 sleep(4000);
             } catch (InterruptedException e) {
-                log.errorPrint(e);
+                log.error(e);
             }
         }
     }

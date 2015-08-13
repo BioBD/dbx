@@ -1,6 +1,6 @@
 /*
  * Automatic Create Materialized Views
- *    *
+ * Authors: rpoliveira@inf.puc-rio.br, sergio@inf.puc-rio.br  *
  */
 package bib.sgbd;
 
@@ -360,21 +360,21 @@ public class SQL {
     }
 
     public void print() {
-        log.msgPrint("PID: " + id);
-        log.msgPrint("SQL: " + sql);
-        log.msgPrint("Start time: " + getTimeFirstCapture());
-        log.msgPrint("Type: " + this.getType());
-        log.msgPrint("Capture count: " + getCaptureCount());
-        log.msgPrint("Last Capture: " + getLastCapture());
-        log.msgPrint("Relevance: " + relevance);
-        log.msgPrint("Cost: " + this.getCost());
-        log.msgPrint("Tables: ");
+        log.msg("PID: " + id);
+        log.msg("SQL: " + sql);
+        log.msg("Start time: " + getTimeFirstCapture());
+        log.msg("Type: " + this.getType());
+        log.msg("Capture count: " + getCaptureCount());
+        log.msg("Last Capture: " + getLastCapture());
+        log.msg("Relevance: " + relevance);
+        log.msg("Cost: " + this.getCost());
+        log.msg("Tables: ");
         for (Table tablesQuery1 : tablesQuery) {
-            log.msgPrint("\t" + tablesQuery1.getName());
+            log.msg("\t" + tablesQuery1.getName());
         }
-        log.msgPrint("Fields Query: ");
+        log.msg("Fields Query: ");
         for (Column fieldsQuery1 : fieldsQuery) {
-            log.msgPrint("\t" + fieldsQuery1.getName());
+            log.msg("\t" + fieldsQuery1.getName());
         }
     }
 
@@ -402,6 +402,10 @@ public class SQL {
                 || clause.contains("." + field + ">")
                 || clause.contains("." + field + "<")
                 || clause.substring(clause.length() - field.length()).equals(field);
+    }
+
+    public String getNameMaterizedView() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
 }

@@ -35,7 +35,7 @@ public class Agrawal extends Base {
                 }
             }
         } catch (Exception e) {
-            log.errorPrint(e);
+            log.error(e);
         }
         return this.capturedQueries;
     }

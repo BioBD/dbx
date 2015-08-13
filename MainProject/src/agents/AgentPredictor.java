@@ -27,7 +27,7 @@ public abstract class AgentPredictor extends Agent implements IPredictor {
                 this.updateTuningActions();
                 sleep(4000);
             } catch (InterruptedException e) {
-                log.errorPrint(e);
+                log.error(e);
             }
         }
     }
@@ -56,7 +56,7 @@ public abstract class AgentPredictor extends Agent implements IPredictor {
             }
             resultset.close();
         } catch (SQLException e) {
-            log.errorPrint(e);
+            log.error(e);
         }
         if (result > 0) {
             int pagesize = Integer.valueOf(prop.getProperty("pagesize" + prop.getProperty("sgbd")));

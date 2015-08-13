@@ -65,15 +65,15 @@ public final class Captor extends Base {
                             currentTable.setNumberPages(schemaResult.getInt(4));
                     }
                     currentTable.setFields(this.getColumns(currentTable.getSchema(), currentTable.getName()));
-                    log.msgPrint("Table: " + currentTable.getName());
-                    log.msgPrint("Fields: " + currentTable.getFieldsString());
+                    log.msg("Table: " + currentTable.getName());
+                    log.msg("Fields: " + currentTable.getFieldsString());
                     schema.tables.add(currentTable);
                 }
                 schemaResult.close();
             }
             log.endTitle();
         } catch (SQLException e) {
-            log.errorPrint(e);
+            log.error(e);
         }
     }
 
@@ -109,7 +109,7 @@ public final class Captor extends Base {
                 preparedStatement.close();
             }
         } catch (SQLException e) {
-            log.errorPrint(e);
+            log.error(e);
         }
         return result;
     }
@@ -124,7 +124,7 @@ public final class Captor extends Base {
             foreignColumn.setDomainRestriction("");
             foreignColumn.setNotNull(true);
         } catch (SQLException ex) {
-            log.errorPrint(ex);
+            log.error(ex);
         }
         return foreignColumn;
     }
@@ -165,7 +165,7 @@ public final class Captor extends Base {
             queriesResult.close();
             preparedStatement.close();
         } catch (SQLException e) {
-            log.errorPrint(e);
+            log.error(e);
         }
     }
 
@@ -258,8 +258,8 @@ public final class Captor extends Base {
                 }
                 result.close();
             } catch (SQLException ex) {
-                log.ddlPrint(query);
-                log.errorPrint(ex);
+                log.msg(query);
+                log.error(ex);
             }
         }
         return partitionedPlan;
@@ -277,7 +277,7 @@ public final class Captor extends Base {
             }
             resultset.close();
         } catch (SQLException ex) {
-            log.errorPrint(ex);
+            log.error(ex);
         }
         return partitionedPlan;
     }
@@ -290,12 +290,12 @@ public final class Captor extends Base {
             if (result != null) {
                 return result;
             } else {
-                log.msgPrint("error");
+                log.msg("error");
             }
             result.close();
             preparedStatement.close();
         } catch (SQLException ex) {
-            log.errorPrint(ex);
+            log.error(ex);
         }
         return null;
     }
@@ -315,7 +315,7 @@ public final class Captor extends Base {
             resultset.close();
             statement.close();
         } catch (SQLException ex) {
-            log.msgPrint(ex);
+            log.msg(ex);
         }
         return plan;
     }
@@ -344,8 +344,8 @@ public final class Captor extends Base {
                 }
                 result.close();
             } catch (SQLException ex) {
-                log.ddlPrint(query);
-                log.errorPrint(ex);
+                log.msg(query);
+                log.error(ex);
             }
         }
         return partitionedPlan;
@@ -359,8 +359,8 @@ public final class Captor extends Base {
             try {
                 driver.executeUpdate(queryExplain);
             } catch (Error ex) {
-                log.ddlPrint("Query com erro:" + queryExplain);
-                log.errorPrint(ex);
+                log.msg("Query com erro:" + queryExplain);
+                log.error(ex);
             }
             try {
                 ResultSet result = driver.executeQuery(queryGetPlan);
@@ -371,11 +371,34 @@ public final class Captor extends Base {
                     }
                 }
             } catch (SQLException ex) {
-                log.ddlPrint("Query com erro:" + queryGetPlan);
-                log.errorPrint(ex);
+                log.msg("Query com erro:" + queryGetPlan);
+                log.error(ex);
             }
         }
         return partitionedPlan;
     }
 
+    public SQL getWorkloadFromAction(String command) {
+        if (command.toLowerCase().contains("tpc_h test_view")) {
+            int ini = command.toLowerCase().indexOf("tpc_h test_view") - 5;
+            int end = command.toLowerCase().substring(ini).indexOf("*/") + 2 + ini;
+            command = command.substring(ini, end);
+        } else if (command.toLowerCase().contains("tpc-h/tpc-r")) {
+            int ini = command.toLowerCase().indexOf("tpc-h/tpc-r") - 3;
+            int end = command.toLowerCase().substring(ini).indexOf("*/") + 2 + ini;
+            command = command.substring(ini, end);
+        } else {
+            for (SQL workload : capturedSQL) {
+                if (command.toLowerCase().contains(workload.getClauseFromSql("select").toLowerCase())) {
+                    return workload;
+                }
+            }
+        }
+        for (SQL workload : capturedSQL) {
+            if (workload.getSql().toLowerCase().contains(command.toLowerCase())) {
+                return workload;
+            }
+        }
+        return null;
+    }
 }

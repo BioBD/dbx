@@ -30,7 +30,7 @@ public class AgentPredictorMV extends AgentPredictor {
                 log.title("Persist update ddl create MV");
                 for (Long item : this.idDDLForMaterialization) {
                     PreparedStatement preparedStatement = driver.prepareStatement(prop.getProperty("getSqlClauseToUpdateDDLCreateMVToMaterialization"));
-                    log.msgPrint("Materialized View Hypothetical ID: " + item);
+                    log.msg("Materialized View Hypothetical ID: " + item);
                     preparedStatement.setString(1, "M");
                     preparedStatement.setLong(2, item);
                     driver.executeUpdate(preparedStatement);
@@ -39,7 +39,7 @@ public class AgentPredictorMV extends AgentPredictor {
                 log.endTitle();
             }
         } catch (SQLException e) {
-            log.errorPrint(e);
+            log.error(e);
         }
     }
 
@@ -59,7 +59,7 @@ public class AgentPredictorMV extends AgentPredictor {
         try {
             PreparedStatement preparedStatement = driver.prepareStatement(prop.getProperty("getSqlClauseToUpdateTemporaryDDLCreateMVToMaterialization"));
             driver.executeUpdate(preparedStatement);
-            log.msgPrint("Space for tuning remainder: " + (this.getSizeSpaceToTuning() / 1024 / 1024) + "GB");
+            log.msg("Space for tuning remainder: " + (this.getSizeSpaceToTuning() / 1024 / 1024) + "GB");
             ResultSet resultset = driver.executeQuery(prop.getProperty("getSqlDDLNotAnalizedPredictor"));
             if (resultset != null) {
                 while (resultset.next()) {
@@ -74,7 +74,7 @@ public class AgentPredictorMV extends AgentPredictor {
             preparedStatement.close();
 
         } catch (SQLException e) {
-            log.errorPrint(e);
+            log.error(e);
         }
     }
 
