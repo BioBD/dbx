@@ -1,6 +1,6 @@
 package main;
 
-import agents.AgentObserverMV;
+import agents.AgentObserver;
 import agents.AgentPredictorMV;
 import agents.AgentReactorMV;
 
@@ -9,7 +9,7 @@ public class Main {
     public static void main(String[] args) {
         if (args != null) {
             if (args.length > 0 && args[0].equals("1")) {
-                AgentObserverMV observer = new AgentObserverMV();
+                AgentObserver observer = new AgentObserver();
                 Thread threadObserver = new Thread(observer);
                 threadObserver.start();
             }
