@@ -194,8 +194,7 @@ public final class Captor extends Base {
     private boolean isQueryValid(String query) {
         boolean isValid = true;
         if ((this.isQueryGeneratedByOuterTuning(query))
-                || (this.isSQLGeneratedBySGBD(query))
-                || (this.isNoQuerySelect(query))) {
+                || (this.isSQLGeneratedBySGBD(query))) {
             isValid = false;
         }
         return isValid;
@@ -252,7 +251,7 @@ public final class Captor extends Base {
         String partitionedPlan = "";
         if (!query.isEmpty()) {
             try {
-                ResultSet result = driver.executeQuery(prop.getProperty("signature") + " EXPLAIN " + query + ";");
+                ResultSet result = driver.executeQuery(prop.getProperty("signature") + " EXPLAIN " + query);
                 while (result.next()) {
                     partitionedPlan += "\n" + result.getString(1);
                 }
@@ -332,12 +331,10 @@ public final class Captor extends Base {
                         + "and s.sql_text like '" + query + "' AND ROWNUM <= 1 AND IO_COST is not null order by s.LAST_LOAD_TIME desc";
                 ResultSet result = driver.executeQuery(temp);
                 ResultSetMetaData rsmd = result.getMetaData();
-                int j = 0;
                 while (result.next()) {
                     for (int i = 1; i <= rsmd.getColumnCount(); i++) {
                         partitionedPlan += rsmd.getColumnName(i) + "=" + result.getString(i) + "\n";
                     }
-                    System.out.println(j++);
                 }
                 if (partitionedPlan.trim().isEmpty()) {
                     partitionedPlan = this.getEstimatedPlanExecutionOracle(query);

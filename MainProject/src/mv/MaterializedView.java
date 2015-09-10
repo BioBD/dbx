@@ -108,7 +108,11 @@ public class MaterializedView extends SQL {
     }
 
     public String getHypoMaterializedView() {
-        return hypoMaterializedView;
+        if (this.getType().equals("Q")) {
+            return hypoMaterializedView;
+        } else {
+            return "";
+        }
     }
 
     public void setHypoMaterializedView(String hypoMaterializedView) {

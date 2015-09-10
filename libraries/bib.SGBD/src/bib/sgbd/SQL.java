@@ -387,23 +387,27 @@ public class SQL {
     public boolean containsFieldOrTable(String clause, String field) {
         clause = clause.toLowerCase();
         field = field.toLowerCase();
-        return clause.contains(" " + field + " ")
-                || clause.contains(" " + field + ",")
-                || clause.contains(" " + field + ";")
-                || clause.contains(" " + field + "=")
-                || clause.contains(" " + field + ">")
-                || clause.contains(" " + field + "<")
-                || clause.contains("," + field + ",")
-                || clause.contains("," + field + ";")
-                || clause.contains("," + field + "=")
-                || clause.contains("," + field + ">")
-                || clause.contains("," + field + "<")
-                || clause.contains("." + field + ",")
-                || clause.contains("." + field + ";")
-                || clause.contains("." + field + "=")
-                || clause.contains("." + field + ">")
-                || clause.contains("." + field + "<")
-                || clause.substring(clause.length() - field.length()).equals(field);
+        if (clause.contains(field)) {
+            return clause.contains(" " + field + " ")
+                    || clause.contains(" " + field + ",")
+                    || clause.contains(" " + field + ";")
+                    || clause.contains(" " + field + "=")
+                    || clause.contains(" " + field + ">")
+                    || clause.contains(" " + field + "<")
+                    || clause.contains("," + field + ",")
+                    || clause.contains("," + field + ";")
+                    || clause.contains("," + field + "=")
+                    || clause.contains("," + field + ">")
+                    || clause.contains("," + field + "<")
+                    || clause.contains("." + field + ",")
+                    || clause.contains("." + field + ";")
+                    || clause.contains("." + field + "=")
+                    || clause.contains("." + field + ">")
+                    || clause.contains("." + field + "<")
+                    || clause.substring(clause.length() - field.length()).equals(field);
+        } else {
+            return false;
+        }
     }
 
     public String getNameMaterizedView() {

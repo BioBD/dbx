@@ -86,9 +86,9 @@ public class AgentObserver extends Agent implements IObserver {
     private void insertQueryTbWorkload(SQL query) {
         try {
             try (PreparedStatement preparedStatement = driver.prepareStatement(prop.getProperty("getSqlClauseToInsertQueryTbWorkload"))) {
-                log.msg("Query: " + query.getSql());
-                log.msg("Query: " + query.getPlan());
-                log.msg("Query: " + query.getType());
+                log.msg("SQL: " + query.getSql());
+                log.msg("Plan: " + query.getPlan());
+                log.msg("Type: " + query.getType());
                 preparedStatement.setString(1, query.getSql());
                 preparedStatement.setString(2, query.getPlan());
                 preparedStatement.setInt(3, 1);
@@ -134,7 +134,7 @@ public class AgentObserver extends Agent implements IObserver {
     public void analyzeQueriesCaptured() {
         DefineView defineView = new DefineView();
         Agrawal agrawal = new Agrawal();
-        ArrayList<MaterializedView> MVCandiates = this.getQueriesNotAnalized();
+        ArrayList<MaterializedView> MVCandiates = this.getQueriesNotAnalizedForVMHypotetical();
         MVCandiates = agrawal.getWorkloadSelected(MVCandiates);
         MVCandiates = defineView.getWorkloadSelected(MVCandiates);
         MVCandiates = this.getPlanDDLViews(MVCandiates);
@@ -159,6 +159,16 @@ public class AgentObserver extends Agent implements IObserver {
             resultset.close();
         } catch (SQLException e) {
             log.error(e);
+        }
+        return MVCandiates;
+    }
+
+    private ArrayList<MaterializedView> getQueriesNotAnalizedForVMHypotetical() {
+        ArrayList<MaterializedView> MVCandiates = this.getQueriesNotAnalized();
+        for (int i = 0; i < MVCandiates.size(); i++) {
+            if (MVCandiates.get(i).getType().equals("Q")) {
+                MVCandiates.remove(i);
+            }
         }
         return MVCandiates;
     }
@@ -205,7 +215,9 @@ public class AgentObserver extends Agent implements IObserver {
 
     private ArrayList<MaterializedView> getPlanDDLViews(ArrayList<MaterializedView> MVCandiates) {
         for (MaterializedView MVCandiate : MVCandiates) {
-            MVCandiate.setHypoPlan(this.getPlanFromQuery(MVCandiate.getHypoMaterializedView()));
+            if (MVCandiate.getType().equals("Q")) {
+                MVCandiate.setHypoPlan(this.getPlanFromQuery(MVCandiate.getHypoMaterializedView()));
+            }
         }
         return MVCandiates;
     }
