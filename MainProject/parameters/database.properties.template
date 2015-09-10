@@ -17,7 +17,7 @@ signature=/*AGENT_DBX*/
 # 2 = Vis\u00c3\u00b5es materializadas
 executionMode=2
 # ============================================================== SQL SERVER ===============================================================
-# Dados de conexao do Postgres
+# Dados de conexao do SQL Server
 driverSQLServer=net.sourceforge.jtds.jdbc.Driver
 urlSQLServer=jdbc:sqlserver://localhost:1433;
 userSQLServer=*****
