@@ -9,7 +9,7 @@ package bib.sgbd;
  *
  * @author Rafael
  */
-public abstract class Plan implements IPlan {
+public class Plan implements IPlan {
 
     private final String plan;
 
@@ -19,6 +19,18 @@ public abstract class Plan implements IPlan {
 
     public String getPlan() {
         return plan;
+    }
+    
+    public long getCost(){
+        return 0;
+    }
+
+    public long getNumRow(){
+        return 0;
+    }
+
+    public long getSizeRow(){
+        return 0;
     }
 
 }
