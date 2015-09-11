@@ -9,12 +9,11 @@ import java.sql.ResultSet;
 
 /**
  *
- * @author Administrador
+ * @author josemariamonteiro
  */
-public class IHSTIS_CI {
+public class IHSTIS_U {
     public static void runAlg(ResultSet resultset){
         
     }
-    
     
 }

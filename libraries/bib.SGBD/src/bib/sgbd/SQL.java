@@ -192,6 +192,9 @@ public class SQL {
         } else if (this.getSql().toLowerCase().contains("insert")) {
             return "I";
         }
+        else if (this.getSql().toLowerCase().contains("delete")) {
+            return "D";
+        }
         return null;
     }
 

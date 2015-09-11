@@ -8,6 +8,7 @@ package agents;
 import agents.interfaces.IObserver;
 import algorithms.mv.Agrawal;
 import algorithms.mv.DefineView;
+import algorithms.mv.IHSTIS;
 import static bib.base.Base.log;
 import static bib.base.Base.prop;
 import bib.sgbd.Captor;
@@ -144,14 +145,23 @@ public class AgentObserver extends Agent implements IObserver {
     private ArrayList<MaterializedView> getQueriesNotAnalized() {
         ArrayList<MaterializedView> MVCandiates = new ArrayList<>();
         try {
+            //Recebendo a carga de trabalho
             ResultSet resultset = driver.executeQuery(prop.getProperty("getSqlQueriesNotAnalizedObserver"));
+            //Percorrendo a carga de trabalho
             if (resultset != null) {
                 while (resultset.next()) {
-                    MaterializedView currentQuery = new MaterializedView();
+                    //Criar os índices hipotéticos
+                    evaluateIndexes(resultset);
+                    //Criar as visoes materializadas hipoteticas
+                    MVCandiates = evaluateMV(resultset);
+                    
+                    /*MaterializedView currentQuery = new MaterializedView();
                     currentQuery.setResultSet(resultset);
                     currentQuery.setSchemaDataBase(captor.getSchemaDataBase());
                     MVCandiates.add(currentQuery);
+                    */
                 }
+                //Ver o esse método, pois parece que altera o contador que indica quantas vezes a tarefa foi analisada
                 if (!MVCandiates.isEmpty()) {
                     this.updateQueryAnalizedCount();
                 }
@@ -221,4 +231,20 @@ public class AgentObserver extends Agent implements IObserver {
         }
         return MVCandiates;
     }
+    
+    public ArrayList evaluateMV(ResultSet resultset){
+        //Criando a Visão Materializada Hipotética
+        ArrayList<MaterializedView> MVCandiates = new ArrayList<>();
+        MaterializedView currentQuery = new MaterializedView();
+        currentQuery.setResultSet(resultset);
+        currentQuery.setSchemaDataBase(captor.getSchemaDataBase());
+        MVCandiates.add(currentQuery);
+        return MVCandiates;
+    }
+
+    //Metodo para Avaliar Indices
+    public void evaluateIndexes(ResultSet resultset) {
+        IHSTIS.runAlg(resultset);
+    }
 }
+
