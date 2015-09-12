@@ -13,6 +13,8 @@ import java.util.Objects;
  * @author Rafael
  */
 public class Column {
+    
+
 
     private String name;
     private Column foreignKey;
@@ -23,7 +25,8 @@ public class Column {
     private String type;
     private int order;
     private String domainRestriction;
-
+    
+    
     public String getDomainRestriction() {
         if (domainRestriction == null || domainRestriction.isEmpty()) {
             return "null";

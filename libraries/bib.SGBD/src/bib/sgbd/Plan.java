@@ -33,4 +33,8 @@ public class Plan implements IPlan {
         return 0;
     }
 
+    public int size() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
 }

@@ -13,6 +13,14 @@ import java.util.ArrayList;
  * @author josemariamonteiro
  */
 public class SeqScan {
-    public Table table;
+
+    public SeqScan(String name, ArrayList<Column> columns) {
+        this.name = name;
+        this.columns = columns;
+    }
+
+    public String name;
     public ArrayList<Column> columns;
+    
+    
 }
