@@ -26,7 +26,6 @@ public class Column {
     private int order;
     private String domainRestriction;
     
-    
     public String getDomainRestriction() {
         if (domainRestriction == null || domainRestriction.isEmpty()) {
             return "null";
@@ -145,5 +144,5 @@ public class Column {
                 return null;
         }
     }
-
+    
 }

@@ -18,7 +18,7 @@ public class SeqScan {
         this.name = name;
         this.columns = columns;
     }
-
+    
     public String name;
     public ArrayList<Column> columns;
     

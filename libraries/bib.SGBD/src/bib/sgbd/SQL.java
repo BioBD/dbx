@@ -48,7 +48,7 @@ public class SQL {
     public long getAnalyzeCount() {
         return analyzeCount;
     }
-
+    
     public void setAnalyzeCount(long analyzeCount) {
         this.analyzeCount = analyzeCount;
     }
@@ -416,5 +416,4 @@ public class SQL {
     public String getNameMaterizedView() {
         return "v_ot_workload_" + String.valueOf(this.getId());
     }
-
 }

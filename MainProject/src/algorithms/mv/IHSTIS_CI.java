@@ -40,7 +40,7 @@ public class IHSTIS_CI {
         }
         for (int i = 0; i < sso.size(); i++) {
             ss = sso.get(i);     
-        }
+        } 
         
         //Usa a comando SQL para pegar os atributos envolvidos nas clausulas SELECT, GROUP e ORDER
         try {

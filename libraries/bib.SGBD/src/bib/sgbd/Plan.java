@@ -12,7 +12,7 @@ package bib.sgbd;
 public class Plan implements IPlan {
 
     private final String plan;
-
+    
     public Plan(String plan) {
         this.plan = plan;
     }
