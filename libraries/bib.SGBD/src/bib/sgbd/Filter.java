@@ -10,30 +10,35 @@ package bib.sgbd;
  *
  * @author josemariamonteiro
  */
-public class Filter {
+public class Filter extends Column{
     
-    private Column column;
+   // private Column column;
     private String filterType;// theta ou equi
     
+    /*
     public Filter(Column column, String filterType){
         this.column = column;
         this.filterType = filterType;
     }
+    */
 
     /**
      * @return the column
      */
+    /*
     public Column getColumn() {
         return column;
     }
+    */
 
     /**
      * @param column the column to set
      */
+    /*
     public void setColumn(Column column) {
         this.column = column;
     }
-
+*/
     /**
      * @return the filterType
      */

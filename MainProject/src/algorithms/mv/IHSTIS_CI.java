@@ -78,7 +78,7 @@ public class IHSTIS_CI {
                 indexAuxP = new Index();
                 indexAuxP.setTableName(ss.getTableName());
                 indexAuxP.columns = new ArrayList();
-                indexAuxP.columns.add(filterAux.getColumn());
+                indexAuxP.columns.add(filterAux);
                 indexAuxP.setIndexType("Primary");
                 indexAuxP.setCreationCost(2*getSeqScanCost(ss.getTableName()));
                 indexAuxP.setHasFilter(true);
@@ -91,7 +91,7 @@ public class IHSTIS_CI {
                 indexAuxS = new Index();
                 indexAuxS.setTableName(ss.getTableName());
                 indexAuxS.columns = new ArrayList();
-                indexAuxS.columns.add(filterAux.getColumn());
+                indexAuxS.columns.add(filterAux);
                 indexAuxS.setIndexType("Secundary");
                 indexAuxS.setCreationCost(2*getSeqScanCost(ss.getTableName()));
                 indexAuxS.setHasFilter(true);
@@ -100,6 +100,8 @@ public class IHSTIS_CI {
                 lCandidates.add(indexAuxS);
             }
         } 
+        
+        //TODO: Criar um indice composto para todos os atributos de um msmo SeqScan
         
         //Usa a comando SQL para pegar os atributos envolvidos nas clausulas SELECT, GROUP e ORDER
         try {
@@ -121,7 +123,7 @@ public class IHSTIS_CI {
         
         //TODO: Juntar os atributos do SELECT, GROUP e ORDER para uma mesma Tabela
          
-         //TODO: Juntar os atributos do Case 1 (Filtro) e do Case 2 (Select, Group e Order) para uma mesma Tabela
+        //TODO: Juntar os atributos do Case 1 (Filtro) e do Case 2 (Select, Group e Order) para uma mesma Tabela
          
         //Percorrer os Indices Candidatos
          for (Index lCandidate : lCandidates) {
