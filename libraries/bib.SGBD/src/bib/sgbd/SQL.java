@@ -5,8 +5,11 @@
 package bib.sgbd;
 
 import static bib.base.Base.log;
+import static bib.base.Base.prop;
 import bib.sgbd.oracle.PlanOracle;
 import bib.sgbd.postgresql.PlanPostgreSQL;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.sql.Time;
 import java.util.ArrayList;
 import java.util.Date;
@@ -31,6 +34,7 @@ public class SQL {
     private Time timeFirstCapture;
     private Plan plan;
     private String database;
+    private String hypoMaterializedView;
 
     private final ArrayList<Table> tablesQuery;
     private ArrayList<Column> fieldsQuery;
@@ -48,7 +52,7 @@ public class SQL {
     public long getAnalyzeCount() {
         return analyzeCount;
     }
-    
+
     public void setAnalyzeCount(long analyzeCount) {
         this.analyzeCount = analyzeCount;
     }
@@ -94,7 +98,7 @@ public class SQL {
         }
     }
 
-    public void setCaptureCount(Integer captureCount) {
+    public void setCaptureCount(long captureCount) {
         this.captureCount = captureCount;
     }
 
@@ -109,6 +113,18 @@ public class SQL {
     public void setLastCapture() {
         Date now = new Date();
         this.lastCapture = now;
+    }
+
+    public String getHypoMaterializedView() {
+        if (this.getType().equals("Q")) {
+            return hypoMaterializedView;
+        } else {
+            return "";
+        }
+    }
+
+    public void setHypoMaterializedView(String hypoMaterializedView) {
+        this.hypoMaterializedView = hypoMaterializedView;
     }
 
     public SQL() {
@@ -191,8 +207,7 @@ public class SQL {
             return "U";
         } else if (this.getSql().toLowerCase().contains("insert")) {
             return "I";
-        }
-        else if (this.getSql().toLowerCase().contains("delete")) {
+        } else if (this.getSql().toLowerCase().contains("delete")) {
             return "D";
         }
         return null;
@@ -387,6 +402,10 @@ public class SQL {
         return this.plan.getPlan();
     }
 
+    public Plan plan() {
+        return this.plan;
+    }
+
     public boolean containsFieldOrTable(String clause, String field) {
         clause = clause.toLowerCase();
         field = field.toLowerCase();
@@ -413,7 +432,36 @@ public class SQL {
         }
     }
 
-    public String getNameMaterizedView() {
-        return "v_ot_workload_" + String.valueOf(this.getId());
+
+    /* TODO - THAYSON IMPLEMENTAR */
+    public ArrayList<Column> getFieldsSelect() {
+        ArrayList<Column> listAllColumns = this.getFieldsQuery();
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+    /* TODO - THAYSON IMPLEMENTAR */
+
+    public ArrayList<Column> getFieldsGroup() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+    /* TODO - THAYSON IMPLEMENTAR */
+
+    public ArrayList<Column> getFieldsOrder() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    public void setResultSet(ResultSet resultset) {
+        try {
+            this.setId(resultset.getInt("wld_id"));
+            this.setSql(resultset.getString("wld_sql").toLowerCase());
+            this.setCaptureCount(resultset.getInt("wld_capture_count"));
+            this.setAnalyzeCount(resultset.getInt("wld_analyze_count"));
+            this.setRelevance(resultset.getInt("wld_relevance"));
+            this.setPlan(resultset.getString("wld_plan").toLowerCase(), prop.getProperty("sgbd"));
+            if (resultset.getObject("cmv_ddl_create") != null) {
+                this.setHypoMaterializedView(resultset.getString("cmv_ddl_create").toLowerCase());
+            }
+        } catch (SQLException e) {
+            log.error(e);
+        }
     }
 }

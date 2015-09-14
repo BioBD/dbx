@@ -5,6 +5,8 @@
  */
 package bib.sgbd;
 
+import java.util.ArrayList;
+
 /**
  *
  * @author Rafael
@@ -17,4 +19,5 @@ public interface IPlan {
 
     long getSizeRow();
 
+    ArrayList<SeqScan> getSeqScanOperations();
 }

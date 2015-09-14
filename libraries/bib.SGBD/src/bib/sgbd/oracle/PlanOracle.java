@@ -7,6 +7,8 @@
 package bib.sgbd.oracle;
 
 import bib.sgbd.Plan;
+import bib.sgbd.SeqScan;
+import java.util.ArrayList;
 
 /**
  *
@@ -58,5 +60,10 @@ public class PlanOracle extends Plan {
             }
         }
         return "";
+    }
+
+    @Override
+    public ArrayList<SeqScan> getSeqScanOperations() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 }

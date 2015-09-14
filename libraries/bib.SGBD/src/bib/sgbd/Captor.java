@@ -23,6 +23,8 @@ import java.sql.Statement;
 import java.sql.Time;
 import java.util.ArrayList;
 import java.util.Locale;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
@@ -398,4 +400,21 @@ public final class Captor extends Base {
         }
         return null;
     }
+
+    public ArrayList<SQL> getWorkloadFromTBWorkload() {
+        ArrayList<SQL> sqlList = new ArrayList<>();
+        try {
+            ResultSet resultset = driver.executeQuery(prop.getProperty("getSqlQueriesNotAnalizedObserver"));
+            while (resultset.next()) {
+                SQL sql = new SQL();
+                sql.setResultSet(resultset);
+                sqlList.add(sql);
+
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(Captor.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return sqlList;
+    }
+
 }
