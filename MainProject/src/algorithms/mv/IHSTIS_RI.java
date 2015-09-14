@@ -12,7 +12,7 @@ import java.sql.ResultSet;
  * @author josemariamonteiro
  */
 public class IHSTIS_RI {
-    public static void runAlg(ResultSet resultset){
+    public void runAlg(ResultSet resultset){
         
     }
     

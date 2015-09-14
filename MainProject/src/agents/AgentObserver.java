@@ -244,7 +244,8 @@ public class AgentObserver extends Agent implements IObserver {
 
     //Metodo para Avaliar Indices
     public void evaluateIndexes(ResultSet resultset) {
-        IHSTIS.runAlg(resultset);
+        IHSTIS ihstis = new IHSTIS();
+        ihstis.runAlg(resultset);
     }
 }
 

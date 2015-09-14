@@ -17,6 +17,12 @@ public class Index {
     public ArrayList<Column> columns;
     private String typeColumn;
     private String hypotheticalPlan;
+    private String tableName;
+    private long creationCost;
+    private String IndexType;
+    private boolean hasFilter;
+    private String filterType; // theta ou equi
+    private long numberOfRows;
 
     public String getHypotheticalPlan() {
         return hypotheticalPlan;
@@ -32,6 +38,48 @@ public class Index {
 
     public void setTypeColumn(String typeColumn) {
         this.typeColumn = typeColumn;
+    }
+    
+       /**
+     * @return the tableName
+     */
+    public String getTableName() {
+        return tableName;
+    }
+
+    /**
+     * @param tableName the tableName to set
+     */
+    public void setTableName(String tableName) {
+        this.tableName = tableName;
+    }
+
+    /**
+     * @return the creationCost
+     */
+    public long getCreationCost() {
+        return creationCost;
+    }
+
+    /**
+     * @param creationCost the creationCost to set
+     */
+    public void setCreationCost(long creationCost) {
+        this.creationCost = creationCost;
+    }
+    
+    /**
+     * @return the IndexType
+     */
+    public String getIndexType() {
+        return IndexType;
+    }
+
+    /**
+     * @param IndexType the IndexType to set
+     */
+    public void setIndexType(String IndexType) {
+        this.IndexType = IndexType;
     }
 
     public Index() {
@@ -94,5 +142,51 @@ public class Index {
         }
         return true;
     }
+
+    /**
+     * @return the hasFilter
+     */
+    public boolean isHasFilter() {
+        return hasFilter;
+    }
+
+    /**
+     * @param hasFilter the hasFilter to set
+     */
+    public void setHasFilter(boolean hasFilter) {
+        this.hasFilter = hasFilter;
+    }
+
+    /**
+     * @return the filterType
+     */
+    public String getFilterType() {
+        return filterType;
+    }
+
+    /**
+     * @param filterType the filterType to set
+     */
+    public void setFilterType(String filterType) {
+        this.filterType = filterType;
+    }
+
+    /**
+     * @return the numberOfRows
+     */
+    public long getNumberOfRows() {
+        return numberOfRows;
+    }
+
+    /**
+     * @param numberOfRows the numberOfRows to set
+     */
+    public void setNumberOfRows(long numberOfRows) {
+        this.numberOfRows = numberOfRows;
+    }
+
+    
+
+ 
 
 }
