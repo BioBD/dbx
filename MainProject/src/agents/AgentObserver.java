@@ -34,7 +34,7 @@ public class AgentObserver extends Agent {
         while (true) {
             try {
                 this.getLastExecutedSQL();
-                this.evaluateFromAllTypesSF();
+                this.evaluateFromAllTypesTuning();
                 sleep(2000);
             } catch (InterruptedException e) {
                 log.error(e);
@@ -136,7 +136,7 @@ public class AgentObserver extends Agent {
         }
     }
 
-    private void evaluateFromAllTypesSF() {
+    private void evaluateFromAllTypesTuning() {
         ArrayList<SQL> sqlList = captor.getWorkloadFromTBWorkload();
         this.evaluateIndexes(sqlList);
         this.evaluateMV(sqlList);
