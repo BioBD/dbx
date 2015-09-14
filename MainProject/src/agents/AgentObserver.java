@@ -5,9 +5,6 @@
  */
 package agents;
 
-import agents.interfaces.IObserver;
-import algorithms.mv.Agrawal;
-import algorithms.mv.DefineView;
 import algorithms.mv.IHSTIS;
 import static bib.base.Base.log;
 import static bib.base.Base.prop;
@@ -18,13 +15,13 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import mv.MaterializedView;
+import mv.ControllerMV;
 
 /**
  *
  * @author Rafael
  */
-public class AgentObserver extends Agent implements IObserver {
+public class AgentObserver extends Agent {
 
     protected final Captor captor;
 
@@ -37,7 +34,7 @@ public class AgentObserver extends Agent implements IObserver {
         while (true) {
             try {
                 this.getLastExecutedSQL();
-                this.analyzeQueriesCaptured();
+                this.evaluateFromAllTypesSF();
                 sleep(2000);
             } catch (InterruptedException e) {
                 log.error(e);
@@ -121,131 +118,28 @@ public class AgentObserver extends Agent implements IObserver {
         this.insertWorkload(sqlCaptured);
     }
 
-    protected void updateQueryAnalizedCount() {
+    private void updateQueryAnalizedCount() {
         PreparedStatement preparedStatement = driver.prepareStatement(prop.getProperty("getSqlClauseToUpdateWldAnalyzeCount"));
         log.msg(prop.getProperty("getSqlClauseToUpdateWldAnalyzeCount"));
         driver.executeUpdate(preparedStatement);
     }
 
-    public String getPlanFromQuery(String query) {
-        return captor.getPlanExecution(query);
+    public void evaluateMV(ArrayList<SQL> sqlList) {
+        ControllerMV controlMV = new ControllerMV();
+        controlMV.evaluateMV(sqlList);
     }
 
-    @Override
-    public void analyzeQueriesCaptured() {
-        DefineView defineView = new DefineView();
-        Agrawal agrawal = new Agrawal();
-        ArrayList<MaterializedView> MVCandiates = this.getQueriesNotAnalizedForVMHypotetical();
-        MVCandiates = agrawal.getWorkloadSelected(MVCandiates);
-        MVCandiates = defineView.getWorkloadSelected(MVCandiates);
-        MVCandiates = this.getPlanDDLViews(MVCandiates);
-        this.persistDDLCreateMV(MVCandiates);
-    }
-
-    private ArrayList<MaterializedView> getQueriesNotAnalized() {
-        ArrayList<MaterializedView> MVCandiates = new ArrayList<>();
-        try {
-            //Recebendo a carga de trabalho
-            ResultSet resultset = driver.executeQuery(prop.getProperty("getSqlQueriesNotAnalizedObserver"));
-            //Percorrendo a carga de trabalho
-            if (resultset != null) {
-                while (resultset.next()) {
-                    //Criar os índices hipotéticos
-                    evaluateIndexes(resultset);
-                    //Criar as visoes materializadas hipoteticas
-                    MVCandiates = evaluateMV(resultset);
-                    
-                    /*MaterializedView currentQuery = new MaterializedView();
-                    currentQuery.setResultSet(resultset);
-                    currentQuery.setSchemaDataBase(captor.getSchemaDataBase());
-                    MVCandiates.add(currentQuery);
-                    */
-                }
-                //Ver o esse método, pois parece que altera o contador que indica quantas vezes a tarefa foi analisada
-                if (!MVCandiates.isEmpty()) {
-                    this.updateQueryAnalizedCount();
-                }
-            }
-            resultset.close();
-        } catch (SQLException e) {
-            log.error(e);
-        }
-        return MVCandiates;
-    }
-
-    private ArrayList<MaterializedView> getQueriesNotAnalizedForVMHypotetical() {
-        ArrayList<MaterializedView> MVCandiates = this.getQueriesNotAnalized();
-        for (int i = 0; i < MVCandiates.size(); i++) {
-            if (MVCandiates.get(i).getType().equals("Q")) {
-                MVCandiates.remove(i);
-            }
-        }
-        return MVCandiates;
-    }
-
-    public void persistDDLCreateMV(ArrayList<MaterializedView> MVCandiates) {
-        try {
-            if (!MVCandiates.isEmpty()) {
-                log.title("Persist ddl create MV");
-                this.updateQueryAnalizedCount();
-                for (MaterializedView mvQuery : MVCandiates) {
-                    if (!mvQuery.getHypoMaterializedView().isEmpty()) {
-                        mvQuery.print();
-                        if (mvQuery.getAnalyzeCount() == 0) {
-                            String ddlCreateMV = mvQuery.getDDLCreateMV();
-                            String[] queries = prop.getProperty("getSqlClauseToInsertDDLCreateMV").split(";");
-                            PreparedStatement preparedStatementInsert = driver.prepareStatement(queries[0]);
-                            log.msg(prop.getProperty("getSqlClauseToInsertDDLCreateMV"));
-                            preparedStatementInsert.setInt(1, mvQuery.getId());
-                            preparedStatementInsert.setString(2, ddlCreateMV);
-                            preparedStatementInsert.setLong(3, mvQuery.getHypoCreationCost());
-                            preparedStatementInsert.setDouble(4, mvQuery.getHypoGainAC());
-                            preparedStatementInsert.setString(5, "H");
-                            mvQuery.setAnalyzeCount(1);
-                            driver.executeUpdate(preparedStatementInsert);
-                            PreparedStatement preparedStatementUpdate = driver.prepareStatement(queries[1]);
-                            preparedStatementUpdate.setInt(1, mvQuery.getId());
-                            driver.executeUpdate(preparedStatementUpdate);
-                        } else {
-                            PreparedStatement preparedStatement = driver.prepareStatement(prop.getProperty("getSqlClauseToIncrementBenefictDDLCreateMV"));
-                            log.msg(prop.getProperty("getSqlClauseToIncrementBenefictDDLCreateMV"));
-                            preparedStatement.setLong(1, mvQuery.getHypoCreationCost());
-                            preparedStatement.setDouble(2, mvQuery.getHypoGainAC());
-                            preparedStatement.setInt(3, mvQuery.getId());
-                            driver.executeUpdate(preparedStatement);
-                        }
-                    }
-                }
-                log.endTitle();
-            }
-        } catch (SQLException e) {
-            log.error(e);
+    public void evaluateIndexes(ArrayList<SQL> sqlList) {
+        for (SQL sql : sqlList) {
+            IHSTIS ihstis = new IHSTIS();
+            ihstis.runAlg(sql);
         }
     }
 
-    private ArrayList<MaterializedView> getPlanDDLViews(ArrayList<MaterializedView> MVCandiates) {
-        for (MaterializedView MVCandiate : MVCandiates) {
-            if (MVCandiate.getType().equals("Q")) {
-                MVCandiate.setHypoPlan(this.getPlanFromQuery(MVCandiate.getHypoMaterializedView()));
-            }
-        }
-        return MVCandiates;
-    }
-    
-    public ArrayList evaluateMV(ResultSet resultset){
-        //Criando a Visão Materializada Hipotética
-        ArrayList<MaterializedView> MVCandiates = new ArrayList<>();
-        MaterializedView currentQuery = new MaterializedView();
-        currentQuery.setResultSet(resultset);
-        currentQuery.setSchemaDataBase(captor.getSchemaDataBase());
-        MVCandiates.add(currentQuery);
-        return MVCandiates;
-    }
-
-    //Metodo para Avaliar Indices
-    public void evaluateIndexes(ResultSet resultset) {
-        IHSTIS ihstis = new IHSTIS();
-        ihstis.runAlg(resultset);
+    private void evaluateFromAllTypesSF() {
+        ArrayList<SQL> sqlList = captor.getWorkloadFromTBWorkload();
+        this.evaluateIndexes(sqlList);
+        this.evaluateMV(sqlList);
+        this.updateQueryAnalizedCount();
     }
 }
-

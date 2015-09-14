@@ -5,15 +5,16 @@
  */
 package algorithms.mv;
 
-import java.sql.ResultSet;
+import bib.sgbd.SQL;
 
 /**
  *
  * @author josemariamonteiro
  */
 public class IHSTIS_RI {
-    public void runAlg(ResultSet resultset){
-        
+
+    public void runAlg(SQL resultset) {
+
     }
-    
+
 }

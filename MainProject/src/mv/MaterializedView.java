@@ -10,8 +10,6 @@ import bib.sgbd.Plan;
 import bib.sgbd.SQL;
 import bib.sgbd.oracle.PlanOracle;
 import bib.sgbd.postgresql.PlanPostgreSQL;
-import java.sql.ResultSet;
-import java.sql.SQLException;
 
 /**
  *
@@ -20,7 +18,6 @@ import java.sql.SQLException;
 public class MaterializedView extends SQL {
 
     private Plan hypoPlan;
-    private String hypoMaterializedView;
     private long hypoGain;
     private long hypoNumPages;
     private long hypoCreationCost;
@@ -52,22 +49,6 @@ public class MaterializedView extends SQL {
         this.setHypoGain();
         this.setHypoGainAC();
         this.setHypoCreationCost();
-    }
-
-    public void setResultSet(ResultSet resultset) {
-        try {
-            this.setId(resultset.getInt("wld_id"));
-            this.setSql(resultset.getString("wld_sql").toLowerCase());
-            if (resultset.getObject("cmv_ddl_create") != null) {
-                this.setHypoMaterializedView(resultset.getString("cmv_ddl_create").toLowerCase());
-            }
-            this.setCaptureCount(resultset.getInt("wld_capture_count"));
-            this.setAnalyzeCount(resultset.getInt("wld_analyze_count"));
-            this.setRelevance(resultset.getInt("wld_relevance"));
-            this.setPlan(resultset.getString("wld_plan").toLowerCase(), prop.getProperty("sgbd"));
-        } catch (SQLException e) {
-            log.error(e);
-        }
     }
 
     public long getHypoGain() {
@@ -107,18 +88,6 @@ public class MaterializedView extends SQL {
         return hypoNumPages;
     }
 
-    public String getHypoMaterializedView() {
-        if (this.getType().equals("Q")) {
-            return hypoMaterializedView;
-        } else {
-            return "";
-        }
-    }
-
-    public void setHypoMaterializedView(String hypoMaterializedView) {
-        this.hypoMaterializedView = hypoMaterializedView;
-    }
-
     @Override
     public void print() {
         super.print();
@@ -131,7 +100,7 @@ public class MaterializedView extends SQL {
         log.msg("hypoCost: " + this.getHypoCost());
         log.msg("Cost - hypoCost: " + (this.getCost() - this.getHypoCost()));
         log.msg("HypoCreationCost: " + this.getHypoCreationCost());
-        log.msg("Hypo Query MV: " + this.hypoMaterializedView);
+        log.msg("Hypo Query MV: " + this.getHypoMaterializedView());
         log.endTitle();
     }
 
@@ -154,4 +123,13 @@ public class MaterializedView extends SQL {
         return this.getHypoNumPages();
     }
 
+    public void copy(SQL sql) {
+        this.setId(sql.getId());
+        this.setSql(sql.getSql());
+        this.setCaptureCount(sql.getCaptureCount());
+        this.setAnalyzeCount(sql.getAnalyzeCount());
+        this.setRelevance(sql.getRelevance());
+        this.setPlan(sql.getPlan(), prop.getProperty("sgbd"));
+        this.setHypoMaterializedView(sql.getHypoMaterializedView());
+    }
 }
