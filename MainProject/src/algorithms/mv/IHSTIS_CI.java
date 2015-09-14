@@ -64,9 +64,9 @@ public class IHSTIS_CI {
         String[] cols, attributes;
  
         //Deixa o texto em caixa baixa e retira os espaços
-        plan = ((p.getPlan()).toLowerCase()).replaceAll(" ", "");
+        plan = (p.getPlan()).toLowerCase();
         //Gera um vetor, tal que o seu tamanha é o número de SeqScan do plano
-        String[] scan = plan.split("seqscanon");
+        String[] scan = plan.split("seq scan on ");
         
         Pattern rest_name = Pattern.compile("(.*).cost");
         Pattern rest_cols = Pattern.compile("filter:(.*)");
@@ -79,37 +79,46 @@ public class IHSTIS_CI {
                 name = nameM.group();
             }
             
-            //Refinanco a string
-            name = name.substring(0,(name.length()-5)); 
+            int a = name.indexOf(' ');
+            name = name.substring(0,a);
             
-            //Matcher filter = rest_cols.matcher(plan);
             str = rest_cols.matcher(scan[i]);  
             while(str.find()){
                 scan[i] = str.group();
             }
 
-            //Trata o SeqScan atual
-            scan[i] = (scan[i]).replaceAll("[(]|[)]| |filter:", "");
-            scan[i] = (scan[i]).replaceAll("::\\w+,*", "");
-            scan[i] = (scan[i]).replaceAll("and|or", ",");
+            if(scan[i].matches("(.*)filter(.*)")){
+                //Trata o SeqScan atual
+                scan[i] = (scan[i]).replaceAll("[(]|[)]|filter:", "");
+                scan[i] = (scan[i]).replaceAll("::\\w+,*", "");
+                scan[i] = (scan[i]).replaceAll(" and | or ", ",");
 
-            //Cria um array de atributos
-            attributes = scan[i].split(",");
-            rest_cols = Pattern.compile(".*[|]");
-
-            //Armazena os atributos no ArrayList columns
-            for(int j=0; j<attributes.length; j++){
-                attributes[j] = attributes[j].replaceFirst("(>|<|=)", "|");
-                str = rest_cols.matcher(attributes[j]);
-                while(str.find()){
-                    attributes[j] = str.group();
+                if(scan[i].matches(" and | or ")){
+                    scan[i] = (scan[i]).replaceAll(" and | or ", ",");
+                }else{
+                    scan[i] = scan[i]+",";
                 }
-                attributes[j]=(attributes[j]).replaceAll("[|]", "");
-                col = new Column();
-                col.setName(attributes[j]);
-                columns.add(col);
+                
+                //Cria um array de atributos
+                attributes = scan[i].split(",");
+                rest_cols = Pattern.compile(".*[|]");
+
+                //Armazena os atributos no ArrayList columns
+                for(int j=0; j<attributes.length; j++){
+                    attributes[j] = attributes[j].replaceFirst("(>|<|=)", "|");
+                    str = rest_cols.matcher(attributes[j]);
+
+                    while(str.find()){
+                        attributes[j] = str.group();
+                    }
+                    attributes[j]=(attributes[j]).replaceAll("[|]| ", "");
+                    col = new Column();
+                    col.setName(attributes[j]);
+                    columns.add(col);
+                }
             }
-             //Monta um objeto e o adiciona no ArrayList<SecScan>
+            
+            //Cria um objeto e o adiciona no ArrayList<SecScan>
             SeqScan objSeq = new SeqScan(name, columns);
             sso.add(objSeq);
         }
@@ -167,7 +176,7 @@ public class IHSTIS_CI {
                 
                 //Transforma a variável str em uma string chamada subStr
                 while(str.find()){
-                    subStr = str.group();
+                  subStr = str.group();
                 }
                 
                 attributes = subStr.split("(orderby|asc,*|desc,*)");
@@ -180,7 +189,7 @@ public class IHSTIS_CI {
                 }
             }    
             
-            //Verifica se há um ORDER BY no comando sql
+            //Verifica se há um GROUP BY no comando sql
             //Adiciona seus atributos em cols
             if(sql.matches("(.*)groupby(.*)")){
                 rest = Pattern.compile("groupby(.*)");
@@ -188,7 +197,7 @@ public class IHSTIS_CI {
                 
                 //Transforma a variável str em uma string chamada subStr
                 while(str.find()){
-                    subStr = str.group();
+                  subStr = str.group();
                 }
                 
                 attributes = subStr.split("(groupby)|,");
