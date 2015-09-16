@@ -432,12 +432,112 @@ public class SQL {
         }
     }
 
+        
+    /*******IMPLEMENTANDO********/
+    /* Devolver um ArrayList de Tabela, onde cada objeto Tabela tem um conjunto de atributos usados em um ou mais cláusulas SELECT */
+    private ArrayList<Table> getSelectColumns(SQL query){
+        ArrayList<Table> tbSelect = new ArrayList();
+        ArrayList<Column> colSelect = new ArrayList();
+        String strAtt = null, strTab = null, sql = null, sch = null;
+        String[] attArray = null, tabArray = null;
+        sql = (query.getSql()).toLowerCase();
+        
+        if (sql.matches("select(.*)")) {
+            Pattern rest;
+            Matcher str;
+             
+            /* Obtendo o(s) nome(s) do(s) atributo(s) */
+            rest = Pattern.compile("select(.*)from");
+            str = rest.matcher(sql);
+            while (str.find()) {
+                strAtt = str.group();
+            }
+    
+            /* Obtendo o(s) nome(s) da(s) tabela(s) */
+            if(sql.matches("(.*)where(.*)")){
+                rest = Pattern.compile("select(.*)where");
+                str = rest.matcher(sql);
+                while (str.find()) {
+                    strTab = str.group();
+                }
+                strTab = (sql.substring(strAtt.length(), strTab.length()-5)).trim();
+            }else{
+                strTab = (sql.substring(strAtt.length(), sql.length()-5)).trim();
+            }
+            
+            strAtt = strAtt.substring(6, strAtt.length()-4).trim();
 
-    /* TODO - THAYSON IMPLEMENTAR */
+            /* Organizando o(s) nome(s) do(s) atributo(s) em um array */
+            if(strAtt.matches("(.*)[,](.*)")){
+                attArray = strAtt.split(",");
+            }else{
+                attArray[0] = strAtt;
+            }
+
+            /* Organizando o(s) nome(s) da(s) tabela(s) em um array */
+            if(strTab.matches("(.*)[,](.*)")){
+                tabArray = strTab.split(",");
+            }else{
+                tabArray[0] = strTab;
+            }
+
+            /* Procurando as tabelas e suas respectivas colunas */
+            for(int i=0; i<tabArray.length; i++){
+                strTab = (tabArray[i]).trim();
+                /* Caso exista esquema */
+                if(strTab.matches("(.*) (.*)")){
+                    rest = Pattern.compile("(.*) ");
+                    str = rest.matcher(strTab);
+                    while(str.find()){
+                        strTab = str.group();
+                    }
+                    strTab = (strTab).trim();
+
+                    sch = (tabArray[i].substring(strTab.length()+1, tabArray[i].length())).trim();
+                    
+                    for(int j=0; j<attArray.length; j++){
+                        strAtt = (attArray[j]).trim();
+                        if(strAtt.matches(sch+"[.](.*)")){
+                            rest = Pattern.compile("[.](.*)");
+                            str = rest.matcher(strAtt);
+                            while(str.find()){
+                                strAtt = str.group();
+                            }
+                            strAtt = (strAtt).trim();
+                            strAtt = strAtt.substring(1, strAtt.length());
+                            
+                        }
+                        strAtt = "";
+                    }
+                    sch = "";
+                    strTab = "";
+                }
+                /* Caso não exista esquema */
+                else{
+                    /* Pega os atributos e os procura na memória */
+                    /* Se referenciando pelo nome da tabela atual */
+                    
+                }
+            }
+        
+            /* CONTA A QUANTIDADE DE OCORRENCIAS (SUBPROCESSOS)
+            String aString = "EXCEPTION,ClassException,EXCEPTION,Mensagem de Exceção";
+            Matcher m = Pattern.compile("(EXCEPTION)",Pattern.DOTALL).matcher(aString);
+            int quantidade = 0;
+            while (m.find()) quantidade++;
+            System.out.println(quantidade);
+            */
+
+        }
+        return null;
+    }
+/*    
+    // TODO - THAYSON IMPLEMENTAR
     public ArrayList<Column> getFieldsSelect() {
         ArrayList<Column> listAllColumns = this.getFieldsQuery();
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
+*/
     /* TODO - THAYSON IMPLEMENTAR */
 
     public ArrayList<Column> getFieldsGroup() {
