@@ -91,14 +91,14 @@ public class IHSTIS_CI {
 
         //TODO: Criar um indice composto para todos os atributos de um msmo SeqScan
         //Usa a comando SQL para pegar os atributos envolvidos nas clausulas SELECT, GROUP e ORDER
-        /* METODOS EM CONSTRUCAO
-        colsSelect = sql.getFieldsSelect();
-        colsGroup = sql.getFieldsGroup();
-        colsOrder = sql.getFieldsOrder();
+        /* O retorno dos métodos não é um arraylist de tabelas? */
+        //colsSelect = sql.getFieldsSelect();
+        //colsGroup = sql.getFieldsGroup();
+        //colsOrder = sql.getFieldsOrder();
         if (colsSelect.size() > 0) {
 
         }
-        */
+       
         //TODO: Juntar os atributos do SELECT, GROUP e ORDER para uma mesma Tabela
         //TODO: Juntar os atributos do Case 1 (Filtro) e do Case 2 (Select, Group e Order) para uma mesma Tabela
         //Percorrer os Indices Candidatos
@@ -184,96 +184,6 @@ public class IHSTIS_CI {
     //SELECT e.enome, d.dnome FROM empregado e, departamento d WHERE e.lotacao=d.codigo
     //TODO: Thayson
     //Talvez, o mais fácil seja utilizar o Parser ZQL [Thuraisingham et al. 2010].
- 
-    /* RPOLIVEIRA - Talvez esse método seja melhor implementado na classe SQL */
-    private ArrayList<Column> getGroupColumns(SQL query) {
-        ArrayList<Column> cols = new ArrayList();
-        String sql = ((query.getSql()).toLowerCase()).replaceAll(" ", "");
-        String[] attributes = null;
-        String subStr = null;
-        Column col;
-
-        if (sql.matches("select")) {
-            Pattern rest;
-            Matcher str;
-            //Cria-se uma restrição para seleção de uma parte do comando sql
-            //Em seguida essa parte é armazenada na variavel chamada str
-            rest = Pattern.compile("select(.*)from");
-            str = rest.matcher(sql);
-
-            //Transforma a variável str em uma string chamada substr
-            while (str.find()) {
-                subStr = str.group();
-            }
-
-            //Verifica se há um GROUP BY no comando sql
-            //Adiciona seus atributos em cols
-            if (sql.matches("(.*)groupby(.*)")) {
-                rest = Pattern.compile("groupby(.*)");
-                str = rest.matcher(sql);
-
-                //Transforma a variável str em uma string chamada subStr
-                while (str.find()) {
-                    subStr = str.group();
-                }
-
-                attributes = subStr.split("(groupby)|,");
-
-                //Adiciona os atributos do ORDER BY no ArrayList cols
-                for (int i = 1; i < attributes.length; i++) {
-                    col = new Column();
-                    col.setName(attributes[i]);
-                    cols.add(col);
-                }
-            }
-        }
-        return cols;
-    }
-
-    /* RPOLIVEIRA - Talvez esse método seja melhor implementado na classe SQL */
-    private ArrayList<Column> getOrderColumns(SQL query) {
-        ArrayList<Column> cols = new ArrayList();
-        String sql = ((query.getSql()).toLowerCase()).replaceAll(" ", "");
-        String[] attributes = null;
-        String subStr = null;
-        Column col;
-
-        if (sql.matches("select")) {
-            Pattern rest;
-            Matcher str;
-            //Cria-se uma restrição para seleção de uma parte do comando sql
-            //Em seguida essa parte é armazenada na variavel chamada str
-            rest = Pattern.compile("select(.*)from");
-            str = rest.matcher(sql);
-
-            //Transforma a variável str em uma string chamada substr
-            while (str.find()) {
-                subStr = str.group();
-            }
-
-            //Verifica se há um ORDER BY no comando sql
-            //Adiciona seus atributos em cols
-            if (sql.matches("(.*)orderby(.*)")) {
-                rest = Pattern.compile("orderby(.*)");
-                str = rest.matcher(sql);
-
-                //Transforma a variável str em uma string chamada subStr
-                while (str.find()) {
-                    subStr = str.group();
-                }
-
-                attributes = subStr.split("(orderby|asc,*|desc,*)");
-
-                //Adiciona os atributos do ORDER BY no ArrayList cols
-                for (int i = 1; i < attributes.length; i++) {
-                    col = new Column();
-                    col.setName(attributes[i]);
-                    cols.add(col);
-                }
-            }
-        }
-        return cols;
-    }
 
     private long getSeqScanCost(String tableName) {
         Driver driver = new Driver();

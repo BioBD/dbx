@@ -431,122 +431,362 @@ public class SQL {
             return false;
         }
     }
-
-        
-    /*******IMPLEMENTANDO********/
-    /* Devolver um ArrayList de Tabela, onde cada objeto Tabela tem um conjunto de atributos usados em um ou mais cláusulas SELECT */
-    private ArrayList<Table> getSelectColumns(SQL query){
+  
+    /* Devolver um ArrayList de Tabela, onde cada objeto Tabela tem um conjunto de atributos usados em uma ou mais cláusulas SELECT */
+    private ArrayList<Table> getFieldsSelect(SQL query){
         ArrayList<Table> tbSelect = new ArrayList();
-        ArrayList<Column> colSelect = new ArrayList();
-        String strAtt = null, strTab = null, sql = null, sch = null;
-        String[] attArray = null, tabArray = null;
+        int count = 0, begin = 0, end = 0, inc = 0;
+
         sql = (query.getSql()).toLowerCase();
         
+        /* Criando um objeto Captor */
+        //Captor captor = new Captor();
         if (sql.matches("select(.*)")) {
+            Matcher m = Pattern.compile("([(]select)",Pattern.DOTALL).matcher(sql);
+            while (m.find()) count++;
+            
+            /* Processa todas as sub consultas */
+            for (int j=0; j<count; j++){
+                /* Procura o sub processo atual */
+                for (int i=0; i<sql.length(); i++) {
+                    if(sql.charAt(i) == '('){
+                        String select;
+                        select = sql.substring(i+1, i+7);
+
+                        if("select".equals(select)){
+                            begin = i;
+                        }
+                        inc++; 
+                    } else if(sql.charAt(i) == ')'){
+                        inc--;
+                    }
+
+                    if((inc==0) && (begin != 0)){
+                        end = i;
+                        break;
+                    }
+                }   
+            
+                /* Pega o sub processo da clausula */
+                String sub = sql.substring(begin, end);
+
+                /* Retira o sub processo da clausula */
+                StringBuilder bSql = new StringBuilder(sql); 
+                bSql.delete(begin, end);
+                sql = bSql.toString();
+
+                /* Chama o método getFildsSubSelect e adiciona o retorno na tbSelect */
+                tbSelect.addAll(getFildsSubSelect(sub));
+            }
+            
+            /* Por fim, processa a consulta principal */
+            tbSelect.addAll(getFildsSubSelect(sql));    
+        }
+        return tbSelect;
+    }
+    
+    /* Trata qualquer SELECT, até mesmo o principal e retorna uma lista de tabelas */
+    public static ArrayList<Table> getFildsSubSelect(String subProcess){
+        ArrayList colSelect = new ArrayList();
+        ArrayList<Table> tbList = new ArrayList();
+        String strAtt = null, strTab = null, sql = null;
+        String[] attArray = null, tabArray = null;
+
+        Pattern rest;
+        Matcher str;
+
+        /* Obtendo o(s) nome(s) do(s) atributo(s) */
+        rest = Pattern.compile("select(.*)from");
+        str = rest.matcher(sql);
+        while (str.find()) {
+            strAtt = str.group();
+        }
+
+        /* Obtendo o(s) nome(s) da(s) tabela(s) */
+        strTab = returnTableNames(sql, strAtt);
+        strAtt = strAtt.substring(6, strAtt.length()-4).trim();
+
+        /* Organizando o(s) nome(s) do(s) atributo(s) em um array */
+        if(strAtt.matches("(.*)[,](.*)")){
+            attArray = strAtt.split(",");
+        }else{
+            attArray = new String[1];
+            attArray[0] = strAtt;
+        }
+
+        /* Organizando o(s) nome(s) da(s) tabela(s) em um array */
+        if(strTab.matches("(.*)[,](.*)")){
+            tabArray = strTab.split(",");
+        }else{
+            tabArray = new String[1];
+            tabArray[0] = strTab;
+        }
+
+        /* Procurando as tabelas e suas respectivas colunas */
+        for(int i=0; i<tabArray.length; i++){
+            Table tb = new Table();
+            
+            /* Método searchAttributes */
+            tb = searchAttributes(tabArray, tabArray, i);
+            
+            /* Criando as tabelas a lista*/
+            tbList.add(i, tb);
+
+        }
+        return tbList;
+    }
+    
+    /* Retorna o(s) nome(s) da(s) tabela(s) */
+    public static String returnTableNames(String mSql, String mAtt){
+        Pattern rest;
+        Matcher str;
+        String mTable = null;
+        
+        
+        /* Obtendo o(s) nome(s) da(s) tabela(s) */
+        if(mSql.matches("(.*)where(.*)")){
+            rest = Pattern.compile("select(.*)where");
+            str = rest.matcher(mSql);
+            while (str.find()) {
+                mTable = str.group();
+            }
+            mTable = (mSql.substring(mAtt.length(), mTable.length()-5)).trim();
+        }else if(mSql.matches("(.*)group by(.*)")){
+            rest = Pattern.compile("select(.*)group by");
+            str = rest.matcher(mSql);
+            while (str.find()) {
+                mTable = str.group();
+            }
+            mTable = (mSql.substring(mAtt.length(), mTable.length()-8)).trim();
+        }else if(mSql.matches("(.*)order by(.*)")){
+            rest = Pattern.compile("select(.*)order by");
+            str = rest.matcher(mSql);
+            while (str.find()) {
+                mTable = str.group();
+            }
+            mTable = (mSql.substring(mAtt.length(), mTable.length()-8)).trim();
+        }
+        
+        return mTable;
+    }
+    
+    public static Table searchAttributes(String[] mTb, String[] mAtt, int index){
+        Table table = new Table();
+        String mSch = null, mStrTab = null, mStrAtt = null;
+        ArrayList<Column> mCols = new ArrayList();
+        Column mCol = new Column();
+        Schema mSchema;     
+        
+        Pattern rest;
+        Matcher str;
+        
+        mStrTab = (mTb[index]).trim();
+        /* Caso exista esquema */
+        if(mStrTab.matches("(.*) (.*)")){
+            rest = Pattern.compile("(.*) ");
+            str = rest.matcher(mStrTab);
+            while(str.find()){
+                mStrTab = str.group();
+            }
+            mStrTab = (mStrTab).trim();
+
+            mSch = (mTb[index].substring(mStrTab.length()+1, mTb[index].length())).trim();
+
+            for(int j=0; j<mAtt.length; j++){
+                mStrAtt = (mAtt[j]).trim();
+                if(mStrAtt.matches(mSch+"[.](.*)")){
+                    rest = Pattern.compile("[.](.*)");
+                    str = rest.matcher(mStrAtt);
+                    while(str.find()){
+                        mStrAtt = str.group();
+                    }
+                    mStrAtt = (mStrAtt).trim();
+                    mStrAtt = mStrAtt.substring(1, mStrAtt.length());
+                    
+                    /* Adicionar os atributos*/
+                    mCol.setName(mStrAtt);
+                    mCols.add(mCol);
+                }
+            }
+        }
+        /* Caso não exista esquema */
+        else{
+            /* Analisa o esquema que está na memória */
+            ArrayList<Table> mTables = new ArrayList<>();
+            ArrayList<Column> mColumns = new ArrayList<>();
+            mSchema = new Schema();
+            mTables = mSchema.tables;
+
+            for (int j=0; j<mTables.size(); j++) {
+                Table mTable = mTables.get(j);
+
+                if(mStrTab == mTable.getName()){
+                    mColumns = mTable.getFields();
+
+                    for(int k=0; k<mAtt.length; k++){
+
+                        /* Verifica se o atributo do select não tem uma referencia */
+                        if(!mAtt[k].matches("(.*)[.](.*)")){
+
+                            for(int l=0; l<mColumns.size(); l++){
+                                Column mColumn = mColumns.get(l);
+                                if(mAtt[k] == mColumn.getName()){
+                                    /* Adicionar os atributos*/
+                                    mCol.setName(mAtt[k]);
+                                    mCols.add(mCol);
+                                }
+                            }
+                        }
+                    }
+                    break;
+                }
+            }
+        }
+
+        /* Montar TABELA table AQUI */
+        table.setName(mStrTab);
+        table.setFields(mCols);
+        return table;
+    }
+    
+    private ArrayList<Table> getFieldsGroup(SQL query) {
+        ArrayList<Table> tbList = new ArrayList();
+        String[] tabArray = null, attArray = null;
+        String subStr = null, strTab = null, strAtt = null;
+        
+        String sql = ((query.getSql()).toLowerCase()).replaceAll(" ", "");
+
+        if (sql.matches("select")) {
             Pattern rest;
             Matcher str;
-             
+
             /* Obtendo o(s) nome(s) do(s) atributo(s) */
             rest = Pattern.compile("select(.*)from");
             str = rest.matcher(sql);
             while (str.find()) {
                 strAtt = str.group();
             }
-    
-            /* Obtendo o(s) nome(s) da(s) tabela(s) */
-            if(sql.matches("(.*)where(.*)")){
-                rest = Pattern.compile("select(.*)where");
-                str = rest.matcher(sql);
-                while (str.find()) {
-                    strTab = str.group();
-                }
-                strTab = (sql.substring(strAtt.length(), strTab.length()-5)).trim();
-            }else{
-                strTab = (sql.substring(strAtt.length(), sql.length()-5)).trim();
-            }
-            
-            strAtt = strAtt.substring(6, strAtt.length()-4).trim();
 
-            /* Organizando o(s) nome(s) do(s) atributo(s) em um array */
-            if(strAtt.matches("(.*)[,](.*)")){
-                attArray = strAtt.split(",");
-            }else{
-                attArray[0] = strAtt;
-            }
+            strTab = returnTableNames(sql, strAtt);
 
             /* Organizando o(s) nome(s) da(s) tabela(s) em um array */
             if(strTab.matches("(.*)[,](.*)")){
                 tabArray = strTab.split(",");
             }else{
+                tabArray = new String[1];
                 tabArray[0] = strTab;
             }
 
-            /* Procurando as tabelas e suas respectivas colunas */
-            for(int i=0; i<tabArray.length; i++){
-                strTab = (tabArray[i]).trim();
-                /* Caso exista esquema */
-                if(strTab.matches("(.*) (.*)")){
-                    rest = Pattern.compile("(.*) ");
-                    str = rest.matcher(strTab);
-                    while(str.find()){
-                        strTab = str.group();
-                    }
-                    strTab = (strTab).trim();
+            //Verifica se há um ORDER BY no comando sql
+            //Adiciona seus atributos em cols
+            if (sql.matches("(.*)group by(.*)")) {
 
-                    sch = (tabArray[i].substring(strTab.length()+1, tabArray[i].length())).trim();
-                    
-                    for(int j=0; j<attArray.length; j++){
-                        strAtt = (attArray[j]).trim();
-                        if(strAtt.matches(sch+"[.](.*)")){
-                            rest = Pattern.compile("[.](.*)");
-                            str = rest.matcher(strAtt);
-                            while(str.find()){
-                                strAtt = str.group();
-                            }
-                            strAtt = (strAtt).trim();
-                            strAtt = strAtt.substring(1, strAtt.length());
-                            
-                        }
-                        strAtt = "";
-                    }
-                    sch = "";
-                    strTab = "";
+                rest = Pattern.compile("group by(.*)?(order by)");
+                str = rest.matcher(sql);
+
+                //Transforma a variável str em uma string chamada subStr
+                while (str.find()) {
+                    subStr = str.group();
                 }
-                /* Caso não exista esquema */
-                else{
-                    /* Pega os atributos e os procura na memória */
-                    /* Se referenciando pelo nome da tabela atual */
-                    
+
+                StringBuilder bSql = null;
+                bSql = new StringBuilder(subStr);
+                /* Retira o ORDER BY */
+                if(subStr.matches("(.*)order by(.*)")){
+                    bSql.delete(subStr.length()-8, subStr.length());  
+                }
+                /* Retira o GROUP BY */
+                bSql.delete(0, 8);
+                subStr = (bSql.toString()).trim();           
+                attArray = subStr.split(",");
+
+                //Adiciona os atributos do ORDER BY no ArrayList cols
+                for (int i = 0; i < attArray.length; i++) {
+                    attArray [i] = (attArray [i]).trim();
+
                 }
             }
-        
-            /* CONTA A QUANTIDADE DE OCORRENCIAS (SUBPROCESSOS)
-            String aString = "EXCEPTION,ClassException,EXCEPTION,Mensagem de Exceção";
-            Matcher m = Pattern.compile("(EXCEPTION)",Pattern.DOTALL).matcher(aString);
-            int quantidade = 0;
-            while (m.find()) quantidade++;
-            System.out.println(quantidade);
-            */
 
+            for(int i=0; i<tabArray.length; i++){
+                Table tb = new Table();
+                tb = searchAttributes(tabArray, tabArray, i);
+
+                /* Criando as tabelas a lista*/
+                tbList.add(i, tb);
+            }
         }
-        return null;
+        return tbList;
     }
-/*    
-    // TODO - THAYSON IMPLEMENTAR
-    public ArrayList<Column> getFieldsSelect() {
-        ArrayList<Column> listAllColumns = this.getFieldsQuery();
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-*/
-    /* TODO - THAYSON IMPLEMENTAR */
+    
+    private ArrayList<Table> getFieldsOrder(SQL query) {
+        ArrayList<Table> tbList = new ArrayList();
+        String[] tabArray = null, attArray = null;
+        String subStr = null, strTab = null, strAtt = null;
+        Column col;
+        
+        String sql = (query.getSql()).toLowerCase();
 
-    public ArrayList<Column> getFieldsGroup() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-    /* TODO - THAYSON IMPLEMENTAR */
+        if (sql.matches("select(.*)")){
+            Pattern rest;
+            Matcher str;
 
-    public ArrayList<Column> getFieldsOrder() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+            /* Obtendo o(s) nome(s) do(s) atributo(s) */
+            rest = Pattern.compile("select(.*)from");
+            str = rest.matcher(sql);
+            while (str.find()) {
+                strAtt = str.group();
+            }
+
+            strTab = returnTableNames(sql, strAtt);
+            /* Organizando o(s) nome(s) da(s) tabela(s) em um array */
+            if(strTab.matches("(.*)[,](.*)")){
+                tabArray = strTab.split(",");
+            }else{
+                tabArray = new String[1];
+                tabArray[0] = strTab;
+            }
+
+            //Verifica se há um ORDER BY no comando sql
+            //Adiciona seus atributos em cols
+            if (sql.matches("(.*)order by(.*)")) {
+
+                rest = Pattern.compile("order by(.*)");
+                str = rest.matcher(sql);
+
+                //Transforma a variável str em uma string chamada subStr
+                while (str.find()) {
+                    subStr = str.group();
+                }
+
+                StringBuilder bSql = null;
+                bSql = new StringBuilder(subStr);
+                /* Retira o GROUP BY */
+                if(subStr.matches("(.*)group by(.*)")){
+                    bSql.delete(subStr.length()-8, subStr.length());  
+                }
+                /* Retira o ORDER BY */
+                bSql.delete(0, 8);
+                subStr = (bSql.toString()).trim();           
+                attArray = subStr.split(",");
+
+                attArray = subStr.split("(asc,*|desc,*)");
+
+                //Adiciona os atributos do ORDER BY no ArrayList cols
+                for (int i = 0; i < attArray.length; i++) {
+                    attArray [i] = (attArray [i]).trim();
+                }
+            }
+
+
+            for(int i=0; i<tabArray.length; i++){
+                Table tb = new Table();
+                tb = searchAttributes(tabArray, tabArray, i);
+
+                /* Criando as tabelas a lista*/
+                tbList.add(i, tb);
+            }
+        }
+        return tbList;
     }
 
     public void setResultSet(ResultSet resultset) {

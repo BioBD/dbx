@@ -12,15 +12,15 @@ package bib.sgbd;
  */
 public class Filter extends Column{
     
-   // private Column column;
+    //private Column column;
     private String filterType;// theta ou equi
     
-    /*
-    public Filter(Column column, String filterType){
-        this.column = column;
-        this.filterType = filterType;
-    }
-    */
+
+    //public Filter(Column column, String filterType){
+    //    this. = column;
+    //    this.filterType = filterType;
+    //}
+    
 
     /**
      * @return the column
@@ -30,6 +30,10 @@ public class Filter extends Column{
         return column;
     }
     */
+
+    public Filter() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
 
     /**
      * @param column the column to set

@@ -5,7 +5,7 @@
  */
 package bib.sgbd.postgresql;
 
-import bib.sgbd.Column;
+import bib.sgbd.Filter;
 import bib.sgbd.Plan;
 import bib.sgbd.SeqScan;
 import java.util.ArrayList;
@@ -54,69 +54,97 @@ public class PlanPostgreSQL extends Plan {
 
     @Override
     public ArrayList<SeqScan> getSeqScanOperations() {
+
         ArrayList<SeqScan> sso = new ArrayList();
-        ArrayList<Column> columns = new ArrayList();
-        Column col;
-        String plan, name = null;
+        ArrayList<Filter> filters = new ArrayList();
+        String plan = null, name = null, fType = null;
         String[] attributes;
-        long seqScanCost = 0;
-
-        //Deixa o texto em caixa baixa e retira os espaços
-        plan = ((this.getPlan()).toLowerCase()).replaceAll(" ", "");
-        //Gera um vetor, tal que o seu tamanha é o número de SeqScan do plano
-        String[] scan = plan.split("seqscanon");
-
+        long seqScanCost = getCost();
+        long rows = getNumRow();
+        
+        Filter filter;
+        SeqScan ss;
+        
+        String[] scan = plan.split("seq scan on ");
+        
         Pattern rest_name = Pattern.compile("(.*).cost");
         Pattern rest_cols = Pattern.compile("filter:(.*)");
-
-        for (int i = 1; i < scan.length; i++) {
+        Pattern rest;
+        
+        for(int i=1; i<scan.length; i++){
             Matcher nameM, str;
-
+            
+            /* Pega o custo. De qual Sec Scan? */
+            seqScanCost = getCost();
+            rows = getNumRow();
+            
             nameM = rest_name.matcher(scan[i]);
-            while (nameM.find()) {
+            while(nameM.find()){
                 name = nameM.group();
             }
-
-            //Refinando a string
-            name = name.substring(0, (name.length() - 5));
-
-            //Matcher filter = rest_cols.matcher(plan);
-            str = rest_cols.matcher(scan[i]);
-            while (str.find()) {
+            
+            int a = name.indexOf(' ');
+            name = name.substring(0,a);
+            
+            str = rest_cols.matcher(scan[i]);  
+            while(str.find()){
                 scan[i] = str.group();
             }
 
-            //Trata o SeqScan atual
-            scan[i] = (scan[i]).replaceAll("[(]|[)]| |filter:", "");
-            scan[i] = (scan[i]).replaceAll("::\\w+,*", "");
-            scan[i] = (scan[i]).replaceAll("and|or", ",");
+            if(scan[i].matches("(.*)filter(.*)")){
+                //Trata o SeqScan atual
+                scan[i] = (scan[i]).replaceAll("[(]|[)]|filter:", "");
+                scan[i] = (scan[i]).replaceAll("::\\w+,*", "");
+                scan[i] = (scan[i]).replaceAll(" and | or ", ",");
 
-            //Cria um array de atributos
-            attributes = scan[i].split(",");
-            rest_cols = Pattern.compile(".*[|]");
-
-            //Armazena os atributos no ArrayList columns
-            for (int j = 0; j < attributes.length; j++) {
-                attributes[j] = attributes[j].replaceFirst("(>|<|=)", "|");
-                str = rest_cols.matcher(attributes[j]);
-                while (str.find()) {
-                    attributes[j] = str.group();
+                if(scan[i].matches(" and | or ")){
+                    scan[i] = (scan[i]).replaceAll(" and | or ", ",");
+                }else{
+                    scan[i] = scan[i]+",";
                 }
-                attributes[j] = (attributes[j]).replaceAll("[|]", "");
-                col = new Column();
-                col.setName(attributes[j]);
-                columns.add(col);
-            }
-            //Monta um objeto e o adiciona no ArrayList<SecScan>
-            //TODO: Thayson: Preencher o atributo numberOfRows de SeqScan
-            //TODO Thayson: Preencher o atributo filterType de Filter: equi para igualdade e theta para os demais
-//            seqScanCost = getSeqScanCost(name);
-            //TODO: Thayson ajustar aqui
-            //SeqScan objSeq = new SeqScan(name, columns, seqScanCost);
-            //sso.add(objSeq);
-        }
+                
+                //Cria um array de atributos
+                attributes = scan[i].split(",");
+                rest_cols = Pattern.compile(".*[|]");
 
+                //Armazena os atributos no ArrayList columns
+                for(int j=0; j<attributes.length; j++){
+
+                    if( ((attributes[j].matches("(.*)[<](.*)")) || (attributes[j].matches("(.*)[>](.*)")) || (attributes[j].matches("(.*)[!](.*)"))) ){
+                        fType = "theta";
+                        System.out.println("theta");
+                    }else{
+                        fType = "equi";
+                        System.out.println("equi");
+                    }
+                    
+                    rest = Pattern.compile("(.*) [!|>|<|=]");
+                    str = rest.matcher(attributes[j]);
+                    while(str.find()){
+                        attributes[j] = str.group();
+                    }
+                    rest = Pattern.compile("(.*) ");
+                    str = rest.matcher(attributes[j]);
+                    while(str.find()){
+                        attributes[j] = str.group();
+                    }
+                    
+                    attributes[j]=(attributes[j]).trim();
+                    System.out.println(attributes[j]);
+                    
+                    filter = new Filter();
+                    filter.setName(attributes[j]);
+                    filter.setFilterType(fType);
+                    
+                    /*Cria o array list de filters*/
+                    filters.add(filter);
+                }    
+            }
+            /* adiciona o sec scan na lista */
+            ss = new SeqScan(name, filters, seqScanCost);
+            ss.setNumberOfRows(rows);
+            sso.add(ss);
+        }
         return sso;
     }
-
 }
