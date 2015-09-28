@@ -138,8 +138,12 @@ public class AgentObserver extends Agent {
 
     private void evaluateFromAllTypesTuning() {
         ArrayList<SQL> sqlList = captor.getWorkloadFromTBWorkload();
-        this.evaluateIndexes(sqlList);
-        this.evaluateMV(sqlList);
+        if (prop.getProperty("indexActive").equals("1")) {
+            this.evaluateIndexes(sqlList);
+        }
+        if (prop.getProperty("materializedViewsActive").equals("1")) {
+            this.evaluateMV(sqlList);
+        }
         this.updateQueryAnalizedCount();
     }
 }
