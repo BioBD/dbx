@@ -416,5 +416,70 @@ public final class Captor extends Base {
         }
         return sqlList;
     }
+    
+    //Calcula a fragmentação do índice
+    private double getIndexFragmentation(String schema, String indexName) {
+        String tableName = null;
+        int numTuplesCurrent = 0, numPagesCurrent = 0;
+        double fragmentation = 0, initialRatio = 0;
+        try {
+            //Obter o nome da tabela em que o índice for criado
+            String sql = prop.getProperty("getDMLTableNameIndex" + prop.getProperty("sgbd"));
+            sql = sql.replace("$schema$", schema);
+            sql = sql.replace("$index$", indexName);
+            PreparedStatement preparedStatement = driver.prepareStatement(sql);
+            ResultSet result = driver.executeQuery(preparedStatement);
+            if (result != null) {
+                while (result.next()) {
+                    tableName = result.getString(1);
+                }
+                
+                if(tableName != null){
+                    //Obter o numero atual de tuplas da tabela
+                    sql = prop.getProperty("getDMLTableNumberTuples" + prop.getProperty("sgbd"));
+                    sql = sql.replace("$schema$", schema);
+                    sql = sql.replace("$table$", tableName);
+                    preparedStatement = driver.prepareStatement(sql);
+                    result = driver.executeQuery(preparedStatement);
+                    if (result != null) {
+                        while (result.next()) {
+                            numTuplesCurrent = result.getInt(1);
+                        }
+                    }
+                    
+                    //Obter o numero atual de blocos que o indice ocupa
+                    sql = prop.getProperty("getDMLIndexNumberPages" + prop.getProperty("sgbd"));
+                    sql = sql.replace("$schema$", schema);
+                    sql = sql.replace("$index$", indexName);   
+                    preparedStatement = driver.prepareStatement(sql);
+                    result = driver.executeQuery(preparedStatement);
+                    if (result != null) {
+                        while (result.next()) {
+                            numPagesCurrent = result.getInt(1);
+                        }
+                    }
+                    
+                    //Obter a razao inicial da fragmentacao na coluna cid_initial_ratio da tabela tb_candidate_index (numero de tuplas da tabela/numero de paginas que o indice ocupa)
+                    sql = prop.getProperty("getDMLValueRatio" + prop.getProperty("sgbd"));
+                    sql = sql.replace("$index$", indexName);   
+                    preparedStatement = driver.prepareStatement(sql);
+                    result = driver.executeQuery(preparedStatement);
+                    if (result != null) {
+                        while (result.next()) {
+                            initialRatio = result.getDouble(1);
+                        }
+                    }
+                    
+                    //Calculando a fragmentacao
+                    fragmentation = 100 - ((numTuplesCurrent/numPagesCurrent)/initialRatio)*100;
+                }
+
+                preparedStatement.close();
+            }
+        } catch (SQLException e) {
+            log.error(e);
+        }
+        return fragmentation;
+    }
 
 }
