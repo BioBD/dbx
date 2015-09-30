@@ -51,15 +51,18 @@
 
 
 
-  CREATE TABLE tb_candidate_index (
-      cid_id integer NOT NULL,
-      cid_table_name character varying(100) NOT NULL,
-      cid_index_profit integer DEFAULT 0 NOT NULL,
-      cid_creation_cost integer DEFAULT 0 NOT NULL,
-      cid_status character(1),
-      cid_type character(1),
-      cid_initial_profit integer,
-      cid_fragmentation_level integer
+  CREATE TABLE agent.tb_candidate_index (
+  cid_id integer NOT NULL,
+  cid_table_name character varying(100) NOT NULL,
+  cid_index_profit integer NOT NULL DEFAULT 0,
+  cid_creation_cost integer NOT NULL DEFAULT 0,
+  cid_status character(1),
+  cid_type character(1),
+  cid_initial_profit integer,
+  cid_fragmentation_level integer,
+  cid_initial_ratio real,
+  cid_index_name character varying(100),
+  CONSTRAINT pk_tb_candidate_index PRIMARY KEY (cid_id)
   );
 
 
