@@ -58,7 +58,7 @@ public class PlanPostgreSQL extends Plan {
         ArrayList<SeqScan> sso = new ArrayList();
         ArrayList<Filter> filters = new ArrayList();
         String plan = null, name = null, fType = null;
-        String[] attributes;
+        String[] attributes = null;
         long seqScanCost = getCost();
         long rows = getNumRow();
         
@@ -146,5 +146,86 @@ public class PlanPostgreSQL extends Plan {
             sso.add(ss);
         }
         return sso;
+    }
+    
+    /* Retorna o plano hipotético */
+    public String hypotheticalPlan(String hp){
+        int quantidade = 0, pos;
+        String[] attributes = null;
+        String indexName = null;
+        StringBuilder bSql = null;
+        String copyhp = hp;
+        hp= (hp).toLowerCase();
+        
+        //Contando o numero de atributos lógicos
+        Matcher m = Pattern.compile("( and | or )",Pattern.DOTALL).matcher(hp);
+        while (m.find()) quantidade++;
+        
+        copyhp = copyhp.replace("\n", "?");
+        //Obter os atributos do plano
+        if(copyhp.matches("(.*)filter:(.*)")){
+            //Deletando parte desnecessaria do plano
+            bSql = new StringBuilder(copyhp);
+            pos = copyhp.indexOf("filter:");
+            bSql.delete(0, pos+7);  
+            copyhp = (bSql.toString()).trim();
+           // System.out.print(copyhp);
+
+            //Trata o SeqScan atual
+            copyhp = (copyhp).replaceAll("[(]|[)]", "");
+            copyhp = (copyhp).replaceAll("::\\w+,*", "");
+            copyhp = (copyhp).replaceAll(" and | or ", ",");
+
+            if(copyhp.matches(" and | or ")){
+                copyhp = (copyhp).replaceAll(" and | or ", ",");
+            }else{
+                copyhp = copyhp+",";
+            }
+
+            //Cria um array de atributos
+            attributes = copyhp.split(",");
+
+            for(int i=0; i<attributes.length; i++){
+                bSql = new StringBuilder(attributes[i]);
+                pos = 0;
+                if(attributes[i].matches(".*[<].*")){
+                    //Deletando parte desnecessaria do plano
+                    pos = attributes[i].indexOf("<");
+                    bSql.delete(pos, bSql.length());  
+                    attributes[i] = (bSql.toString()).trim();
+
+                }else if(attributes[i].matches(".*[>].*")){
+                    //Deletando parte desnecessaria do plano
+                    pos = attributes[i].indexOf(">");
+                    bSql.delete(pos, bSql.length());  
+                    attributes[i] = (bSql.toString()).trim();
+
+                }else{
+                    pos = attributes[i].indexOf("=");
+                    bSql.delete(pos, bSql.length());  
+                    attributes[i] = (bSql.toString()).trim();
+                }
+            }  
+        } 
+        
+        //Obter o nome do índice
+        indexName = attributes[0];
+        for(int i=1; i<attributes.length; i++){
+            indexName += "_"+attributes[i];
+        } 
+        
+        bSql = new StringBuilder(hp);
+        pos = hp.indexOf(" (cost=");
+        bSql.delete(0, pos);  
+        hp = (bSql.toString()).trim();
+                      
+        if(quantidade >= 2){ //prefixo "Index Only Scan using"
+            hp = "Index Only Scan using on "+indexName+" "+hp;
+        }else{ //prefixo "Index Scan using"
+            hp = "Index Scan using "+indexName+" "+hp;  
+        }
+        hp = hp.replace("filter: ", "Index Cond: ");
+        
+        return hp;
     }
 }
