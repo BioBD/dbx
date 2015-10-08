@@ -20,7 +20,6 @@ import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.sql.Time;
 import java.util.ArrayList;
 import java.util.Locale;
 import java.util.logging.Level;
@@ -138,7 +137,7 @@ public final class Captor extends Base {
 
     private void captureAndProcessQueries() {
         try {
-            String query = prop.getProperty("getSqlClauseToCaptureCurrentQueries" + prop.getProperty("sgbd"));
+            String query = prop.getProperty("signature") + prop.getProperty("getSqlClauseToCaptureCurrentQueries" + prop.getProperty("sgbd"));
             PreparedStatement preparedStatement = driver.prepareStatement(query);
             preparedStatement.setString(1, prop.getProperty("databaseName"));
             ResultSet queriesResult = driver.executeQuery(preparedStatement);
@@ -148,19 +147,15 @@ public final class Captor extends Base {
                 if (this.isQueryValid(currentQuery)) {
                     SQL sql = new SQL();
                     sql.setPid(queriesResult.getString("pid"));
-                    if (prop.getProperty("sgbd").equals("oracle")) {
-                        String time = queriesResult.getString("start_time").split("/")[1];
-                        sql.setTimeFirstCapture(Time.valueOf(time));
-                    } else {
-                        sql.setTimeFirstCapture(queriesResult.getTime("start_time"));
-                    }
                     sql.setDatabase(queriesResult.getString("database_name"));
+                    sql.setTimeFirstCapture(queriesResult.getString("start_time"));
                     sql.setLastCapture();
                     sql.setSql(currentQuery);
                     sql.setSchemaDataBase(this.schema);
                     SQL temp = this.processAndgetCapturedSQLFromHistory(sql);
                     if (temp != null) {
                         this.lastcapturedSQL.add(temp);
+                        this.insertQueryTableLog(temp);
                     }
                 }
             }
@@ -480,6 +475,26 @@ public final class Captor extends Base {
             log.error(e);
         }
         return fragmentation;
+    }
+
+    private void insertQueryTableLog(SQL sql) {
+        if (prop.getProperty("insertTableLog").equals("1")) {
+            try {
+                try (PreparedStatement preparedStatement = driver.prepareStatement(prop.getProperty("getSqlClauseToInsertQueryTbWorkloadLog"))) {
+                    log.msg("SQL: " + sql.getSql());
+                    log.msg("Plan: " + sql.getPlan());
+                    log.msg("Type: " + sql.getType());
+                    preparedStatement.setString(1, sql.getSql());
+                    preparedStatement.setString(2, sql.getPlan());
+                    preparedStatement.setTimestamp(3, new java.sql.Timestamp(sql.getTimeFirstCapture().getTime()));
+                    preparedStatement.setString(4, sql.getType());
+                    driver.executeUpdate(preparedStatement);
+                }
+            } catch (SQLException e) {
+                log.error(e);
+            }
+        }
+
     }
 
 }

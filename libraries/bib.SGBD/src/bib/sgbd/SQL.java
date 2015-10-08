@@ -10,7 +10,8 @@ import bib.sgbd.oracle.PlanOracle;
 import bib.sgbd.postgresql.PlanPostgreSQL;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Time;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Objects;
@@ -31,7 +32,7 @@ public class SQL {
     private Integer relevance;
     private Date lastCapture;
     private String sql;
-    private Time timeFirstCapture;
+    private Date timeFirstCapture;
     private Plan plan;
     private String database;
     private String hypoMaterializedView;
@@ -328,11 +329,27 @@ public class SQL {
         }
     }
 
-    public Time getTimeFirstCapture() {
+    public Date getTimeFirstCapture() {
         return timeFirstCapture;
     }
 
-    public void setTimeFirstCapture(Time timeFirstCapture) {
+    public void setTimeFirstCapture(String timeFirstCapture) {
+        System.out.println(timeFirstCapture);
+        if (prop.getProperty("sgbd").equals("oracle")) {
+            log.error("implementar formato para oracle?");
+        }
+        try {
+            SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+            Date date = new Date(format.parse(timeFirstCapture).getTime());
+            this.setTimeFirstCapture(date);
+            System.out.println(this.getTimeFirstCapture());
+        } catch (ParseException ex) {
+            log.error(ex);
+        }
+
+    }
+
+    public void setTimeFirstCapture(Date timeFirstCapture) {
         this.timeFirstCapture = timeFirstCapture;
         this.addTimesOfCaptureNow();
     }
@@ -399,7 +416,7 @@ public class SQL {
     }
 
     public String getPlan() {
-        return this.plan.getPlan();
+        return this.plan.getPlan().trim();
     }
 
     public Plan plan() {
@@ -431,62 +448,64 @@ public class SQL {
             return false;
         }
     }
-  
+
     /* Devolver um ArrayList de Tabela, onde cada objeto Tabela tem um conjunto de atributos usados em uma ou mais cláusulas SELECT */
-    private ArrayList<Table> getFieldsSelect(SQL query){
+    private ArrayList<Table> getFieldsSelect(SQL query) {
         ArrayList<Table> tbSelect = new ArrayList();
         int count = 0, begin = 0, end = 0, inc = 0;
 
         sql = (query.getSql()).toLowerCase();
-        
+
         /* Criando um objeto Captor */
         //Captor captor = new Captor();
         if (sql.matches("select(.*)")) {
-            Matcher m = Pattern.compile("([(]select)",Pattern.DOTALL).matcher(sql);
-            while (m.find()) count++;
-            
-            /* Processa todas as sub consultas */
-            for (int j=0; j<count; j++){
-                /* Procura o sub processo atual */
-                for (int i=0; i<sql.length(); i++) {
-                    if(sql.charAt(i) == '('){
-                        String select;
-                        select = sql.substring(i+1, i+7);
+            Matcher m = Pattern.compile("([(]select)", Pattern.DOTALL).matcher(sql);
+            while (m.find()) {
+                count++;
+            }
 
-                        if("select".equals(select)){
+            /* Processa todas as sub consultas */
+            for (int j = 0; j < count; j++) {
+                /* Procura o sub processo atual */
+                for (int i = 0; i < sql.length(); i++) {
+                    if (sql.charAt(i) == '(') {
+                        String select;
+                        select = sql.substring(i + 1, i + 7);
+
+                        if ("select".equals(select)) {
                             begin = i;
                         }
-                        inc++; 
-                    } else if(sql.charAt(i) == ')'){
+                        inc++;
+                    } else if (sql.charAt(i) == ')') {
                         inc--;
                     }
 
-                    if((inc==0) && (begin != 0)){
+                    if ((inc == 0) && (begin != 0)) {
                         end = i;
                         break;
                     }
-                }   
-            
+                }
+
                 /* Pega o sub processo da clausula */
                 String sub = sql.substring(begin, end);
 
                 /* Retira o sub processo da clausula */
-                StringBuilder bSql = new StringBuilder(sql); 
+                StringBuilder bSql = new StringBuilder(sql);
                 bSql.delete(begin, end);
                 sql = bSql.toString();
 
                 /* Chama o método getFildsSubSelect e adiciona o retorno na tbSelect */
                 tbSelect.addAll(getFildsSubSelect(sub));
             }
-            
+
             /* Por fim, processa a consulta principal */
-            tbSelect.addAll(getFildsSubSelect(sql));    
+            tbSelect.addAll(getFildsSubSelect(sql));
         }
         return tbSelect;
     }
-    
+
     /* Trata qualquer SELECT, até mesmo o principal e retorna uma lista de tabelas */
-    public static ArrayList<Table> getFildsSubSelect(String subProcess){
+    public static ArrayList<Table> getFildsSubSelect(String subProcess) {
         ArrayList colSelect = new ArrayList();
         ArrayList<Table> tbList = new ArrayList();
         String strAtt = null, strTab = null, sql = null;
@@ -504,133 +523,130 @@ public class SQL {
 
         /* Obtendo o(s) nome(s) da(s) tabela(s) */
         strTab = returnTableNames(sql, strAtt);
-        strAtt = strAtt.substring(6, strAtt.length()-4).trim();
+        strAtt = strAtt.substring(6, strAtt.length() - 4).trim();
 
         /* Organizando o(s) nome(s) do(s) atributo(s) em um array */
-        if(strAtt.matches("(.*)[,](.*)")){
+        if (strAtt.matches("(.*)[,](.*)")) {
             attArray = strAtt.split(",");
-        }else{
+        } else {
             attArray = new String[1];
             attArray[0] = strAtt;
         }
 
         /* Organizando o(s) nome(s) da(s) tabela(s) em um array */
-        if(strTab.matches("(.*)[,](.*)")){
+        if (strTab.matches("(.*)[,](.*)")) {
             tabArray = strTab.split(",");
-        }else{
+        } else {
             tabArray = new String[1];
             tabArray[0] = strTab;
         }
 
         /* Procurando as tabelas e suas respectivas colunas */
-        for(int i=0; i<tabArray.length; i++){
+        for (int i = 0; i < tabArray.length; i++) {
             Table tb = new Table();
-            
+
             /* Método searchAttributes */
             tb = searchAttributes(tabArray, tabArray, i);
-            
+
             /* Criando as tabelas a lista*/
             tbList.add(i, tb);
 
         }
         return tbList;
     }
-    
+
     /* Retorna o(s) nome(s) da(s) tabela(s) */
-    public static String returnTableNames(String mSql, String mAtt){
+    public static String returnTableNames(String mSql, String mAtt) {
         Pattern rest;
         Matcher str;
         String mTable = null;
-        
-        
+
         /* Obtendo o(s) nome(s) da(s) tabela(s) */
-        if(mSql.matches("(.*)where(.*)")){
+        if (mSql.matches("(.*)where(.*)")) {
             rest = Pattern.compile("select(.*)where");
             str = rest.matcher(mSql);
             while (str.find()) {
                 mTable = str.group();
             }
-            mTable = (mSql.substring(mAtt.length(), mTable.length()-5)).trim();
-        }else if(mSql.matches("(.*)group by(.*)")){
+            mTable = (mSql.substring(mAtt.length(), mTable.length() - 5)).trim();
+        } else if (mSql.matches("(.*)group by(.*)")) {
             rest = Pattern.compile("select(.*)group by");
             str = rest.matcher(mSql);
             while (str.find()) {
                 mTable = str.group();
             }
-            mTable = (mSql.substring(mAtt.length(), mTable.length()-8)).trim();
-        }else if(mSql.matches("(.*)order by(.*)")){
+            mTable = (mSql.substring(mAtt.length(), mTable.length() - 8)).trim();
+        } else if (mSql.matches("(.*)order by(.*)")) {
             rest = Pattern.compile("select(.*)order by");
             str = rest.matcher(mSql);
             while (str.find()) {
                 mTable = str.group();
             }
-            mTable = (mSql.substring(mAtt.length(), mTable.length()-8)).trim();
+            mTable = (mSql.substring(mAtt.length(), mTable.length() - 8)).trim();
         }
-        
+
         return mTable;
     }
-    
-    public static Table searchAttributes(String[] mTb, String[] mAtt, int index){
+
+    public static Table searchAttributes(String[] mTb, String[] mAtt, int index) {
         Table table = new Table();
         String mSch = null, mStrTab = null, mStrAtt = null;
         ArrayList<Column> mCols = new ArrayList();
         Column mCol = new Column();
-        Schema mSchema;     
-        
+        Schema mSchema;
+
         Pattern rest;
         Matcher str;
-        
+
         mStrTab = (mTb[index]).trim();
         /* Caso exista esquema */
-        if(mStrTab.matches("(.*) (.*)")){
+        if (mStrTab.matches("(.*) (.*)")) {
             rest = Pattern.compile("(.*) ");
             str = rest.matcher(mStrTab);
-            while(str.find()){
+            while (str.find()) {
                 mStrTab = str.group();
             }
             mStrTab = (mStrTab).trim();
 
-            mSch = (mTb[index].substring(mStrTab.length()+1, mTb[index].length())).trim();
+            mSch = (mTb[index].substring(mStrTab.length() + 1, mTb[index].length())).trim();
 
-            for(int j=0; j<mAtt.length; j++){
+            for (int j = 0; j < mAtt.length; j++) {
                 mStrAtt = (mAtt[j]).trim();
-                if(mStrAtt.matches(mSch+"[.](.*)")){
+                if (mStrAtt.matches(mSch + "[.](.*)")) {
                     rest = Pattern.compile("[.](.*)");
                     str = rest.matcher(mStrAtt);
-                    while(str.find()){
+                    while (str.find()) {
                         mStrAtt = str.group();
                     }
                     mStrAtt = (mStrAtt).trim();
                     mStrAtt = mStrAtt.substring(1, mStrAtt.length());
-                    
+
                     /* Adicionar os atributos*/
                     mCol.setName(mStrAtt);
                     mCols.add(mCol);
                 }
             }
-        }
-        /* Caso não exista esquema */
-        else{
+        } /* Caso não exista esquema */ else {
             /* Analisa o esquema que está na memória */
             ArrayList<Table> mTables = new ArrayList<>();
             ArrayList<Column> mColumns = new ArrayList<>();
             mSchema = new Schema();
             mTables = mSchema.tables;
 
-            for (int j=0; j<mTables.size(); j++) {
+            for (int j = 0; j < mTables.size(); j++) {
                 Table mTable = mTables.get(j);
 
-                if(mStrTab == mTable.getName()){
+                if (mStrTab == mTable.getName()) {
                     mColumns = mTable.getFields();
 
-                    for(int k=0; k<mAtt.length; k++){
+                    for (int k = 0; k < mAtt.length; k++) {
 
                         /* Verifica se o atributo do select não tem uma referencia */
-                        if(!mAtt[k].matches("(.*)[.](.*)")){
+                        if (!mAtt[k].matches("(.*)[.](.*)")) {
 
-                            for(int l=0; l<mColumns.size(); l++){
+                            for (int l = 0; l < mColumns.size(); l++) {
                                 Column mColumn = mColumns.get(l);
-                                if(mAtt[k] == mColumn.getName()){
+                                if (mAtt[k] == mColumn.getName()) {
                                     /* Adicionar os atributos*/
                                     mCol.setName(mAtt[k]);
                                     mCols.add(mCol);
@@ -648,12 +664,12 @@ public class SQL {
         table.setFields(mCols);
         return table;
     }
-    
+
     private ArrayList<Table> getFieldsGroup(SQL query) {
         ArrayList<Table> tbList = new ArrayList();
         String[] tabArray = null, attArray = null;
         String subStr = null, strTab = null, strAtt = null;
-        
+
         String sql = ((query.getSql()).toLowerCase()).replaceAll(" ", "");
 
         if (sql.matches("select")) {
@@ -670,9 +686,9 @@ public class SQL {
             strTab = returnTableNames(sql, strAtt);
 
             /* Organizando o(s) nome(s) da(s) tabela(s) em um array */
-            if(strTab.matches("(.*)[,](.*)")){
+            if (strTab.matches("(.*)[,](.*)")) {
                 tabArray = strTab.split(",");
-            }else{
+            } else {
                 tabArray = new String[1];
                 tabArray[0] = strTab;
             }
@@ -692,22 +708,22 @@ public class SQL {
                 StringBuilder bSql = null;
                 bSql = new StringBuilder(subStr);
                 /* Retira o ORDER BY */
-                if(subStr.matches("(.*)order by(.*)")){
-                    bSql.delete(subStr.length()-8, subStr.length());  
+                if (subStr.matches("(.*)order by(.*)")) {
+                    bSql.delete(subStr.length() - 8, subStr.length());
                 }
                 /* Retira o GROUP BY */
                 bSql.delete(0, 8);
-                subStr = (bSql.toString()).trim();           
+                subStr = (bSql.toString()).trim();
                 attArray = subStr.split(",");
 
                 //Adiciona os atributos do ORDER BY no ArrayList cols
                 for (int i = 0; i < attArray.length; i++) {
-                    attArray [i] = (attArray [i]).trim();
+                    attArray[i] = (attArray[i]).trim();
 
                 }
             }
 
-            for(int i=0; i<tabArray.length; i++){
+            for (int i = 0; i < tabArray.length; i++) {
                 Table tb = new Table();
                 tb = searchAttributes(tabArray, tabArray, i);
 
@@ -717,16 +733,16 @@ public class SQL {
         }
         return tbList;
     }
-    
+
     private ArrayList<Table> getFieldsOrder(SQL query) {
         ArrayList<Table> tbList = new ArrayList();
         String[] tabArray = null, attArray = null;
         String subStr = null, strTab = null, strAtt = null;
         Column col;
-        
+
         String sql = (query.getSql()).toLowerCase();
 
-        if (sql.matches("select(.*)")){
+        if (sql.matches("select(.*)")) {
             Pattern rest;
             Matcher str;
 
@@ -739,9 +755,9 @@ public class SQL {
 
             strTab = returnTableNames(sql, strAtt);
             /* Organizando o(s) nome(s) da(s) tabela(s) em um array */
-            if(strTab.matches("(.*)[,](.*)")){
+            if (strTab.matches("(.*)[,](.*)")) {
                 tabArray = strTab.split(",");
-            }else{
+            } else {
                 tabArray = new String[1];
                 tabArray[0] = strTab;
             }
@@ -761,24 +777,23 @@ public class SQL {
                 StringBuilder bSql = null;
                 bSql = new StringBuilder(subStr);
                 /* Retira o GROUP BY */
-                if(subStr.matches("(.*)group by(.*)")){
-                    bSql.delete(subStr.length()-8, subStr.length());  
+                if (subStr.matches("(.*)group by(.*)")) {
+                    bSql.delete(subStr.length() - 8, subStr.length());
                 }
                 /* Retira o ORDER BY */
                 bSql.delete(0, 8);
-                subStr = (bSql.toString()).trim();           
+                subStr = (bSql.toString()).trim();
                 attArray = subStr.split(",");
 
                 attArray = subStr.split("(asc,*|desc,*)");
 
                 //Adiciona os atributos do ORDER BY no ArrayList cols
                 for (int i = 0; i < attArray.length; i++) {
-                    attArray [i] = (attArray [i]).trim();
+                    attArray[i] = (attArray[i]).trim();
                 }
             }
 
-
-            for(int i=0; i<tabArray.length; i++){
+            for (int i = 0; i < tabArray.length; i++) {
                 Table tb = new Table();
                 tb = searchAttributes(tabArray, tabArray, i);
 

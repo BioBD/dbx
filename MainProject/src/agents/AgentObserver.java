@@ -119,8 +119,8 @@ public class AgentObserver extends Agent {
     }
 
     private void updateQueryAnalizedCount() {
-        PreparedStatement preparedStatement = driver.prepareStatement(prop.getProperty("getSqlClauseToUpdateWldAnalyzeCount"));
-        log.msg(prop.getProperty("getSqlClauseToUpdateWldAnalyzeCount"));
+        PreparedStatement preparedStatement = driver.prepareStatement(prop.getProperty("signature") + prop.getProperty("getSqlClauseToUpdateWldAnalyzeCount"));
+        log.msg(prop.getProperty("signature") + prop.getProperty("getSqlClauseToUpdateWldAnalyzeCount"));
         driver.executeUpdate(preparedStatement);
     }
 
@@ -141,7 +141,7 @@ public class AgentObserver extends Agent {
         if (prop.getProperty("indexActive").equals("1")) {
             this.evaluateIndexes(sqlList);
         }
-        if (prop.getProperty("materializedViewsActive").equals("1")) {
+        if (prop.getProperty("materializedViewActive").equals("1")) {
             this.evaluateMV(sqlList);
         }
         this.updateQueryAnalizedCount();

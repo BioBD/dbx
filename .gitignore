@@ -3,3 +3,5 @@ build/
 dist/
 *.csv
 /nbproject/private/
+MainProject/report/
+MainProject/log/

@@ -142,6 +142,21 @@
   ALTER TABLE agent.tb_task_indexes OWNER TO postgres;
 
 
+CREATE TABLE agent.tb_workload_log
+(
+  wlog_sql text NOT NULL,
+  wlog_plan text NOT NULL,
+  wlog_time timestamp with time zone NOT NULL,
+  wlog_id serial NOT NULL,
+  wlog_type character(1),
+  CONSTRAINT wlog_pk PRIMARY KEY (wlog_id)
+)
+WITH (
+  OIDS=FALSE
+);
+ALTER TABLE agent.tb_workload_log
+  OWNER TO postgres;
+
 
   CREATE TABLE tb_workload (
       wld_id integer NOT NULL,
@@ -252,5 +267,4 @@
 
   ALTER TABLE ONLY tb_task_indexes
       ADD CONSTRAINT tb_task_indexes_wld_id_fkey FOREIGN KEY (wld_id) REFERENCES tb_workload(wld_id) ON UPDATE CASCADE ON DELETE CASCADE;
-
 
