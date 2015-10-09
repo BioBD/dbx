@@ -148,6 +148,7 @@ COMMENT ON COLUMN agent.tb_candidate_view.cmv_status IS 'Possiveis valores:
 
   ALTER TABLE agent.tb_task_indexes OWNER TO postgres;
 
+-- DROP TABLE agent.tb_workload_log;
 
 CREATE TABLE agent.tb_workload_log
 (
@@ -156,6 +157,7 @@ CREATE TABLE agent.tb_workload_log
   wlog_time timestamp with time zone NOT NULL,
   wlog_id serial NOT NULL,
   wlog_type character(1),
+  wlog_duration double precision,
   CONSTRAINT wlog_pk PRIMARY KEY (wlog_id)
 )
 WITH (

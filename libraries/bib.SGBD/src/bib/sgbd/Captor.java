@@ -493,6 +493,7 @@ public final class Captor extends Base {
                     preparedStatement.setString(2, sql.getPlan());
                     preparedStatement.setTimestamp(3, new java.sql.Timestamp(sql.getTimeFirstCapture().getTime()));
                     preparedStatement.setString(4, sql.getType());
+                    System.out.println("Duração SQL: " + sql.getDuration());
                     preparedStatement.setDouble(5, sql.getDuration());
                     driver.executeUpdate(preparedStatement);
                 }

@@ -334,7 +334,6 @@ public class SQL {
     }
 
     public void setTimeFirstCapture(String timeFirstCapture) {
-        System.out.println(timeFirstCapture);
         if (prop.getProperty("sgbd").equals("oracle")) {
             log.error("implementar formato para oracle?");
         }
@@ -342,7 +341,6 @@ public class SQL {
             SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
             Date date = new Date(format.parse(timeFirstCapture).getTime());
             this.setTimeFirstCapture(date);
-            System.out.println(this.getTimeFirstCapture());
         } catch (ParseException ex) {
             log.error(ex);
         }
