@@ -13,11 +13,14 @@ import java.util.ArrayList;
  */
 public interface IPlan {
 
-    long getCost();
+    public long getCost();
 
-    long getNumRow();
+    public long getNumRow();
 
-    long getSizeRow();
+    public long getSizeRow();
 
-    ArrayList<SeqScan> getSeqScanOperations();
+    public ArrayList<SeqScan> getSeqScanOperations();
+
+    public float getDuration();
+
 }

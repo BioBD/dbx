@@ -81,31 +81,38 @@
 
 
 
-  CREATE TABLE tb_candidate_view (
-      cmv_id integer NOT NULL,
-      cmv_ddl_create text NOT NULL,
-      cmv_cost bigint,
-      cmv_profit bigint NOT NULL,
-      cmv_status character(1) DEFAULT 'H'::bpchar
-  );
-  ALTER TABLE ONLY tb_candidate_view ALTER COLUMN cmv_id SET STATISTICS 0;
-  ALTER TABLE ONLY tb_candidate_view ALTER COLUMN cmv_profit SET STATISTICS 0;
 
+-- DROP TABLE agent.tb_candidate_view;
 
-  ALTER TABLE agent.tb_candidate_view OWNER TO postgres;
-
-
-
-  COMMENT ON TABLE tb_candidate_view IS 'Possiveis valores:
+CREATE TABLE agent.tb_candidate_view
+(
+  cmv_id integer NOT NULL,
+  cmv_ddl_create text NOT NULL,
+  cmv_cost bigint,
+  cmv_profit bigint NOT NULL,
+  cmv_status character(1) DEFAULT 'H'::bpchar, -- Possiveis valores:...
+  cmv_timestamp_create timestamp with time zone,
+  CONSTRAINT tb_cadidate_view_pkey PRIMARY KEY (cmv_id),
+  CONSTRAINT tb_cadidate_view_fk FOREIGN KEY (cmv_id)
+      REFERENCES agent.tb_workload (wld_id) MATCH SIMPLE
+      ON UPDATE CASCADE ON DELETE CASCADE
+)
+WITH (
+  OIDS=FALSE
+);
+ALTER TABLE agent.tb_candidate_view
+  OWNER TO postgres;
+COMMENT ON TABLE agent.tb_candidate_view
+  IS 'Possiveis valores:
   H: Hipotetico
   R: Real';
-
-
-
-  COMMENT ON COLUMN tb_candidate_view.cmv_status IS 'Possiveis valores:
+ALTER TABLE agent.tb_candidate_view ALTER COLUMN cmv_id SET STATISTICS 0;
+ALTER TABLE agent.tb_candidate_view ALTER COLUMN cmv_profit SET STATISTICS 0;
+COMMENT ON COLUMN agent.tb_candidate_view.cmv_status IS 'Possiveis valores:
   H: Hipotetico
   R: Real
   M: Materializar';
+
 
 
 

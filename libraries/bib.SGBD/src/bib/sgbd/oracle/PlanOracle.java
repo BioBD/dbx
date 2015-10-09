@@ -66,4 +66,9 @@ public class PlanOracle extends Plan {
     public ArrayList<SeqScan> getSeqScanOperations() {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
+
+    @Override
+    public float getDuration() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
 }

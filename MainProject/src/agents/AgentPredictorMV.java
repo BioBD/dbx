@@ -31,8 +31,7 @@ public class AgentPredictorMV extends AgentPredictor {
                 for (Long item : this.idDDLForMaterialization) {
                     PreparedStatement preparedStatement = driver.prepareStatement(prop.getProperty("getSqlClauseToUpdateDDLCreateMVToMaterialization"));
                     log.msg("Materialized View Hypothetical ID: " + item);
-                    preparedStatement.setString(1, "M");
-                    preparedStatement.setLong(2, item);
+                    preparedStatement.setLong(1, item);
                     driver.executeUpdate(preparedStatement);
                     preparedStatement.close();
                 }

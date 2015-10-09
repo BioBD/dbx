@@ -819,4 +819,8 @@ public class SQL {
             log.error(e);
         }
     }
+
+    public float getDuration() {
+        return this.plan.getDuration();
+    }
 }
