@@ -22,7 +22,7 @@ public class Index {
     private String IndexType;
     private boolean hasFilter;
     private String filterType; // theta ou equi
-    private long numberOfRows;
+    private long numberOfRows; //número de linhas do seq scan para o qual o índice foi gerado
 
     public String getHypotheticalPlan() {
         return hypotheticalPlan;
@@ -146,7 +146,7 @@ public class Index {
     /**
      * @return the hasFilter
      */
-    public boolean isHasFilter() {
+    public boolean getHasFilter() {
         return hasFilter;
     }
 

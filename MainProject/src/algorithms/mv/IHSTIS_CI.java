@@ -447,12 +447,69 @@ public class IHSTIS_CI {
     }
 
     private long getIndexScanCost(Index ind) {
-        if (ind.getIndexType().equals("Primary")) {
-
-        } else {
-
+        //Variável que armazena o custo do index scan
+        long isCost=0;
+        //Usar função para estimar a altura da árvore B+ referente ao índice hipotético
+        //Se o índice for real, pegar a altura da árvore da metabase
+        //Verificar se esse método é chamado sempre para índices hipotéticos e nunca para índices reais. Creio que sim.
+        long deepTree =3;
+        
+        //Recupera o número de tuplas e o número de páginas da tabela onde o índice seria criado
+        Driver driver = new Driver();
+        int numberOfTablePages = 0;
+        int numberOfTableTuples = 0;
+        try {
+            String queryTemp = prop.getProperty("getIndexScanCostpostgresql");
+            PreparedStatement preparedStatement = driver.prepareStatement(queryTemp);
+            preparedStatement.setString(1, ind.getTableName());
+            ResultSet result = driver.executeQuery(preparedStatement);
+            if (result.next()) {
+                numberOfTablePages = result.getInt("relpages");
+                numberOfTableTuples = result.getInt("reltuples");
+                result.close();
+            } else {
+                result.close();
+            }
+        } catch (SQLException e) {
+            log.error(e.getMessage());
         }
-        return 0;
+        
+        //Testa se o índice está envolvido em algum seq scan com filtro
+        if(ind.getHasFilter()){
+            //Testa se o filtro é do tipo equi (=)
+            if(ind.getFilterType().equals("equi")){
+                //Testa se o índice é primário
+                if(ind.getIndexType().equals("P")){
+                    isCost = deepTree + 1;
+                }
+                //Índice é secundário
+                else{
+                    //isCost = Hi + pico(nlr/(n/p))
+                    //Hi -> Altura da árvore
+                    //nlr -> Número de linhas recuperados no seq scan
+                    //n -> Número de linhas (tuplas) da tabela
+                    //p -> Número de páginas (blocos) da tabela
+                    isCost = deepTree + (ind.getNumberOfRows()/(numberOfTableTuples/numberOfTablePages));
+                }
+                
+            }
+            //Filtro é do tipo theta (>, <, >=, <=)
+            else{
+                //Testa se o índice é primário
+                if(ind.getIndexType().equals("P")){
+                    isCost = deepTree + (ind.getNumberOfRows()/(numberOfTableTuples/numberOfTablePages));;
+                }
+                //Índice é secundário
+                else{
+                    isCost = deepTree + ind.getNumberOfRows();
+                }
+                
+            }
+             
+            
+        }
+        
+        return isCost;
     }
 
 
@@ -465,7 +522,7 @@ public class IHSTIS_CI {
             preparedStatement.setString(1, tableName);
             ResultSet result = driver.executeQuery(preparedStatement);
             if (result.next()) {
-                numberOfTablePages = result.getInt("rel_pages");
+                numberOfTablePages = result.getInt("relpages");
                 result.close();
             } else {
                 result.close();

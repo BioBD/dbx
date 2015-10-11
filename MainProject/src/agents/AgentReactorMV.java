@@ -27,6 +27,7 @@ public class AgentReactorMV extends AgentReactor {
     @Override
     public void getLastTuningActionsNotAnalyzed() {
         this.getDDLNotAnalized();
+        //TODO: Zé
     }
 
     public void getDDLNotAnalized() {
