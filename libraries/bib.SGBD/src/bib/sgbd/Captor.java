@@ -248,12 +248,7 @@ public final class Captor extends Base {
         String partitionedPlan = "";
         if (!query.isEmpty()) {
             try {
-                ResultSet result;
-                if (prop.getProperty("executeExplainAnalyseForCaptureWorkload").equals("1")) {
-                    result = driver.executeQuery(prop.getProperty("signature") + " EXPLAIN (ANALYZE TRUE, TIMING FALSE) " + query);
-                } else {
-                    result = driver.executeQuery(prop.getProperty("signature") + " EXPLAIN " + query);
-                }
+                ResultSet result = driver.executeQuery(prop.getProperty("signature") + " EXPLAIN " + query);
                 while (result.next()) {
                     partitionedPlan += "\n" + result.getString(1);
                 }
@@ -416,7 +411,7 @@ public final class Captor extends Base {
         }
         return sqlList;
     }
-
+    
     //Calcula a fragmentação do índice
     private double getIndexFragmentation(String schema, String indexName) {
         String tableName = null;
@@ -433,8 +428,8 @@ public final class Captor extends Base {
                 while (result.next()) {
                     tableName = result.getString(1);
                 }
-
-                if (tableName != null) {
+                
+                if(tableName != null){
                     //Obter o numero atual de tuplas da tabela
                     sql = prop.getProperty("getDMLTableNumberTuples" + prop.getProperty("sgbd"));
                     sql = sql.replace("$schema$", schema);
@@ -446,11 +441,11 @@ public final class Captor extends Base {
                             numTuplesCurrent = result.getInt(1);
                         }
                     }
-
+                    
                     //Obter o numero atual de blocos que o indice ocupa
                     sql = prop.getProperty("getDMLIndexNumberPages" + prop.getProperty("sgbd"));
                     sql = sql.replace("$schema$", schema);
-                    sql = sql.replace("$index$", indexName);
+                    sql = sql.replace("$index$", indexName);   
                     preparedStatement = driver.prepareStatement(sql);
                     result = driver.executeQuery(preparedStatement);
                     if (result != null) {
@@ -458,10 +453,10 @@ public final class Captor extends Base {
                             numPagesCurrent = result.getInt(1);
                         }
                     }
-
+                    
                     //Obter a razao inicial da fragmentacao na coluna cid_initial_ratio da tabela tb_candidate_index (numero de tuplas da tabela/numero de paginas que o indice ocupa)
                     sql = prop.getProperty("getDMLValueRatio" + prop.getProperty("sgbd"));
-                    sql = sql.replace("$index$", indexName);
+                    sql = sql.replace("$index$", indexName);   
                     preparedStatement = driver.prepareStatement(sql);
                     result = driver.executeQuery(preparedStatement);
                     if (result != null) {
@@ -469,9 +464,9 @@ public final class Captor extends Base {
                             initialRatio = result.getDouble(1);
                         }
                     }
-
+                    
                     //Calculando a fragmentacao
-                    fragmentation = 100 - ((numTuplesCurrent / numPagesCurrent) / initialRatio) * 100;
+                    fragmentation = 100 - ((numTuplesCurrent/numPagesCurrent)/initialRatio)*100;
                 }
 
                 preparedStatement.close();
@@ -493,8 +488,6 @@ public final class Captor extends Base {
                     preparedStatement.setString(2, sql.getPlan());
                     preparedStatement.setTimestamp(3, new java.sql.Timestamp(sql.getTimeFirstCapture().getTime()));
                     preparedStatement.setString(4, sql.getType());
-                    System.out.println("Duração SQL: " + sql.getDuration());
-                    preparedStatement.setDouble(5, sql.getDuration());
                     driver.executeUpdate(preparedStatement);
                 }
             } catch (SQLException e) {

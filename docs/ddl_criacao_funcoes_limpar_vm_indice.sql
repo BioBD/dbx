@@ -25,7 +25,8 @@ SELECT
   'DROP INDEX ' || string_agg(nspname || '.' || relname, ', ')
  FROM pg_class, pg_index, pg_namespace
  WHERE pg_class.oid = pg_index.indexrelid
- and pg_namespace.oid = pg_class.relnamespace
+ and pg_namespace.oid = pg_class.relnamespace and nspname='public'
+
   AND pg_class.oid IN (
      SELECT indexrelid
      FROM pg_index, pg_class
@@ -63,6 +64,7 @@ SELECT
 end;
 $body$
 language plpgsql
+
 
 
 
