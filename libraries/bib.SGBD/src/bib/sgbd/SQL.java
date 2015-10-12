@@ -334,7 +334,6 @@ public class SQL {
     }
 
     public void setTimeFirstCapture(String timeFirstCapture) {
-        System.out.println(timeFirstCapture);
         if (prop.getProperty("sgbd").equals("oracle")) {
             log.error("implementar formato para oracle?");
         }
@@ -342,7 +341,6 @@ public class SQL {
             SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
             Date date = new Date(format.parse(timeFirstCapture).getTime());
             this.setTimeFirstCapture(date);
-            System.out.println(this.getTimeFirstCapture());
         } catch (ParseException ex) {
             log.error(ex);
         }
@@ -456,8 +454,6 @@ public class SQL {
 
         sql = (query.getSql()).toLowerCase();
 
-        /* Criando um objeto Captor */
-        //Captor captor = new Captor();
         if (sql.matches("select(.*)")) {
             Matcher m = Pattern.compile("([(]select)", Pattern.DOTALL).matcher(sql);
             while (m.find()) {

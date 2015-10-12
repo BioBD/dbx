@@ -24,9 +24,11 @@ import mv.ControllerMV;
 public class AgentObserver extends Agent {
 
     protected final Captor captor;
+    protected final ControllerMV controlMV;
 
     public AgentObserver() {
         this.captor = new Captor();
+        this.controlMV = new ControllerMV();
     }
 
     @Override
@@ -125,7 +127,6 @@ public class AgentObserver extends Agent {
     }
 
     public void evaluateMV(ArrayList<SQL> sqlList) {
-        ControllerMV controlMV = new ControllerMV();
         controlMV.evaluateMV(sqlList);
     }
 
