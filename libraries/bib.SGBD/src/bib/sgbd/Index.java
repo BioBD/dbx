@@ -24,6 +24,7 @@ public class Index {
     private String filterType; // theta ou equi
     private long numberOfRows; //número de linhas do seq scan para o qual o índice foi gerado
     private int cidId;//identificador do índice
+    private String indexName;//Nome do índice
 
     public String getHypotheticalPlan() {
         return hypotheticalPlan;
@@ -216,6 +217,20 @@ public class Index {
      */
     public void setCidId(int cidId) {
         this.cidId = cidId;
+    }
+
+    /**
+     * @return the indexName
+     */
+    public String getIndexName() {
+        return indexName;
+    }
+
+    /**
+     * @param indexName the indexName to set
+     */
+    public void setIndexName(String indexName) {
+        this.indexName = indexName;
     }
 
 
