@@ -98,16 +98,21 @@ SET statement_timeout = 0;
 
 
 
-  CREATE TABLE agent.tb_candidate_view (
-      cmv_id integer NOT NULL,
-      cmv_ddl_create text NOT NULL,
-      cmv_cost bigint,
-      cmv_profit bigint NOT NULL,
-      cmv_status character(1) DEFAULT 'H'::bpchar
-  );
-  ALTER TABLE ONLY agent.tb_candidate_view ALTER COLUMN cmv_id SET STATISTICS 0;
-  ALTER TABLE ONLY agent.tb_candidate_view ALTER COLUMN cmv_profit SET STATISTICS 0;
-
+  
+CREATE TABLE agent.tb_candidate_view
+(
+  cmv_ddl_create text NOT NULL,
+  cmv_cost bigint,
+  cmv_profit bigint NOT NULL,
+  cmv_status character(1) DEFAULT 'H'::bpchar, -- Possiveis valores:...
+  cmv_timestamp_create timestamp with time zone,
+  cmv_id serial NOT NULL,
+  CONSTRAINT pk_tb_candidate_view PRIMARY KEY (cmv_id)
+)
+WITH (
+  OIDS=FALSE
+);
+  
 
   ALTER TABLE agent.tb_candidate_view OWNER TO postgres;
 
@@ -187,6 +192,27 @@ ALTER TABLE agent.tb_workload_log
       wld_type character(1),
       wld_relevance integer
   );
+  
+  
+CREATE TABLE agent.tb_task_views
+(
+  cmv_id integer NOT NULL,
+  wld_id integer NOT NULL,
+  CONSTRAINT pk_tb_task_views PRIMARY KEY (cmv_id, wld_id),
+  CONSTRAINT fk_views FOREIGN KEY (cmv_id)
+      REFERENCES agent.tb_candidate_view (cmv_id) MATCH SIMPLE
+      ON UPDATE NO ACTION ON DELETE NO ACTION,
+  CONSTRAINT fk_workload_id FOREIGN KEY (wld_id)
+      REFERENCES agent.tb_workload (wld_id) MATCH SIMPLE
+      ON UPDATE NO ACTION ON DELETE NO ACTION
+)
+WITH (
+  OIDS=FALSE
+);
+ALTER TABLE agent.tb_task_views
+  OWNER TO postgres;
+  
+  
 
 
   ALTER TABLE agent.tb_workload OWNER TO postgres;
