@@ -32,7 +32,6 @@ public class AgentReactorMV extends AgentReactor {
 
     public void getDDLNotAnalized() {
         try {
-            this.capturedQueriesForAnalyses.clear();
             ResultSet resultset = driver.executeQuery(prop.getProperty("getSqlDDLNotAnalizedReactor"));
             if (resultset != null) {
                 while (resultset.next()) {

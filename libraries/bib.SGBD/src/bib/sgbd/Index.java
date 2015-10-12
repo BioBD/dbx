@@ -23,6 +23,7 @@ public class Index {
     private boolean hasFilter;
     private String filterType; // theta ou equi
     private long numberOfRows; //número de linhas do seq scan para o qual o índice foi gerado
+    private int cidId;//identificador do índice
 
     public String getHypotheticalPlan() {
         return hypotheticalPlan;
@@ -186,7 +187,36 @@ public class Index {
     }
 
     
+    public void setColumns(ArrayList<Column> fields) {
+        for (Column column : fields) {
+                if (!this.containsColumns(column)) {
+                        this.columns.add(column);
+                }
+        }
+    }
 
- 
+    private boolean containsColumns(Column field) {
+        for (Column column : columns) {
+                if (column.equals(field)) {
+                        return true;
+                }
+        }
+        return false;
+    }
+
+    /**
+     * @return the cidId
+     */
+    public int getCidId() {
+        return cidId;
+    }
+
+    /**
+     * @param cidId the cidId to set
+     */
+    public void setCidId(int cidId) {
+        this.cidId = cidId;
+    }
+
 
 }

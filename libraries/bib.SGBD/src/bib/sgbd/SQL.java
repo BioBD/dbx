@@ -450,7 +450,7 @@ public class SQL {
     }
 
     /* Devolver um ArrayList de Tabela, onde cada objeto Tabela tem um conjunto de atributos usados em uma ou mais cláusulas SELECT */
-    private ArrayList<Table> getFieldsSelect(SQL query) {
+    public ArrayList<Table> getFieldsSelect(SQL query) {
         ArrayList<Table> tbSelect = new ArrayList();
         int count = 0, begin = 0, end = 0, inc = 0;
 
@@ -665,7 +665,7 @@ public class SQL {
         return table;
     }
 
-    private ArrayList<Table> getFieldsGroup(SQL query) {
+    public ArrayList<Table> getFieldsGroup(SQL query) {
         ArrayList<Table> tbList = new ArrayList();
         String[] tabArray = null, attArray = null;
         String subStr = null, strTab = null, strAtt = null;
@@ -734,7 +734,7 @@ public class SQL {
         return tbList;
     }
 
-    private ArrayList<Table> getFieldsOrder(SQL query) {
+    public ArrayList<Table> getFieldsOrder(SQL query) {
         ArrayList<Table> tbList = new ArrayList();
         String[] tabArray = null, attArray = null;
         String subStr = null, strTab = null, strAtt = null;

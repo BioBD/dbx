@@ -13,6 +13,7 @@ import bib.sgbd.Filter;
 import bib.sgbd.Index;
 import bib.sgbd.SQL;
 import bib.sgbd.SeqScan;
+import bib.sgbd.Table;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -28,9 +29,10 @@ public class IHSTIS_CI {
 
     private ArrayList<SeqScan> sso = null;
     private SeqScan ss = null;
-    private ArrayList<Column> colsSelect = null;
-    private ArrayList<Column> colsGroup = null;
-    private ArrayList<Column> colsOrder = null;
+    private ArrayList<Table> tabsSelect = null;
+    private ArrayList<Table> tabsGroup = null;
+    private ArrayList<Table> tabsOrder = null;  
+    private ArrayList<Table> allTabs = null;
     private ArrayList<Index> lCandidates = new ArrayList();
     private ArrayList<Filter> filterColumns = null;
     private Filter filterAux = null;
@@ -94,9 +96,6 @@ public class IHSTIS_CI {
         //colsSelect = sql.getFieldsSelect();
         //colsGroup = sql.getFieldsGroup();
         //colsOrder = sql.getFieldsOrder();
-        if (colsSelect.size() > 0) {
-
-        }
         //PS. Um comando SQL pode ter várias cláusulas SELECT
         //É importante saber qual a tabela de uma determinada coluna. 
         //Logo, é necessário preencher o campo table da classe Column
@@ -111,8 +110,72 @@ public class IHSTIS_CI {
         //com os atributos de cada um dos índices criados anteriormente (envolvidos em filter)
         //Basta criar um novo índice secundário com todos os atributos presentes nos índices que já estão em lCandidates (removendo os atributos repetidos)
         
+        //Avaliar esse código posteriormente
+        /*
+        tabsSelect = sql.getFieldsSelect(sql);
+        tabsGroup = sql.getFieldsGroup(sql);
+        tabsOrder = sql.getFieldsOrder(sql);
         
+        //Juntar todas listas de tabelas numa mesma lista
+        for(int i=0; i<tabsSelect.size(); i++){
+            allTabs.add(tabsSelect.get(i));
+        }
+        for(int i=0; i<tabsOrder.size(); i++){
+            allTabs.add(tabsOrder.get(i));
+        }
+        for(int i=0; i<tabsGroup.size(); i++){
+            allTabs.add(tabsGroup.get(i));
+        }
+
+        //Obter uma lista de tabelas, sem repeticoes, e com seus respectivos atributos utilizados na clausula SQL
+        //Tratar as repeticoes de atributos e tabelas
+        for(int i=0; i<allTabs.size()-1; i++){
+            for(int j=i+1; j<allTabs.size(); j++){
+                Table tab1 = allTabs.get(i);
+                Table tab2 = allTabs.get(j);
+                //Testa se as tabelas s„o iguais
+                if(tab1.getName() == tab2.getName()){
+                    ArrayList<Column> listCols1 = tab1.getFields();
+                    ArrayList<Column> listCols2 = tab2.getFields();
+                    //Trata os atributos em comum
+                    for(int k=0; k<listCols1.size()-1; k++){
+                        for(int l=0; l<listCols2.size(); l++){
+                            Column col1 = listCols1.get(k);
+                            Column col2 = listCols1.get(l);
+                            if(col1.getName() == col2.getName()){
+                                listCols2.remove(l);
+                            }
+                        }
+                    }
+                    
+                    //Junta os atributos que est„o em listCols2 e que n„o est„o em listCols1
+                    for(int k=0; k<listCols2.size(); k++){
+                        listCols1.add(listCols2.get(k));
+                    }
+                    
+                    //Atualiza a lista de atributos da tabela atual, pela listCols1
+                    tab1.setFields(listCols1);
+                    
+                    //remover tab2 da lista allTabs e atualiza a tabela atual
+                    allTabs.remove(j);
+                    allTabs.set(i, tab1);
+                }
+            }
+        }
         
+        //Criar um Ìndice secundario, a partir das tabelas obtidas.
+        for(int i=0; i<allTabs.size(); i++){
+            Index idx = null;
+            Table tab = allTabs.get(i);
+            
+            idx.setTableName(tab.getName()); //Adicionando a tabela em que o Ìndice ser· criado
+            idx.setIndexType("S"); //Adicionando tipo do indice
+            idx.setColumns(tab.getFields()); //Adicionando as colunas do indice
+            
+            lCandidates.add(idx); //Adicionando o Ìndice na lCandidates
+        }
+        */
+
         //Percorrer os Indices Candidatos
         for (Index lCandidate : lCandidates) {
             //Testa se o indice ja existe na metabase local
