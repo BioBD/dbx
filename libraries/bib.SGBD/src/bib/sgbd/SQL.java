@@ -356,7 +356,7 @@ public class SQL {
         return sql;
     }
 
-    private String removerNl(String frase) {
+    protected String removerNl(String frase) {
         String padrao = "\\s{2,}";
         Pattern regPat = Pattern.compile(padrao);
         Matcher matcher = regPat.matcher(frase);
@@ -815,4 +815,5 @@ public class SQL {
             log.error(e);
         }
     }
+
 }

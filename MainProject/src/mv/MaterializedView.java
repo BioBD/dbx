@@ -100,7 +100,7 @@ public class MaterializedView extends SQL {
         log.msg("hypoCost: " + this.getHypoCost());
         log.msg("Cost - hypoCost: " + (this.getCost() - this.getHypoCost()));
         log.msg("HypoCreationCost: " + this.getHypoCreationCost());
-        log.msg("Hypo Query MV: " + this.getHypoMaterializedView());
+        log.msg("Hypo Query MV: " + this.removerNl(this.getHypoMaterializedView()));
         log.endTitle();
     }
 
@@ -108,7 +108,7 @@ public class MaterializedView extends SQL {
         String ddl = prop.getProperty("getDDLCreateMV" + prop.getProperty("sgbd"));
         ddl = ddl.replace("$nameMV$", this.getNameMaterizedView());
         ddl = ddl.replace("$sqlMV$", this.getHypoMaterializedView());
-        return ddl;
+        return ddl.trim();
     }
 
     private Object erro() {
@@ -116,7 +116,7 @@ public class MaterializedView extends SQL {
     }
 
     public String getNameMaterizedView() {
-        return "v_ot_workload_" + String.valueOf(this.getId());
+        return "v_dbx_view_" + this.getHypoMaterializedView().hashCode();
     }
 
     private long getHypoCost() {

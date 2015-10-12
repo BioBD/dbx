@@ -43,11 +43,11 @@ public class DefineView extends Base {
     }
 
     protected String getDdlCreateViewComplete() {
-        return this.treatComma(this.select) + " "
+        return (this.treatComma(this.select) + " "
                 + treatComma(this.from) + " "
                 + treatComma(this.where) + " "
                 + treatComma(this.groupBy) + " "
-                + treatComma(this.orderBy);
+                + treatComma(this.orderBy)).trim();
     }
 
     protected String treatComma(String query) {
