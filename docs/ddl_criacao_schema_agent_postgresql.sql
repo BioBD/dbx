@@ -159,6 +159,8 @@ SET statement_timeout = 0;
   ALTER TABLE agent.tb_task_indexes OWNER TO postgres;
 
 
+-- DROP TABLE agent.tb_workload_log;
+
 CREATE TABLE agent.tb_workload_log
 (
   wlog_sql text NOT NULL,
@@ -166,6 +168,7 @@ CREATE TABLE agent.tb_workload_log
   wlog_time timestamp with time zone NOT NULL,
   wlog_id serial NOT NULL,
   wlog_type character(1),
+  wlog_duration double precision,
   CONSTRAINT wlog_pk PRIMARY KEY (wlog_id)
 )
 WITH (
