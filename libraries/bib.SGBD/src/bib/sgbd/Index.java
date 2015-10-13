@@ -5,6 +5,7 @@
  */
 package bib.sgbd;
 
+import static bib.base.Base.prop;
 import java.util.ArrayList;
 import java.util.Objects;
 
@@ -19,7 +20,7 @@ public class Index {
     private String hypotheticalPlan;
     private String tableName;
     private long creationCost;
-    private String IndexType;
+    private String indexType;
     private boolean hasFilter;
     private String filterType; // theta ou equi
     private long numberOfRows; //número de linhas do seq scan para o qual o índice foi gerado
@@ -74,14 +75,14 @@ public class Index {
      * @return the IndexType
      */
     public String getIndexType() {
-        return IndexType;
+        return indexType;
     }
 
     /**
      * @param IndexType the IndexType to set
      */
-    public void setIndexType(String IndexType) {
-        this.IndexType = IndexType;
+    public void setIndexType(String indexType) {
+        this.indexType = indexType;
     }
 
     public Index() {
@@ -89,21 +90,12 @@ public class Index {
     }
 
     public String getName() {
-        if (columns.size() > 0) {
-            String columnsNames = "";
-            String table = "";
-            for (int i = 0; i < columns.size(); i++) {
-                table = columns.get(i).getTable();
-                if (i > 0) {
-                    columnsNames += "_";
-                }
-                columnsNames += columns.get(i).getName();
-            }
-            String nameOfIndex = "index_ot_" + table + "_" + columnsNames;
-            nameOfIndex = nameOfIndex.replace("public.", "");
-            return nameOfIndex;
-        }
-        return "public." + this.hashCode();
+        String indexName = tableName + "_" + indexType;
+        for (int i=0;i<columns.size();i++){
+            indexName=indexName+"_"+columns.get(i).getName();
+        }            
+        return indexName;
+
     }
 
     public String getSintaxe() {

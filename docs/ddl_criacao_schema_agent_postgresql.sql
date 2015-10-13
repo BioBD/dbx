@@ -5,10 +5,11 @@ DROP TABLE agent.tb_profits
 DROP TABLE agent.tb_task_indexes
 DROP TABLE agent.tb_candidate_index_column
 DROP TABLE agent.tb_access_plan
+DROP TABLE agent.tb_workload_log
+DROP TABLE agent.tb_task_views;
 DROP TABLE agent.tb_candidate_view
 DROP TABLE agent.tb_candidate_index
 DROP TABLE agent.tb_workload
-DROP TABLE agent.tb_workload_log;
 
 DROP  FUNCTION agent.limpa_estatisticas()
 DROP SEQUENCE agent.tb_workload_wld_id_seq
@@ -38,15 +39,16 @@ DROP SEQUENCE agent.tb_workload_log_wlog_id_seq
   CREATE FUNCTION agent.limpa_estatisticas() RETURNS boolean
       LANGUAGE sql
       AS $$
-  delete from agent.tb_access_plan;
-  delete from agent.tb_candidate_view;
-  delete from agent.tb_workload;
-  delete from agent.tb_task_indexes;
-  delete from agent.tb_candidate_index_column;
-  delete from agent.tb_candidate_index;
   delete from agent.tb_epoque;
   delete from agent.tb_profits;
+  delete from agent.tb_task_indexes;
+  delete from agent.tb_candidate_index_column;
+  delete from agent.tb_access_plan;
   delete from agent.tb_workload_log;
+  delete from agent.tb_task_views;
+  delete from agent.tb_candidate_view;
+  delete from agent.tb_candidate_index;
+  delete from agent.tb_workload;
   select true;
   $$;
 

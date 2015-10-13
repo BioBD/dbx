@@ -68,7 +68,7 @@ public class IHSTIS_CI {
                 indexAuxP.setTableName(ss.getTableName());
                 indexAuxP.columns = new ArrayList();
                 indexAuxP.columns.add(filterAux);
-                indexAuxP.setIndexType("Primary");
+                indexAuxP.setIndexType("P");
                 indexAuxP.setCreationCost(2 * getSeqScanCost(ss.getTableName()));
                 indexAuxP.setHasFilter(true);
                 indexAuxP.setFilterType(filterAux.getFilterType());
@@ -81,7 +81,7 @@ public class IHSTIS_CI {
                 indexAuxS.setTableName(ss.getTableName());
                 indexAuxS.columns = new ArrayList();
                 indexAuxS.columns.add(filterAux);
-                indexAuxS.setIndexType("Secundary");
+                indexAuxS.setIndexType("S");
                 indexAuxS.setCreationCost(2 * getSeqScanCost(ss.getTableName()));
                 indexAuxS.setHasFilter(true);
                 indexAuxS.setFilterType(filterAux.getFilterType());
@@ -182,13 +182,13 @@ public class IHSTIS_CI {
             if (!inLM(lCandidate)) {
                 //Insere um novo indice candidato na LM
                 insertIndexLM(lCandidate);
-            } else {
-                //verificar se o indice ja estah associado ah tarefa corrente
-                if (!inTaskIndexes(wldId, lCandidate)) {
-                    //Inserir tupla na tabela tb_task_indexes
-                    insertTaskIndexes(wldId, lCandidate);
-                }
+            } 
+            //verificar se o indice ja estah associado ah tarefa corrente
+            if (!inTaskIndexes(wldId, lCandidate)) {
+                //Inserir tupla na tabela tb_task_indexes
+                insertTaskIndexes(wldId, lCandidate);
             }
+            
             //Verifica se o indice eh hipotetico (ou seja, nao eh um indice real)
             if (isHypotheticalIndex(lCandidate)) {
                 //Estimar Custo de Index Scan
@@ -258,7 +258,7 @@ public class IHSTIS_CI {
             //Guarda o id do índice que está sendo verificado
             cidId=ids.get(i);
             //Percorre as colunas
-            for (int j = 0; j < ind.columns.size(); i++)
+            for (int j = 0; j < ind.columns.size(); j++)
             {
                 column = ind.columns.get(j);
                 columnName = column.getName();
@@ -316,7 +316,12 @@ public class IHSTIS_CI {
             }
         }
         
-        return status.equals("H");
+        if((status!=null)&&(status.equals("H"))){
+            return true;
+        }
+        else{
+            return false;
+        }
     }
 
     private void insertTaskIndexes(long wldId, Index ind) {
@@ -497,7 +502,7 @@ public class IHSTIS_CI {
             //cid_index_name
             preparedStatement.setString(10, ind.getName());
             //cid_creation_time (as a real index)
-            preparedStatement.setInt(11, 0);
+            preparedStatement.setTimestamp(11, null);
             
             //Executa a inserção
             driver.executeUpdate(preparedStatement);
@@ -506,7 +511,30 @@ public class IHSTIS_CI {
             log.error(e.getMessage());
         }
         
+        for(int i=0;i<ind.columns.size();i++){
+            Column c = ind.columns.get(i);
+            insertColumn(maxId,c);  
+        }
         
+    }
+    
+    private void insertColumn(int cidId, Column c){
+        Driver driver = new Driver();
+        //Insere coluna de índice candidato
+        try {
+            String queryTemp = prop.getProperty("setDMLInsertCandidateIndexColumnonpostgresql");
+            PreparedStatement preparedStatement = driver.prepareStatement(queryTemp);
+            //cid_id
+            preparedStatement.setInt(1, cidId);
+            //cic_column_name
+            preparedStatement.setString(2, c.getName());
+            
+            //Executa a inserção
+            driver.executeUpdate(preparedStatement);
+            
+        } catch (SQLException e) {
+            log.error(e.getMessage());
+        }
     }
 
     private long getIndexScanCost(Index ind) {
@@ -567,9 +595,7 @@ public class IHSTIS_CI {
                     isCost = deepTree + ind.getNumberOfRows();
                 }
                 
-            }
-             
-            
+            }              
         }
         
         return isCost;
