@@ -416,7 +416,7 @@ public class IHSTIS_CI {
             //Avalia um determinado índice possível
             isInLM = true;
             //Percorre as colunas
-            for (int j = 0; j < ind.columns.size(); i++)
+            for (int j = 0; j < ind.columns.size(); j++)
             {
                 column = ind.columns.get(j);
                 columnName = column.getName();
