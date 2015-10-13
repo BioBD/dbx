@@ -1,4 +1,4 @@
-create or replace function clearMaterializedView() returns integer
+create or replace function agent.clearMaterializedView() returns integer
 as
 $body$
 declare
@@ -14,7 +14,7 @@ language plpgsql
 
 
 
-create or replace function clearAllIndex() returns integer
+create or replace function agent.clearAllIndex() returns integer
 as
 $body$
 declare
@@ -40,7 +40,7 @@ language plpgsql
 
 
 
-create or replace function clearIndexNotPrimary() returns integer
+create or replace function agent.clearIndexNotPrimary() returns integer
 as
 $body$
 declare
