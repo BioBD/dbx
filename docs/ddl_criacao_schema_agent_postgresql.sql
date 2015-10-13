@@ -8,14 +8,16 @@ DROP TABLE agent.tb_access_plan
 DROP TABLE agent.tb_candidate_view
 DROP TABLE agent.tb_candidate_index
 DROP TABLE agent.tb_workload
+DROP TABLE agent.tb_workload_log;
 
 DROP  FUNCTION agent.limpa_estatisticas()
 DROP SEQUENCE agent.tb_workload_wld_id_seq
+DROP SEQUENCE agent.tb_workload_log_wlog_id_seq 
 
   
 
 
-SET statement_timeout = 0;
+  SET statement_timeout = 0;
   SET lock_timeout = 0;
   SET client_encoding = 'UTF8';
   SET standard_conforming_strings = on;
@@ -44,6 +46,7 @@ SET statement_timeout = 0;
   delete from agent.tb_candidate_index;
   delete from agent.tb_epoque;
   delete from agent.tb_profits;
+  delete from agent.tb_workload_log;
   select true;
   $$;
 
@@ -87,7 +90,7 @@ SET statement_timeout = 0;
 
 
 
-  CREATE TABLE tb_candidate_index_column (
+  CREATE TABLE agent.tb_candidate_index_column (
       cid_id integer NOT NULL,
       cic_column_name character(100) NOT NULL,
       cic_type character(100)
@@ -163,8 +166,6 @@ WITH (
 
   ALTER TABLE agent.tb_task_indexes OWNER TO postgres;
 
-
--- DROP TABLE agent.tb_workload_log;
 
 CREATE TABLE agent.tb_workload_log
 (
