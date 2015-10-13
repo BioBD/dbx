@@ -57,7 +57,8 @@ public class PlanPostgreSQL extends Plan {
 
         ArrayList<SeqScan> sso = new ArrayList();
         ArrayList<Filter> filters = new ArrayList();
-        String plan = null, name = null, fType = null;
+        //String plan = null; 
+        String name = null, fType = null;
         String[] attributes = null;
         long seqScanCost = getCost();
         long rows = getNumRow();
@@ -65,9 +66,9 @@ public class PlanPostgreSQL extends Plan {
         Filter filter;
         SeqScan ss;
 
-        System.out.println(plan);
+        System.out.println(getPlan());
 
-        String[] scan = plan.split("seq scan on ");
+        String[] scan = getPlan().split("seq scan on ");
 
         Pattern rest_name = Pattern.compile("(.*).cost");
         Pattern rest_cols = Pattern.compile("filter:(.*)");

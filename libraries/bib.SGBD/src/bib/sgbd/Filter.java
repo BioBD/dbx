@@ -30,10 +30,12 @@ public class Filter extends Column{
         return column;
     }
     */
-
+   
+    /*
     public Filter() {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
+    */
 
     /**
      * @param column the column to set
