@@ -47,14 +47,14 @@ public class Index {
      * @return the tableName
      */
     public String getTableName() {
-        return tableName;
+        return tableName.trim();
     }
 
     /**
      * @param tableName the tableName to set
      */
     public void setTableName(String tableName) {
-        this.tableName = tableName;
+        this.tableName = tableName.trim();
     }
 
     /**
@@ -215,14 +215,15 @@ public class Index {
      * @return the indexName
      */
     public String getIndexName() {
-        return indexName;
+        //return indexName;
+        return this.getName();
     }
 
     /**
      * @param indexName the indexName to set
      */
     public void setIndexName(String indexName) {
-        this.indexName = indexName;
+        this.indexName = indexName.trim();
     }
 
 

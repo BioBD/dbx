@@ -63,7 +63,7 @@ public class Column {
     }
 
     public String getName() {
-        return name;
+        return name.trim();
     }
 
     public String getCompleteName() {
@@ -71,7 +71,7 @@ public class Column {
     }
 
     public void setName(String name) {
-        this.name = name;
+        this.name = name.trim();
     }
 
     public Column getForeignKey() {

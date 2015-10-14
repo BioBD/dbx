@@ -32,6 +32,7 @@ public class AgentReactorIndex extends AgentReactor{
 
     public void getDDLNotAnalized() {
         try {
+            candidateIndexes.clear();
             ResultSet resultset = driver.executeQuery(prop.getProperty("getSqlIndexNotAnalizedReactor"));
             PreparedStatement preparedStatement = null;
             ResultSet resultsetColumn = null;
@@ -139,6 +140,7 @@ public class AgentReactorIndex extends AgentReactor{
                 driver.executeUpdate(preparedStatement);
                 preparedStatement.close();
             }
+            candidateIndexes.clear();
             log.endTitle();
         } catch (SQLException e) {
             log.error(e);

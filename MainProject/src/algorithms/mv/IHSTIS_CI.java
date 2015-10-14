@@ -57,10 +57,38 @@ public class IHSTIS_CI {
         {
             ss = sso.get(i);
 
+            //Criando um índice composto primário (com todos os atributos do seq scan)
+            Index composedIndexP = new Index();
+            composedIndexP.setTableName(ss.getTableName());
+            composedIndexP.columns = new ArrayList();
+            composedIndexP.setIndexType("P");
+            composedIndexP.setNumberOfRows(ss.getNumberOfRows());
+            
+            //Criando um índice composto primário (com todos os atributos do seq scan)
+            Index composedIndexS = new Index();
+            composedIndexS.setTableName(ss.getTableName());
+            composedIndexS.columns = new ArrayList();
+            composedIndexS.setIndexType("S");
+            composedIndexS.setNumberOfRows(ss.getNumberOfRows());
+            
+
             //Percorre cada coluna (filter) do SeqScan
             filterColumns = ss.getFilterColumns();
             for (int j = 0; j < filterColumns.size(); j++) {
                 filterAux = filterColumns.get(j);
+                
+                //Ajusta o índice composto
+                composedIndexP.columns.add(filterAux);
+                composedIndexS.columns.add(filterAux);
+                
+                if ((composedIndexP.getFilterType()==null)||(!composedIndexP.getFilterType().equals("equi"))){
+                    composedIndexP.setFilterType(filterAux.getFilterType());
+                    composedIndexS.setFilterType(filterAux.getFilterType());
+                }
+                composedIndexP.setHasFilter(true);
+                composedIndexS.setHasFilter(true);
+                composedIndexP.setCreationCost(2 * getSeqScanCost(ss.getTableName()));
+                composedIndexS.setCreationCost(2 * getSeqScanCost(ss.getTableName()));
 
                 //Adiciona indice primario
                 //Cria um indice candidato primario para cada coluna do SeqScan
@@ -87,6 +115,11 @@ public class IHSTIS_CI {
                 indexAuxS.setFilterType(filterAux.getFilterType());
                 indexAuxS.setNumberOfRows(ss.getNumberOfRows());
                 lCandidates.add(indexAuxS);
+            }
+            //Adiciona o índice composto
+            if (filterColumns.size()>0){
+                lCandidates.add(composedIndexP);
+                lCandidates.add(composedIndexS);
             }
         }
 
