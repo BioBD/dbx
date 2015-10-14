@@ -133,7 +133,7 @@ public class AgentReactorIndex extends AgentReactor {
     public void updateStatusTuningActions() {
         try {
             for (Index ind : this.candidateIndexes) {
-                PreparedStatement preparedStatement = driver.prepareStatement(prop.getProperty("getSqlClauseToUpdateDDLCreateIndexToMaterialization"));
+                PreparedStatement preparedStatement = driver.prepareStatement(prop.getProperty("getSqlClauseToUpdateDDLCreateIndexToMaterializationReactor"));
                 preparedStatement.setString(1, "R");
                 preparedStatement.setInt(2, ind.getCidId());
                 driver.executeUpdate(preparedStatement);
