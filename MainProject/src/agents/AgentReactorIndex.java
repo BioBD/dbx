@@ -13,7 +13,6 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import mv.MaterializedView;
 
 /**
  *
@@ -103,9 +102,11 @@ public class AgentReactorIndex extends AgentReactor{
             System.out.println(ddl);
             //Executa a Criação
             try {
+                log.msg("Creating index "+ind.getName()+" with script: "+ddl);
                 preparedStatement = driver.prepareStatement(ddl);
                 driver.executeUpdate(preparedStatement);
                 preparedStatement.close();
+                log.msg("Finish create index "+ind.getName());
             } catch (SQLException ex) {
                 log.error(ex);
             }
@@ -113,11 +114,12 @@ public class AgentReactorIndex extends AgentReactor{
             //Se o índice for primário clusteriza    
             if (ind.getIndexType().equals("P")){
                 try {
-                    log.title("Cluster Index");
+                    log.msg("Clustering Index "+indexName);
                     String ddlCluster = "Cluster " + tableName + " Using " + indexName;
                     preparedStatement = driver.prepareStatement(ddlCluster);
                     driver.executeUpdate(preparedStatement);
                     preparedStatement.close();
+                    log.msg("Finish cluster index "+indexName);
                 } catch (SQLException e) {
                     log.error(e);
                 }
