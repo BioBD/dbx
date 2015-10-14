@@ -22,8 +22,6 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Locale;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  *
@@ -190,7 +188,7 @@ public final class Captor extends Base {
 
     private boolean isQueryValid(String query) {
         boolean isValid = true;
-        if ((this.isQueryGeneratedByOuterTuning(query))
+        if ((query.isEmpty()) || (this.isQueryGeneratedByOuterTuning(query))
                 || (this.isSQLGeneratedBySGBD(query))) {
             isValid = false;
         }
@@ -407,11 +405,11 @@ public final class Captor extends Base {
 
             }
         } catch (SQLException ex) {
-            Logger.getLogger(Captor.class.getName()).log(Level.SEVERE, null, ex);
+            log.error(ex);
         }
         return sqlList;
     }
-    
+
     //Calcula a fragmentação do índice
     private double getIndexFragmentation(String schema, String indexName) {
         String tableName = null;
@@ -428,8 +426,8 @@ public final class Captor extends Base {
                 while (result.next()) {
                     tableName = result.getString(1);
                 }
-                
-                if(tableName != null){
+
+                if (tableName != null) {
                     //Obter o numero atual de tuplas da tabela
                     sql = prop.getProperty("getDMLTableNumberTuples" + prop.getProperty("sgbd"));
                     sql = sql.replace("$schema$", schema);
@@ -441,11 +439,11 @@ public final class Captor extends Base {
                             numTuplesCurrent = result.getInt(1);
                         }
                     }
-                    
+
                     //Obter o numero atual de blocos que o indice ocupa
                     sql = prop.getProperty("getDMLIndexNumberPages" + prop.getProperty("sgbd"));
                     sql = sql.replace("$schema$", schema);
-                    sql = sql.replace("$index$", indexName);   
+                    sql = sql.replace("$index$", indexName);
                     preparedStatement = driver.prepareStatement(sql);
                     result = driver.executeQuery(preparedStatement);
                     if (result != null) {
@@ -453,10 +451,10 @@ public final class Captor extends Base {
                             numPagesCurrent = result.getInt(1);
                         }
                     }
-                    
+
                     //Obter a razao inicial da fragmentacao na coluna cid_initial_ratio da tabela tb_candidate_index (numero de tuplas da tabela/numero de paginas que o indice ocupa)
                     sql = prop.getProperty("getDMLValueRatio" + prop.getProperty("sgbd"));
-                    sql = sql.replace("$index$", indexName);   
+                    sql = sql.replace("$index$", indexName);
                     preparedStatement = driver.prepareStatement(sql);
                     result = driver.executeQuery(preparedStatement);
                     if (result != null) {
@@ -464,9 +462,9 @@ public final class Captor extends Base {
                             initialRatio = result.getDouble(1);
                         }
                     }
-                    
+
                     //Calculando a fragmentacao
-                    fragmentation = 100 - ((numTuplesCurrent/numPagesCurrent)/initialRatio)*100;
+                    fragmentation = 100 - ((numTuplesCurrent / numPagesCurrent) / initialRatio) * 100;
                 }
 
                 preparedStatement.close();

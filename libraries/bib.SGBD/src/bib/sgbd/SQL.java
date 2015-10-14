@@ -337,12 +337,15 @@ public class SQL {
         if (prop.getProperty("sgbd").equals("oracle")) {
             log.error("implementar formato para oracle?");
         }
-        try {
-            SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-            Date date = new Date(format.parse(timeFirstCapture).getTime());
-            this.setTimeFirstCapture(date);
-        } catch (ParseException ex) {
-            log.error(ex);
+        if (timeFirstCapture != null) {
+            try {
+                SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+                Date date = new Date(format.parse(timeFirstCapture).getTime());
+                this.setTimeFirstCapture(date);
+            } catch (ParseException ex) {
+            }
+        } else {
+            this.setTimeFirstCapture(new Date());
         }
 
     }

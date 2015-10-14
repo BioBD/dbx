@@ -37,7 +37,7 @@ public class AgentObserver extends Agent {
             try {
                 this.getLastExecutedSQL();
                 this.evaluateFromAllTypesTuning();
-                sleep(2000);
+                sleep(20);
             } catch (InterruptedException e) {
                 log.error(e);
             }
@@ -122,7 +122,7 @@ public class AgentObserver extends Agent {
 
     private void updateQueryAnalizedCount() {
         PreparedStatement preparedStatement = driver.prepareStatement(prop.getProperty("signature") + prop.getProperty("getSqlClauseToUpdateWldAnalyzeCount"));
-        log.msg(prop.getProperty("signature") + prop.getProperty("getSqlClauseToUpdateWldAnalyzeCount"));
+//        log.msg(prop.getProperty("signature") + prop.getProperty("getSqlClauseToUpdateWldAnalyzeCount"));
         driver.executeUpdate(preparedStatement);
     }
 
