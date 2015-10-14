@@ -21,7 +21,7 @@ public class MaterializedView extends SQL {
     private long hypoGain;
     private long hypoNumPages;
     private long hypoCreationCost;
-    private double hypoGainAC;
+    private long hypoGainAC;
 
     public MaterializedView() {
     }
@@ -59,12 +59,16 @@ public class MaterializedView extends SQL {
         this.hypoGain = (this.getCost() - this.getHypoCost());
     }
 
-    public double getHypoGainAC() {
+    public long getHypoGainAC() {
+        this.setHypoGainAC();
         return hypoGainAC;
     }
 
     public void setHypoGainAC() {
-        this.hypoGainAC = this.getHypoGain() * this.getCaptureCount();
+        this.hypoGainAC = this.hypoGain * this.getCaptureCount();
+        if (this.hypoGainAC < 0) {
+            this.hypoGainAC = 0;
+        }
     }
 
     public void setHypoNumPages() {
@@ -91,7 +95,7 @@ public class MaterializedView extends SQL {
     @Override
     public void print() {
         super.print();
-        log.title("custo hypotético visão " + this.getComents());
+        log.title("Hypothetical cost of a Materialized View " + this.getComents());
         log.msg("HypoGain: " + this.getHypoGain());
         log.msg("HypoGainAC: " + this.getHypoGainAC());
         log.msg("HypoNumPages: " + this.getHypoNumPages());
@@ -131,5 +135,7 @@ public class MaterializedView extends SQL {
         this.setRelevance(sql.getRelevance());
         this.setPlan(sql.getPlan(), prop.getProperty("sgbd"));
         this.setHypoMaterializedView(sql.getHypoMaterializedView());
+        this.setHypoGain();
+        this.setHypoGainAC();
     }
 }

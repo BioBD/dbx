@@ -136,7 +136,7 @@ public class Log {
     }
 
     public void endTitle() {
-        this.title("fim");
+        this.title("end");
     }
 
     public void msg(Object msg) {

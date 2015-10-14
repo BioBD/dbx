@@ -42,7 +42,6 @@ public class AgentReactorMV extends AgentReactor {
                     this.capturedQueriesForAnalyses.add(currentQuery);
                 }
             }
-            log.msg("Quantidade de DDLs encontradas para materialização: " + this.capturedQueriesForAnalyses.size());
             resultset.close();
         } catch (SQLException e) {
             log.error(e);
@@ -69,7 +68,6 @@ public class AgentReactorMV extends AgentReactor {
     @Override
     public void updateStatusTuningActions() {
         try {
-            log.title("Persist update ddl create MV");
             for (MaterializedView currentQuery : this.MVCandiates) {
                 PreparedStatement preparedStatement = driver.prepareStatement(prop.getProperty("getSqlClauseToUpdateDDLCreateMVToMaterialization"));
                 preparedStatement.setString(1, "R");
@@ -77,7 +75,6 @@ public class AgentReactorMV extends AgentReactor {
                 driver.executeUpdate(preparedStatement);
                 preparedStatement.close();
             }
-            log.endTitle();
         } catch (SQLException e) {
             log.error(e);
         }

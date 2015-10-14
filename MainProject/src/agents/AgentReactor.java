@@ -17,6 +17,7 @@ public abstract class AgentReactor extends Agent implements IReactor {
 
     @Override
     public void run() {
+        log.msg("Execute agent " + this.getClass());
         while (true) {
             try {
                 this.getLastTuningActionsNotAnalyzed();

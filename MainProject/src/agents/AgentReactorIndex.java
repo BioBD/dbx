@@ -18,7 +18,8 @@ import java.util.ArrayList;
  *
  * @author josemariamonteiro
  */
-public class AgentReactorIndex extends AgentReactor{
+public class AgentReactorIndex extends AgentReactor {
+
     ArrayList<Index> candidateIndexes;
 
     public AgentReactorIndex() {
@@ -36,7 +37,7 @@ public class AgentReactorIndex extends AgentReactor{
             ResultSet resultset = driver.executeQuery(prop.getProperty("getSqlIndexNotAnalizedReactor"));
             PreparedStatement preparedStatement = null;
             ResultSet resultsetColumn = null;
-            
+
             if (resultset != null) {
                 while (resultset.next()) {
                     Index ind = new Index();
@@ -44,10 +45,10 @@ public class AgentReactorIndex extends AgentReactor{
                     ind.setTableName(resultset.getString("cid_table_name"));
                     ind.setIndexType(resultset.getString("cid_type"));
                     String indexName = ind.getTableName() + "_" + ind.getIndexType();
-                    
+
                     preparedStatement = driver.prepareStatement(prop.getProperty("getSqlIndexColumns"));
                     preparedStatement.setInt(1, ind.getCidId());
-         
+
                     resultsetColumn = driver.executeQuery(preparedStatement);
 
                     if (resultsetColumn != null) {
@@ -62,7 +63,7 @@ public class AgentReactorIndex extends AgentReactor{
                     candidateIndexes.add(ind);
                     preparedStatement.close();
                     resultsetColumn.close();
-                }    
+                }
             }
             resultset.close();
         } catch (SQLException e) {
@@ -79,52 +80,51 @@ public class AgentReactorIndex extends AgentReactor{
             String tableName = ind.getTableName();
             ArrayList<Column> columns = ind.columns;
             String columnName = null;
-            String indexName=ind.getIndexName();
+            String indexName = ind.getIndexName();
             String ddl = null;
 
             ddl = "CREATE INDEX "
-            + indexName 
-            + " ON " 
-            + tableName 
-            + " USING btree (";
-            
-            for (int i=0;i<columns.size();i++){
+                    + indexName
+                    + " ON "
+                    + tableName
+                    + " USING btree (";
+
+            for (int i = 0; i < columns.size(); i++) {
                 columnName = columns.get(i).getName();
-                if (i==0){
+                if (i == 0) {
                     ddl = ddl + columnName + " ASC NULLS LAST";
-                }
-                else{
+                } else {
                     ddl = ddl + "," + columnName + " ASC NULLS LAST";
-                } 
+                }
             }
             ddl = ddl + ")";
-                    
+
             //Usado como Debug
             System.out.println(ddl);
             //Executa a Criação
             try {
-                log.msg("Creating index "+ind.getName()+" with script: "+ddl);
+                log.msg("Creating index " + ind.getName() + " with script: " + ddl);
                 preparedStatement = driver.prepareStatement(ddl);
                 driver.executeUpdate(preparedStatement);
                 preparedStatement.close();
-                log.msg("Finish create index "+ind.getName());
+                log.msg("Finish create index " + ind.getName());
             } catch (SQLException ex) {
                 log.error(ex);
             }
 
-            //Se o índice for primário clusteriza    
-            if (ind.getIndexType().equals("P")){
+            //Se o índice for primário clusteriza
+            if (ind.getIndexType().equals("P")) {
                 try {
-                    log.msg("Clustering Index "+indexName);
+                    log.msg("Clustering Index " + indexName);
                     String ddlCluster = "Cluster " + tableName + " Using " + indexName;
                     preparedStatement = driver.prepareStatement(ddlCluster);
                     driver.executeUpdate(preparedStatement);
                     preparedStatement.close();
-                    log.msg("Finish cluster index "+indexName);
+                    log.msg("Finish cluster index " + indexName);
                 } catch (SQLException e) {
                     log.error(e);
                 }
-                
+
             }
         }
     }
@@ -132,7 +132,6 @@ public class AgentReactorIndex extends AgentReactor{
     @Override
     public void updateStatusTuningActions() {
         try {
-            log.title("Persist update ddl create Index");
             for (Index ind : this.candidateIndexes) {
                 PreparedStatement preparedStatement = driver.prepareStatement(prop.getProperty("getSqlClauseToUpdateDDLCreateIndexToMaterialization"));
                 preparedStatement.setString(1, "R");
@@ -141,11 +140,9 @@ public class AgentReactorIndex extends AgentReactor{
                 preparedStatement.close();
             }
             candidateIndexes.clear();
-            log.endTitle();
         } catch (SQLException e) {
             log.error(e);
         }
     }
 
-    
 }

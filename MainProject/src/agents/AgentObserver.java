@@ -33,6 +33,7 @@ public class AgentObserver extends Agent {
 
     @Override
     public void run() {
+        log.msg("Execute agent " + this.getClass());
         while (true) {
             try {
                 this.getLastExecutedSQL();

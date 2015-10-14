@@ -58,7 +58,7 @@ public class ControllerMV extends Base {
                 log.msg(prop.getProperty("getSqlClauseToInsertDDLCreateMV"));
                 preparedStatementInsert.setString(1, mvQuery.getDDLCreateMV());
                 preparedStatementInsert.setLong(2, mvQuery.getHypoCreationCost());
-                preparedStatementInsert.setDouble(3, mvQuery.getHypoGainAC());
+                preparedStatementInsert.setLong(3, mvQuery.getHypoGainAC());
                 preparedStatementInsert.setString(4, "H");
                 mvQuery.setAnalyzeCount(1);
                 driver.executeUpdate(preparedStatementInsert);
@@ -78,7 +78,7 @@ public class ControllerMV extends Base {
             PreparedStatement preparedStatement = driver.prepareStatement(prop.getProperty("getSqlClauseToIncrementBenefictDDLCreateMV"));
             log.msg(prop.getProperty("getSqlClauseToIncrementBenefictDDLCreateMV"));
             preparedStatement.setLong(1, mvQuery.getHypoCreationCost());
-            preparedStatement.setDouble(2, mvQuery.getHypoGainAC());
+            preparedStatement.setLong(2, mvQuery.getHypoGainAC());
             preparedStatement.setInt(3, mvQuery.getId());
             driver.executeUpdate(preparedStatement);
         } catch (SQLException ex) {

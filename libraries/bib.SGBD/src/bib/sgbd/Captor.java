@@ -150,6 +150,7 @@ public final class Captor extends Base {
                     sql.setLastCapture();
                     sql.setSql(currentQuery);
                     sql.setSchemaDataBase(this.schema);
+                    sql.setPlan(this.getPlanExecution(sql.getSql()), prop.getProperty("sgbd"));
                     SQL temp = this.processAndgetCapturedSQLFromHistory(sql);
                     if (temp != null) {
                         this.lastcapturedSQL.add(temp);
@@ -171,13 +172,13 @@ public final class Captor extends Base {
                     return null;
                 } else {
                     workload.incrementCaptureCount(1);
+                    workload.setPlan(this.getPlanExecution(workload.getSql()), prop.getProperty("sgbd"));
                     workload.setTimeFirstCapture(sql.getTimeFirstCapture());
                     workload.setWaitAnalysis(true);
                     return workload;
                 }
             }
         }
-        sql.setPlan(this.getPlanExecution(sql.getSql()), prop.getProperty("sgbd"));
         sql.setSchemaDataBase(this.schema);
         sql.setCaptureCount(1);
         sql.setId(this.capturedSQL.size() + 1);

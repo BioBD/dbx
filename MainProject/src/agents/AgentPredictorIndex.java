@@ -18,7 +18,8 @@ import java.util.ArrayList;
  *
  * @author josemariamonteiro
  */
-public class AgentPredictorIndex extends AgentPredictor{
+public class AgentPredictorIndex extends AgentPredictor {
+
     protected ArrayList<ItemBag> itemsBag;
     protected ArrayList<Long> idDDLForMaterialization;
 
@@ -29,7 +30,6 @@ public class AgentPredictorIndex extends AgentPredictor{
     public void updateTuningActions() {
         try {
             if (this.idDDLForMaterialization.size() > 0) {
-                log.title("Persist update ddl create MV");
                 for (Long item : this.idDDLForMaterialization) {
                     PreparedStatement preparedStatement = driver.prepareStatement(prop.getProperty("getSqlClauseToUpdateDDLCreateIndexToMaterialization"));
                     log.msg("Hypothetical Index ID: " + item);
@@ -38,7 +38,6 @@ public class AgentPredictorIndex extends AgentPredictor{
                     driver.executeUpdate(preparedStatement);
                     preparedStatement.close();
                 }
-                log.endTitle();
             }
         } catch (SQLException e) {
             log.error(e);
@@ -62,9 +61,8 @@ public class AgentPredictorIndex extends AgentPredictor{
             //Altera os índices marcados com status=M para status=H, uma vez que estes não foram selecionados na última execução do algorítmo da mochila
             PreparedStatement preparedStatement = driver.prepareStatement(prop.getProperty("getSqlClauseToUpdateTemporaryDDLCreateIndexToMaterialization"));
             driver.executeUpdate(preparedStatement);
-            log.msg("Space for tuning remainder: " + (this.getSizeSpaceToTuning() / 1024 / 1024) + "GB");
-            //boolean hasItemsToMaterialize = false;
-            
+            //log.msg("Space for tuning remainder: " + (this.getSizeSpaceToTuning() / 1024 / 1024) + "GB");
+
             //Verifica se tem índice hipotético com benefício acumulado maior que o custo de criação
             ResultSet resultset = driver.executeQuery(prop.getProperty("getSqlDDLNotAnalizedIndexesPositivePredictor"));
             if (resultset != null) {
@@ -79,17 +77,13 @@ public class AgentPredictorIndex extends AgentPredictor{
             }
             resultset.close();
             preparedStatement.close();
-            
-            //Refatoração: Adicionar na mochila os índices reais e considerar o espaço todo
-            
 
+            //Refatoração: Adicionar na mochila os índices reais e considerar o espaço todo
         } catch (SQLException e) {
             log.error(e);
         }
     }
-    
+
     //getSqlDDLNotAnalizedIndexesPositivePredictor=select cid_id, cid_creation_cost, cid_index_profit from agent.tb_candidate_index where cid_index_profit > 0 and cid_index_profit > cid_creation_cost and cid_status = 'H'
     //getSqlDDLNotAnalizedIndexesNegativePredictor=select cid_id, cid_creation_cost, cid_index_profit from agent.tb_candidate_index where cid_index_profit < 0 and cid_status = 'R'
-
-    
 }
