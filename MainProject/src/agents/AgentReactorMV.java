@@ -32,6 +32,7 @@ public class AgentReactorMV extends AgentReactor {
 
     public void getDDLNotAnalized() {
         try {
+            this.MVCandiates.clear();
             ResultSet resultset = driver.executeQuery(prop.getProperty("getSqlDDLNotAnalizedReactor"));
             if (resultset != null) {
                 while (resultset.next()) {
@@ -54,10 +55,11 @@ public class AgentReactorMV extends AgentReactor {
         for (MaterializedView workload : this.MVCandiates) {
             if (!workload.getHypoMaterializedView().isEmpty()) {
                 try {
-                    log.msg("Materializando: " + workload.getHypoMaterializedView());
+                    log.msg("Materializing view: " + workload.getHypoMaterializedView());
                     preparedStatement = driver.prepareStatement(workload.getHypoMaterializedView());
                     driver.executeUpdate(preparedStatement);
                     preparedStatement.close();
+                    log.msg("Finish materializing view: " + workload.getHypoMaterializedView());
                 } catch (SQLException ex) {
                     log.error(ex);
                 }
@@ -69,7 +71,7 @@ public class AgentReactorMV extends AgentReactor {
     public void updateStatusTuningActions() {
         try {
             for (MaterializedView currentQuery : this.MVCandiates) {
-                PreparedStatement preparedStatement = driver.prepareStatement(prop.getProperty("getSqlClauseToUpdateDDLCreateMVToMaterialization"));
+                PreparedStatement preparedStatement = driver.prepareStatement(prop.getProperty("getSqlClauseToUpdateDDLCreateMVToMaterializationReactor"));
                 preparedStatement.setString(1, "R");
                 preparedStatement.setInt(2, currentQuery.getId());
                 driver.executeUpdate(preparedStatement);

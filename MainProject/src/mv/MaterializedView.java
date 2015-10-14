@@ -67,7 +67,7 @@ public class MaterializedView extends SQL {
     public void setHypoGainAC() {
         this.hypoGainAC = this.hypoGain * this.getCaptureCount();
         if (this.hypoGainAC < 0) {
-            this.hypoGainAC = 0;
+            this.hypoGainAC = -1;
         }
     }
 
@@ -120,7 +120,7 @@ public class MaterializedView extends SQL {
     }
 
     public String getNameMaterizedView() {
-        return "v_dbx_view_" + this.getHypoMaterializedView().hashCode();
+        return ("v_dbx_view_" + this.getHypoMaterializedView().hashCode()).replace("-", "");
     }
 
     private long getHypoCost() {
