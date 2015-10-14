@@ -117,7 +117,7 @@ public class IHSTIS_CI {
                 lCandidates.add(indexAuxS);
             }
             //Adiciona o índice composto
-            if (filterColumns.size()>0){
+            if (filterColumns.size()>1){
                 lCandidates.add(composedIndexP);
                 lCandidates.add(composedIndexS);
             }
