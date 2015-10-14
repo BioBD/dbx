@@ -20,10 +20,10 @@ import mv.MaterializedView;
  * @author josemariamonteiro
  */
 public class AgentReactorIndex extends AgentReactor{
-    ArrayList<Index> candiateIndexes;
+    ArrayList<Index> candidateIndexes;
 
     public AgentReactorIndex() {
-        this.candiateIndexes = new ArrayList<>();
+        this.candidateIndexes = new ArrayList<>();
     }
 
     @Override
@@ -59,7 +59,7 @@ public class AgentReactorIndex extends AgentReactor{
                         }
                     }
                     ind.setIndexName(indexName);
-                    candiateIndexes.add(ind);
+                    candidateIndexes.add(ind);
                     preparedStatement.close();
                     resultsetColumn.close();
                 }    
@@ -74,7 +74,7 @@ public class AgentReactorIndex extends AgentReactor{
     public void executeTuningActions() {
         PreparedStatement preparedStatement;
         //Percorre os índices a serem criados fisicamente (como índices reais)
-        for (Index ind : this.candiateIndexes) {
+        for (Index ind : this.candidateIndexes) {
             //Monta o comando CREATE INDEX
             String tableName = ind.getTableName();
             ArrayList<Column> columns = ind.columns;
@@ -86,7 +86,7 @@ public class AgentReactorIndex extends AgentReactor{
             + indexName 
             + " ON " 
             + tableName 
-            + "USING btree (";
+            + " USING btree (";
             
             for (int i=0;i<columns.size();i++){
                 columnName = columns.get(i).getName();
@@ -114,9 +114,8 @@ public class AgentReactorIndex extends AgentReactor{
             if (ind.getIndexType().equals("P")){
                 try {
                     log.title("Cluster Index");
-                    preparedStatement = driver.prepareStatement(prop.getProperty("setDMLClusterIndexonpostgresql"));
-                    preparedStatement.setString(1, tableName);
-                    preparedStatement.setString(2, indexName);
+                    String ddlCluster = "Cluster " + tableName + " Using " + indexName;
+                    preparedStatement = driver.prepareStatement(ddlCluster);
                     driver.executeUpdate(preparedStatement);
                     preparedStatement.close();
                 } catch (SQLException e) {
@@ -131,7 +130,7 @@ public class AgentReactorIndex extends AgentReactor{
     public void updateStatusTuningActions() {
         try {
             log.title("Persist update ddl create Index");
-            for (Index ind : this.candiateIndexes) {
+            for (Index ind : this.candidateIndexes) {
                 PreparedStatement preparedStatement = driver.prepareStatement(prop.getProperty("getSqlClauseToUpdateDDLCreateIndexToMaterialization"));
                 preparedStatement.setString(1, "R");
                 preparedStatement.setInt(2, ind.getCidId());
