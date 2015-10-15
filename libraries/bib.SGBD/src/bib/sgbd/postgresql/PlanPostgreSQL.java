@@ -228,4 +228,15 @@ public class PlanPostgreSQL extends Plan {
 
         return hp;
     }
+
+    @Override
+    public float getDuration() {
+        if ((!this.getPlan().isEmpty()) && (this.getPlan().contains("Total runtime"))) {
+            int ini = this.getPlan().indexOf("Total runtime:") + 14;
+            int end = this.getPlan().substring(ini).indexOf("ms") + ini;
+            return Float.valueOf(this.getPlan().substring(ini, end));
+        } else {
+            return 0;
+        }
+    }
 }

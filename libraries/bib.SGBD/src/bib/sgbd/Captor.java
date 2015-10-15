@@ -211,10 +211,6 @@ public final class Captor extends Base {
         return query.toLowerCase().contains(prop.getProperty("signature").toLowerCase());
     }
 
-    private boolean isNoQuerySelect(String query) {
-        return !query.toLowerCase(Locale.getDefault()).contains("select");
-    }
-
     public ArrayList<SQL> getTopCapturedQuery() {
         SQL aux;
         for (int i = 0; i < this.capturedSQL.size(); i++) {
@@ -247,7 +243,12 @@ public final class Captor extends Base {
         String partitionedPlan = "";
         if (!query.isEmpty()) {
             try {
-                ResultSet result = driver.executeQuery(prop.getProperty("signature") + " EXPLAIN " + query);
+                ResultSet result;
+                if (prop.getProperty("executeExplainAnalyseForCaptureWorkload").equals("1")) {
+                    result = driver.executeQuery(prop.getProperty("signature") + " EXPLAIN (ANALYZE TRUE, TIMING FALSE) " + query);
+                } else {
+                    result = driver.executeQuery(prop.getProperty("signature") + " EXPLAIN " + query);
+                }
                 while (result.next()) {
                     partitionedPlan += "\n" + result.getString(1);
                 }
@@ -487,6 +488,7 @@ public final class Captor extends Base {
                     preparedStatement.setString(2, sql.getPlan());
                     preparedStatement.setTimestamp(3, new java.sql.Timestamp(sql.getTimeFirstCapture().getTime()));
                     preparedStatement.setString(4, sql.getType());
+                    preparedStatement.setFloat(5, sql.getDuration());
                     driver.executeUpdate(preparedStatement);
                 }
             } catch (SQLException e) {

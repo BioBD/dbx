@@ -819,4 +819,8 @@ public class SQL {
         }
     }
 
+    public float getDuration() {
+        return this.plan.getDuration();
+    }
+
 }

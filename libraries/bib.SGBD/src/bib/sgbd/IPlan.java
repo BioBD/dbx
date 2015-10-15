@@ -20,4 +20,6 @@ public interface IPlan {
     long getSizeRow();
 
     ArrayList<SeqScan> getSeqScanOperations();
+
+    float getDuration();
 }
