@@ -231,8 +231,9 @@ public class PlanPostgreSQL extends Plan {
 
     @Override
     public float getDuration() {
-        if ((!this.getPlan().isEmpty()) && (this.getPlan().contains("Total runtime"))) {
-            int ini = this.getPlan().indexOf("Total runtime:") + 14;
+        System.out.println(this.getPlan());
+        if ((!this.getPlan().isEmpty()) && (this.getPlan().contains("Execution time"))) {
+            int ini = this.getPlan().indexOf("Execution time:") + 15;
             int end = this.getPlan().substring(ini).indexOf("ms") + ini;
             return Float.valueOf(this.getPlan().substring(ini, end));
         } else {

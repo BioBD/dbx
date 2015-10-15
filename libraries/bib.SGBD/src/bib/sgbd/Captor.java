@@ -245,7 +245,7 @@ public final class Captor extends Base {
             try {
                 ResultSet result;
                 if (prop.getProperty("executeExplainAnalyseForCaptureWorkload").equals("1")) {
-                    result = driver.executeQuery(prop.getProperty("signature") + " EXPLAIN (ANALYZE TRUE, TIMING FALSE) " + query);
+                    result = driver.executeQuery(prop.getProperty("signature") + " EXPLAIN " + query);
                 } else {
                     result = driver.executeQuery(prop.getProperty("signature") + " EXPLAIN " + query);
                 }
@@ -489,6 +489,7 @@ public final class Captor extends Base {
                     preparedStatement.setTimestamp(3, new java.sql.Timestamp(sql.getTimeFirstCapture().getTime()));
                     preparedStatement.setString(4, sql.getType());
                     preparedStatement.setFloat(5, sql.getDuration());
+                    System.out.println(sql.getDuration());
                     driver.executeUpdate(preparedStatement);
                 }
             } catch (SQLException e) {
