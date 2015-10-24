@@ -1,4 +1,15 @@
-var urlpie ='consultapie.php?order=wld_capture_count';
+var urlpie ='consulta-workload.php?order=wld_capture_count';
+
+var contadorWorkload = setInterval(atualizaWorkload, 10000);
+
+function atualizaWorkload(){
+    $.getJSON(urlpie, function(data){
+        optionspie.series[0].data = data;
+        optionspie.series[0].animation = false;
+        chart = new Highcharts.Chart(optionspie);
+        
+    });
+};
 
 var optionspie = {
         chart:{
@@ -17,7 +28,7 @@ var optionspie = {
             text: 'Workload'
         },
         tooltip: {
-            pointFormat: '{series.name}: <b>{point.percentage:.1f}%</b><br/>{point.text}'
+            pointFormat: '{series.name}: <b>{point.percentage:.1f}%</b><br/>'
         },
         plotOptions: {
             pie: {
@@ -37,11 +48,12 @@ var optionspie = {
 
 $('#botao-pizza').click(function botao(){  
     var parametro = "order="+$('input[name=order]:checked', '#pieForm').val();
-    var prefixo = "consultapie.php?";
+    var prefixo = "consulta-workload.php?";
     urlpie = prefixo+parametro;
     
     $.getJSON(urlpie, function(data){   
         optionspie.series[0].data = data;
+        optionspie.series[0].animation = true;
         chart = new Highcharts.Chart(optionspie);
     });
 });
@@ -52,6 +64,7 @@ $('#botao-pizza').click(function botao(){
 $(document).ready(function inicializar(){
     $.getJSON(urlpie, function(data){
         optionspie.series[0].data = data;
+        optionspie.series[0].animation = true;
         chart = new Highcharts.Chart(optionspie);
         
     });

@@ -2,19 +2,35 @@
 	<head>
 		<meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
-		<title>Visualização 1</title>
+		<link href="img/favicon.png" rel="icon">
+        <title>DBX</title>
 		
-		<!--JS core -->
-		<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
+		<!--JS core 
+        ==================================================================-->
+		<script src="js/jquery-2.1.4.min.js"></script>
         <script src="js/bootstrap.js"></script>
-		<script src="http://code.highcharts.com/highcharts.js"></script>
-		
-		<!-- CSS core -->
+        <script src="js/highcharts.js"></script>
+        <script src="js/exporting.js"></script>
+        
+        
+		<!-- CSS core 
+        ==================================================================-->
 		<link href="css/bootstrap.css" rel="stylesheet">
 		<link href="css/custom.css" rel="stylesheet">
 		
 	</head>
 	<body>
+        <header class="navbar navbar-default navbar-fixed">
+			<div class="container">
+				<div class="navbar-header">
+					<a class="navbar-brand" href="#"><img src="img/logo.png" alt="DBX"></a>
+				</div>
+                <div class="navbar-left">
+                    <p>To tune or not to tune</p>
+                </div>
+            </div>
+        </header>
+        
 			<div class="container">
             <div class="row">
 				<!--Inicio do Grafico: Managed Indexes  
@@ -66,6 +82,7 @@
                 =========================================================================================--> 
                 <div class="col-md-6">
                     <div id="grafico-barras-2">
+                        <!-- Div onde será renderizado o grafico -->
                     </div>
                     <div id = "formulario">
                         <form id="barForm-2" class="form-inline" onsubmit="return false">
@@ -106,6 +123,7 @@
             =========================================================================================-->
             <div id="teste-div" class="col-md-6">
                 <div id="grafico-pizza">
+                    <!-- Div onde será renderizado o grafico -->
                 </div>
                 <div id = "formulario">
                     <form id="pieForm" class="form-inline" onsubmit="return false">
@@ -123,6 +141,7 @@
             </div>
             <!--Fim do Grafico: Workload  
             =========================================================================================-->
+            
             <?php include("tabela.php");?>
             <div id="teste-div" class="col-md-6">
                 <div class="tabela">
@@ -138,7 +157,10 @@
                             </tr>
                         </thead>    
                         <?php 
+                            //funcao que retorna um Array com os dados necessarios para povar a tabela
                             $dados = consulta();
+                            //Inicio: Criacao dinamica da tabela
+                            //=====================================================================================-->
                             for($i = 0; $i < sizeof($dados['id']); $i++){
                         ?>
                         <tbody>
@@ -168,26 +190,36 @@
                                     <tr>
                                         <td><?php echo $dados['indexes'][$i]?></td>
                                     </tr>
+                                        <td><b>Related MVs</b></td> 
+                                    </tr>
+                                    <tr>
+                                        <td><?php echo $dados['vms'][$i]?></td>
+                                    </tr>
                                 </table>
                             </td>
                         </tbody>    
                         <?php    
                             }
+                            //Fim: Criacao dinamica da tabela
+                            //=====================================================================================-->
                         ?>
                     </table>
                     <!-- Fim Tabela Worload
                     ============================================================================================-->
                 </div>
             </div>
-                
         </div>
         
-        <div id="teste-div-2" class="row">
+        <div class="row">
             <!--Inicio do Grafico: Index Fragmentation 
             =========================================================================================-->
             <div class="col-md-12">
                 <div id="grafico-coluna">
+                    <!--Div onde será renderizado o grafico -->
                 </div>
+                
+                <!-- Inicio: Formulario para receber a Proper Frag. 
+                ============================================================================================-->    
                 <div class="col-md-offset-9 col-md-3">
                     <div class="input-group">
                         <input id="proper-frag" type="text" class="form-control" placeholder="Enter Proper Fragmentation">
@@ -195,21 +227,34 @@
                             <button class="btn btn-default" type="button" onclick="setProperFrag()"><b>Ok!</b></button>
                         </span>
                     </div><!-- /input-group -->
-                </div>    
+                </div>
+                <!-- Inicio: Formulario para receber a Proper Frag. 
+                ============================================================================================--> 
+            
             </div>
+            
             <!--Fim do Grafico: Index Fragmentation  
             =========================================================================================-->
         </div>
         
-        <!--Inclusão dos arquivos .js
+        <div class="row">
+            <div class="col-md-12">
+                <div id="grafico-linha">
+                </div>
+            </div>    
+        </div>
+                
+                
+        <!-- Inclusão dos arquivos .js 
         =========================================================================================--> 
         <script type="text/javascript">
             <?php
                 include("js/custom.js");
-                include("barchart.js");
-                include("piechart.js");
-                include("columnchart.js");    
-                include("barchart2.js");
+                include("js/barchart.js");
+                include("js/workload.js");
+                include("js/columnchart.js");    
+                include("js/barchart2.js"); 
+                include("js/line.js");
             ?>
         </script>
         </div>

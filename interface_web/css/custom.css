@@ -1,13 +1,9 @@
-#teste.row{
-    height: 450px;
-}
-.container{
-    width: 98%;
-}
 
 @media(max-width : 993px){
     #teste.row{
         height: auto;
+        padding-top: 20px;
+        overflow: none;
     }
 }
 
@@ -16,6 +12,25 @@
     overflow: hidden;
 }
 
+/*Tags Gerais*/
+
+.navbar{
+	margin-bottom: 0;
+	border-top: 5px solid #7CB5EC;
+	text-transform: uppercase;
+    color: #A3A3A3;
+}
+
+p{
+    margin-left: -20px;
+    margin-top: 9px;
+    font-size: 22px;
+}
+
+img{
+    margin-top: -30px;
+    height: 80px;
+}
 
 html{
     margin-top: 30px;
@@ -28,7 +43,13 @@ body{
 .row{
     padding-top: 15px;   
 }
-
+/*Estilo dos Formularios e componentes*/
+#teste.row{
+    height: 450px;
+}
+.container{
+    width: 98%;
+}
 .checkbox{
 	padding: 25px 25px 0 25px;
 	vertical-align: top !important;
@@ -61,6 +82,8 @@ label{
 	padding-bottom: 10px;
 }
 
+/*Estilo dos graficos*/
+
 #grafico-barras{
 	height: 50%;
 }
@@ -81,6 +104,12 @@ label{
 	height: 50%;
     margin-bottom: 15px;
 }
+
+#slogan{
+    vertical-align: middle;
+}
+
+/*Estilo da tabela*/
 
 .tabela{
     overflow: auto;

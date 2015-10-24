@@ -1,5 +1,5 @@
 
-var urlbar ='consultabar.php?inicio=0';
+var urlbar ='consulta-managed-indexes.php?inicio=0';
 
 var contadorBar = setInterval(atualizarBar, 10000);
 
@@ -41,7 +41,7 @@ function url(inicioBar){
     var parametros = [$('input[name=status]:checked', '#barForm').val(), $('input[name=type]:checked', '#barForm').val(), $('input[name=order]:checked', '#barForm').val()];
     //para o timer e atualiza o grafico
     clearInterval(contadorBar);
-    var prefixo = "consultabar.php?";
+    var prefixo = "consulta-managed-indexes.php?";
     var status = "status="+parametros[0];
     var type = "type="+parametros[1];
     var order = "order="+parametros[2];

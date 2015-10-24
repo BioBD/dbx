@@ -244,11 +244,7 @@ public final class Captor extends Base {
         if (!query.isEmpty()) {
             try {
                 ResultSet result;
-                if (prop.getProperty("executeExplainAnalyseForCaptureWorkload").equals("1")) {
-                    result = driver.executeQuery(prop.getProperty("signature") + " EXPLAIN " + query);
-                } else {
-                    result = driver.executeQuery(prop.getProperty("signature") + " EXPLAIN " + query);
-                }
+                result = driver.executeQuery(prop.getProperty("signature") + " EXPLAIN " + query);
                 while (result.next()) {
                     partitionedPlan += "\n" + result.getString(1);
                 }
@@ -488,8 +484,7 @@ public final class Captor extends Base {
                     preparedStatement.setString(2, sql.getPlan());
                     preparedStatement.setTimestamp(3, new java.sql.Timestamp(sql.getTimeFirstCapture().getTime()));
                     preparedStatement.setString(4, sql.getType());
-                    preparedStatement.setFloat(5, sql.getDuration());
-                    System.out.println(sql.getDuration());
+                    preparedStatement.setFloat(5, this.getTimeDurationFromSQL(sql.getSql()));
                     driver.executeUpdate(preparedStatement);
                 }
             } catch (SQLException e) {
@@ -497,6 +492,30 @@ public final class Captor extends Base {
             }
         }
 
+    }
+
+    public float getTimeDurationFromSQL(String query) {
+        String partitionedPlan = "";
+        if (!query.isEmpty()) {
+            try {
+                ResultSet result;
+                result = driver.executeQuery(prop.getProperty("signature") + " EXPLAIN (ANALYZE TRUE, TIMING FALSE)" + query);
+                while (result.next()) {
+                    partitionedPlan += "\n" + result.getString(1);
+                }
+                result.close();
+            } catch (SQLException ex) {
+                log.msg(query);
+                log.error(ex);
+            }
+        }
+        if ((!partitionedPlan.isEmpty()) && (partitionedPlan.contains("Execution time"))) {
+            int ini = partitionedPlan.indexOf("Execution time:") + 15;
+            int end = partitionedPlan.substring(ini).indexOf("ms") + ini;
+            return Float.valueOf(partitionedPlan.substring(ini, end));
+        } else {
+            return 0;
+        }
     }
 
 }

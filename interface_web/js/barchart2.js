@@ -1,5 +1,5 @@
 
-var urlbar2 ='consultabar2.php?inicio=0';
+var urlbar2 ='consulta-materialized-views.php?inicio=0';
 
 var contadorBar2 = setInterval(atualizarBar2, 10000);
 
@@ -40,7 +40,7 @@ function subtraiInicioBar2(){
 function url2(inicio){
     var parametros = [$('input[name=status]:checked', '#barForm-2').val(), $('input[name=order]:checked', '#barForm-2').val()];
     //para o timer e atualiza o grafico
-    var prefixo = "consultabar2.php?";
+    var prefixo = "consulta-materialized-views.php?";
     var status = "status="+parametros[0];
     var order = "order="+parametros[1];
     urlbar2 = prefixo+status+"&"+order+"&"+"inicio="+inicio;

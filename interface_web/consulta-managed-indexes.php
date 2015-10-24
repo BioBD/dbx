@@ -22,9 +22,10 @@
             $operacao2="SELECT cic_column_name from  agent.tb_candidate_index_column WHERE cid_id=".$linha['cid_id'];
             $consulta2=pg_query($conexao,$operacao2) or die ('falha na operacao: '.pg_last_error());
         while($linha2=pg_fetch_array($consulta2)){
-            $nome.=" ".trim($linha2['cic_column_name']);
+            $nome.=" ".trim($linha2['cic_column_name']).",";
 
         }
+            $nome=rtrim($nome,",");
             $nome.=")'";
             //echo $nome;
             array_push($dados['nomes'],$nome);
