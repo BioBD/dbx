@@ -1,6 +1,0 @@
-/*
- * Biblioteca de codigo fonte criada por Rafael Pereira
- * Proibido o uso sem autorizacao formal do autor
- *
- * rpoliveirati@gmail.com
- */

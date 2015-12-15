@@ -1,5 +1,0 @@
-11:24:13= + 0s   = Conectado ao bd jdbc:postgresql://localhost:5432/:tpc-h
-11:24:13= + 0s   = Aplicação versão: 0.1
-11:24:13= + 0s   = ============================== Reading schema database ==============================
-11:24:13= + 0s   = SELECT  nspname as schema, relname as tablename, reltuples as numberrows, relpages as numberpages FROM pg_class C LEFT JOIN pg_namespace N ON (N.oid = C.relnamespace) WHERE  nspname NOT IN ('pg_catalog', 'information_schema') AND relkind='r'  ORDER BY reltuples DESC;
-11:24:13= + 0s   = java.sql.SQLFeatureNotSupportedException: Método org.postgresql.jdbc4.Jdbc4Statement.closeOnCompletion() ainda não foi implementado.
