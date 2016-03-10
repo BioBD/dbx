@@ -1,0 +1,78 @@
+package br.com.iqt;
+
+import java.sql.*;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
+public class AgentWorkLoad {
+    private Dbms dbms;
+    private String driver;
+    private String url;
+    private String sql;
+    
+    private static final String driverPostgresql = "org.postgresql.Driver";
+    private static final String driverSqlServer = "com.microsoft.sqlserver.jdbc.SQLServerDriver";
+    private static final String driverOracle = "oracle.jdbc.driver.OracleDriver";
+
+    public AgentWorkLoad(Dbms dbms) {
+        this.dbms = dbms;
+        switch(dbms.getDbms()){
+            case Dbms.POSTGRESQL:
+                this.driver = AgentWorkLoad.driverPostgresql;
+                this.url = "jdbc:postgresql://" + dbms.getServer() + ":" + dbms.getPort() + "/" + dbms.getDatabase();
+                this.sql = "select pg_stat_get_backend_activity(s.backendid) as current_query "
+                        + "from (select pg_stat_get_backend_idset() as backendid) as s";
+                break;
+            case Dbms.SQLSERVER:
+                this.driver = AgentWorkLoad.driverSqlServer;
+                this.url = "jdbc:sqlserver://" + dbms.getServer() + ";database=" + dbms.getDatabase();
+                this.sql = "select sql as current_query from master.dbo.syscacheobjects "
+                        + "where objtype='Prepared' and cacheobjtype='Executable Plan' and sql like'()%' "
+                        + "group by UPPER(sql)";
+                break;
+            case Dbms.ORACLE:
+                this.driver = AgentWorkLoad.driverOracle;
+                this.url = "jdbc:oracle:thin:@" + dbms.getServer() + ":" + dbms.getPort() + ":orcl";
+                this.sql = "select sql.sql_fulltext as current_query from v$sql sql where exists(select ash.sql_id, "
+                        + "ash.sql_plan_hash_value from v$active_session_history ash where ash.sql_plan_hash_value = "
+                        + "sql.plan_hash_value and ash.sql_id=sql.sql_id)";
+                break;
+        }
+    }
+    
+    public ArrayList getWorkLoad() throws ClassNotFoundException, SQLException{
+        ArrayList workLoadList = new ArrayList();
+        
+        Class.forName(driver);
+        Connection connection = (Connection) DriverManager.getConnection(url, dbms.getUser(), dbms.getPassword());
+        Statement statement = connection.createStatement();
+        ResultSet resultSet = statement.executeQuery(sql);
+        while(resultSet.next()) {
+            String query = resultSet.getString("current_query");
+            if(!query.equals("<IDLE>"))
+                workLoadList.add(query);
+        }
+        connection.close();
+        return workLoadList;
+    }
+    
+    public static void main(String args[]){
+        Dbms d = new Dbms(Dbms.POSTGRESQL, "localhost", "5432", "tpch", "postgres", "123456");
+        AgentWorkLoad aw = new AgentWorkLoad(d);
+        try {
+            ArrayList workLoad = aw.getWorkLoad();
+            for (Iterator it = workLoad.iterator(); it.hasNext();) {
+                Object e = it.next();
+                System.out.println(e.toString());
+            }
+        } catch (ClassNotFoundException ex) {
+            Logger.getLogger(AgentWorkLoad.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (SQLException ex) {
+            Logger.getLogger(AgentWorkLoad.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        
+        
+    }
+}

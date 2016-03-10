@@ -512,5 +512,19 @@ public final class Captor {
             return 0;
         }
     }
-
+    /* Implementation to DBx-Iqt */
+    public ArrayList<SQL> getWorkloadFromTBWorkloadToIqt() {
+        ArrayList<SQL> sqlList = new ArrayList<>();
+        try {
+            ResultSet resultset = driver.executeQuery(config.getProperty("getSqlQueriesObserver"));
+            while (resultset.next()) {
+                SQL sql = new SQL();
+                sql.setResultSet(resultset);
+                sqlList.add(sql);
+            }
+        }catch (SQLException ex) {
+            log.error(ex);
+        }
+        return sqlList;
+    }
 }

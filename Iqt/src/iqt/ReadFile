@@ -1,0 +1,43 @@
+package iqt;
+
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
+
+public class ReadFile {
+    public static void main(String[] args) throws IOException {
+        String fileInputName = null, fileOutputName = null;
+        
+        if(args.length > 1){
+            fileInputName = args[0];
+            fileOutputName = args[1];
+        }else{
+            fileInputName = "d:\\input.txt";
+            fileOutputName = "d:\\output.txt";
+        }
+        File f = new File(fileInputName);
+        
+        if(!f.exists()){
+            System.out.println("Arquivo '" + fileInputName + "' não encontrado!");
+            System.exit(-1);
+        }
+        FileWriter out = new FileWriter(fileOutputName,false);
+        try{
+            BufferedReader in = new BufferedReader(new FileReader(f));
+            String lineIn, lineOut = "";
+            AgentRewriter rw = new AgentRewriter(Dbms.POSTGRESQL);
+            while((lineIn = in.readLine())!=null){
+                lineOut = rw.analyseStatement(lineIn) + ";\r\n";
+                out.write(lineOut);
+            }
+            
+            in.close();
+            out.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        
+    }
+}  

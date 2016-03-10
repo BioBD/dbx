@@ -1,0 +1,243 @@
+    .invisible{
+        display: none;
+    }
+    
+
+    #menu-heuristics{
+        position: absolute;
+        right: 5%;
+        top: 3%;
+    }
+
+    #limit-menu-heuristics{
+        display:none;
+        position: absolute;
+        right: 5%;
+        top: 8%;
+        
+        width: 450px;
+        background-color: #000000;
+        box-shadow: 1px 1px 12px #000;
+        opacity: 0.9;
+        
+       
+        color: #FFFFFF;
+        margin-top: 45px;
+        //text-shadow: 1px 1px 1px #FFF;
+    }
+    
+    #element-menu-heuristics{
+        margin: 0px auto;
+        margin-bottom: 15px;
+        margin-left: 15px;
+        margin-top: 15px;
+        margin-right: 15px;        
+    }
+    
+    
+/*BUTTONS*/
+    #btns-table{
+        margin: 0px auto;
+        margin-top: 5px;
+        right: 40px;
+    }
+
+    #btn-file{
+
+      margin: 3px;
+    }
+
+    #btn-wload{
+      margin: 3px;
+    }
+
+/* BARRA DE MANU OU TITULO */
+    #title-iqt{
+        margin: 0px auto;
+        margin-bottom: 0px;
+    }
+
+/* DIV PRINCIPAL */
+    #form-main-iqt{
+        margin: 0 auto;
+        margin-top: 15px;
+        padding: 5px;
+        width: 500px;
+        height: auto;
+        position: relative;
+        box-shadow: 1px 1px 12px #000;
+    }
+
+/* DIV DOS RESULTADOS DAS CONSULTAS */  
+    #original{
+        margin: 0 auto;
+        //margin-bottom: 10px;
+
+    }
+    
+    #form-main-query-original{
+        
+        margin: 0 auto;
+        //margin-top: 5px;
+        width: 450px;
+        height: 130px;
+        border: 2px #dcdcdc solid;
+        background-color: #FFFFFF;
+    }
+
+    #form-main-query-original-title{
+        margin: 0px auto;
+        width: 100%;
+        height: 30px;
+        padding: 5px;
+        text-align: left;
+        background-color: #e0e0e0;
+    }
+
+    #form-main-query-original-body{
+        margin: 0px auto;
+        width: 100%;
+        height: 95px;
+        resize: none;
+        border: 0px;
+    }
+/* DIV DOS RESULTADOS DAS CONSULTAS */  
+    
+    #form-main-plan-original{
+        
+        margin: 0 auto;
+        //margin-top: 5px;
+        width: 450px;
+        height: 130px;
+        border: 2px #dcdcdc solid;
+        background-color: #FFFFFF;
+    }
+
+    #form-main-plan-original-title{
+        margin: 0px auto;
+        width: 100%;
+        height: 30px;
+        padding: 5px;
+        text-align: left;
+        background-color: #e0e0e0;
+    }
+
+    #form-main-plan-original-body{
+        margin: 0px auto;
+        width: 100%;
+        height: 95px;
+        resize: none;
+        border: 0px;
+    }
+    
+/* DIV DAS TABELAS */
+    #form-main-table{
+        margin: 0px auto;
+       //margin-top: 35px;
+    }
+
+    #form-main-table-bar{
+        margin: 0 auto;
+        margin-top: 5px;
+        background-color: #e0e0e0;
+        width: 450px;
+        height: 30px;
+        padding: 8px;
+        text-align: left;
+    }
+    
+    #form-main-table-sqls{
+        margin: 0 auto;
+        margin-bottom: 5px;
+        border: 1px #dcdcdc solid;
+        background-color: #FFFFFF;
+        width: 450px; 
+        height: 115px; 
+        overflow: auto;
+    }
+    
+/* DIV DOS PLANO DAS REESCRITAS */
+    
+    #form-main-plan-result{
+        margin: 0 auto;
+        //margin-top: 10px;
+        width: 450px;
+        height: 130px;
+        border: 2px #dcdcdc solid;
+        background-color: #FFFFFF;
+    }
+
+    #form-main-plan-result-title{
+        margin: 0px auto;
+        margin-top: 0px;
+        width: 100%;
+        height: 30px;
+        padding: 5px;
+        text-align: left;
+        background-color: #e0e0e0;
+    }
+
+    #form-main-plan-result-body{
+        margin: 0px auto;
+        width: 100%;
+        height: 95px;
+        resize: none;
+        border: 0px;
+        overflow: auto;
+    }
+
+/* DIV DOS RESULTADOS DAS REESCRITAS */
+    #result{
+        display:none;
+        margin: 0px auto;
+        margin-bottom: 10px;
+    }
+    
+    #form-main-query-result{
+        margin: 0 auto;
+        //margin-top: 10px;
+        width: 450px;
+        height: 130px;
+        border: 2px #dcdcdc solid;
+        background-color: #FFFFFF;
+    }
+
+    #form-main-query-result-title{
+        margin: 0px auto;
+        margin-top: 0px;
+        width: 100%;
+        height: 30px;
+        padding: 5px;
+        text-align: left;
+        background-color: #e0e0e0;
+    }
+
+    #form-main-query-result-body{
+        margin: 0px auto;
+        width: 100%;
+        height: 95px;
+        resize: none;
+        border: 0px;
+    }
+
+/* AJUDA A FAZER O EFEITO BACANA DA TABELA PRINCIPAL */
+    .hidden-row{
+        display: none;
+    }
+
+/* CLICA NA CONSULTA */
+    .clicado{
+        background: #000; color:#fff;
+    }
+    
+    .desclicado{
+        background: #fff; color: #000;
+    }
+    
+/* BUTTONS DA TABELA ALINHAMENTO */
+    #table-buttons{
+        margin: 0px auto;
+        margin-top: 10px;
+        padding: 5px;
+    }
+

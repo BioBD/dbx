@@ -1,0 +1,118 @@
+package br.com.iqt;
+
+import br.com.iqt.exception.SqlInputException;
+import br.com.iqt.util.Indenter;
+import br.com.iqt.zql.ParseException;
+import br.com.iqt.zql.ZConstant;
+import br.com.iqt.zql.ZExp;
+import br.com.iqt.zql.ZExpression;
+import br.com.iqt.zql.ZQuery;
+import br.com.iqt.zql.ZSelectItem;
+import br.com.iqt.zql.ZStatement;
+import br.com.iqt.zql.ZqlParser;
+import java.beans.Expression;
+import java.io.ByteArrayInputStream;
+import java.util.Collection;
+import java.util.Vector;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
+
+
+/*
+ * To change this template, choose Tools | Templates
+ * and open the template in the editor.
+ */
+
+/**
+ *
+ * @author Arlino
+ */
+
+public class StringDemo {
+    
+    public static void main(String args[]){
+        
+        AgentRewriter rw = new AgentRewriter(Dbms.POSTGRESQL);
+        HeuristicSet h = new HeuristicSet(Dbms.POSTGRESQL);
+        String sql;
+/*
+        sql = "SELECT *2 INTO temp FROM tb1, tb2; select c1,c2,c3 from temp where c2 >= all(select c2 from tb2 where c3 >= all(select c3 from tb3));";
+        sql = "select c1,c2 from tb1 inner join tb2 on (c1=c2) where c3 in (select c3 from tb3 inner join tb4 on (c3=c4) where a=b)";
+        sql = "select c1,c2 from tb1 where c3 in (select c3 from tb3 inner join tb4 on (c3=c4) where a=b) and u=i";
+        
+        String newSql="";
+        try {
+            newSql = rw.analyseStatement(sql);
+            System.out.println(rw.isRewrited()?"Foram realizadas " + rw.getCount() + " reescritas!\n":"Não houve reescrita!\n");
+            System.out.println("Tempo: " + rw.getTimeNano());
+            System.out.println("Tempo: " + rw.getTimeSecond());
+            System.out.println("\nResultado:\n" + Indenter.ident(newSql));
+            Vector transformationList = (Vector)rw.getTransformationList();
+            if(transformationList != null){
+                System.out.println("\nREESCRITAS:\n");
+                for (Object object : transformationList) {
+                    Transformation t = (Transformation)object;
+                    System.out.println(t);
+                    System.out.println();
+                }
+            }
+        } catch (ParseException ex) {
+            System.out.println("Tempo: " + rw.getTimeSecond());
+            Logger.getLogger(StringDemo.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        catch (SqlInputException ex) {
+            System.out.println("Tempo: " + rw.getTimeSecond());
+            Logger.getLogger(StringDemo.class.getName()).log(Level.SEVERE, null, ex);
+        }
+  
+ * 
+ */
+         
+        
+
+        try{
+            
+            sql = "SELECT DISTINCT Sum(PrecoUnitario * Quantidade) AS Sales,(Nome + ' ' + Sobrenome) AS Name "
+                    + "FROM Empregados INNER JOIN ( Pedidos INNER JOIN DetalhesPedidos ON "
+                    + "Pedidos.IdPedido = DetalhesPedidos.IdPedido) ON (Empregados.IdEmpregado = Pedidos.IdEmpregado) ;";
+            
+            sql = "SELECT distinct(id) from tb;";
+            //sql = "select c1 from (select * from tb1);";
+           
+            
+            //Manipula consulta do parametro sql
+            ZqlParser p = new ZqlParser();
+            p.initParser(new ByteArrayInputStream(sql.getBytes()));
+            ZStatement st = p.readStatement();
+            
+            System.out.println(st);
+   /*         
+            ZQuery query = (ZQuery)st;
+            System.out.println(query);
+            Vector from = query.getFrom();
+            Object elementAt = from.elementAt(0);
+            System.out.println(from);
+            System.out.println(elementAt);
+            System.out.println(query.getJoin().getFirstTable());
+            //System.out.println(rw.analyseStatement(sql));
+            //System.out.println(query);
+            //            System.out.println("query: " + query);
+            // System.out.println("query: " + rw.analyseStatement(sql));
+            //System.out.println("query: " + rw.analyseStatement(sql));
+    * 
+    */
+            
+        }catch(Exception e){
+            //** Criar excessao
+            System.out.println("Erro=" + e.getMessage());
+        }
+
+
+        
+
+     
+    }
+
+};
+

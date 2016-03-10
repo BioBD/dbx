@@ -1,0 +1,34 @@
+package br.com.iqt.tests;
+
+import java.sql.*;
+
+public class Oracle {
+     public static void main(String args[]) {
+
+        try {
+      
+            Class.forName("oracle.jdbc.driver.OracleDriver");
+            Connection conn = DriverManager.getConnection("jdbc:oracle:thin:@127.0.0.1:1521:orcl","system","admin");
+            
+            Statement st = conn.createStatement();
+            ResultSet rs;
+            int i;
+            
+            System.out.println("Executando consulta Oracle ...");
+            long tempoInicial = System.currentTimeMillis();
+            rs = st.executeQuery("select * from customer");
+            long tempoFinal = System.currentTimeMillis();
+            i=0;
+            while(rs.next()) {
+               i++;
+            }
+            System.out.println("Count = " + i + " - Tempo = " + (tempoFinal - tempoInicial));
+            st.close();
+            conn.close();
+        }catch(Exception e) {
+            System.out.println(e.getMessage());
+        } finally {
+            System.out.println("Conexao finalizada....");
+        }
+    }
+}

@@ -1,0 +1,216 @@
+***************************
+SQL 1 foi reescrita
+***************************
+SQL Original:
+select * from graduacao.discente_graduacao where ira > ALL (select ira from graduacao.discente_graduacao g where g.id_matriz_curricular=658149)
+SQL Reescrita:
+SELECT * FROM graduacao.discente_graduacao WHERE (ira > (SELECT MAX(ira) FROM graduacao.discente_graduacao AS g WHERE (g.id_matriz_curricular = 658149)));
+
+
+***************************
+SQL 2 foi reescrita
+***************************
+SQL Original:
+select * from graduacao.discente_graduacao where ira > some (select ira from graduacao.discente_graduacao g where g.id_matriz_curricular=658149)
+SQL Reescrita:
+SELECT * FROM graduacao.discente_graduacao WHERE (ira > (SELECT MIN(ira) FROM graduacao.discente_graduacao AS g WHERE (g.id_matriz_curricular = 658149)));
+
+
+***************************
+SQL 3 foi reescrita
+***************************
+SQL Original:
+select * from graduacao.discente_graduacao where ira < any (select ira from graduacao.discente_graduacao g where g.id_matriz_curricular=658149)
+SQL Reescrita:
+SELECT * FROM graduacao.discente_graduacao WHERE (ira < (SELECT MAX(ira) FROM graduacao.discente_graduacao AS g WHERE (g.id_matriz_curricular = 658149)));
+
+
+***************************
+SQL 4 foi reescrita
+***************************
+SQL Original:
+select * FROM stricto_sensu.discente_stricto where mes_entrada > any (select mes_entrada FROM stricto_sensu.discente_stricto d, stricto_sensu.area_concentracao a where d.id_area_concentracao = a.id_area_concentracao and a.denominacao='EDUCA��O BRASILEIRA')
+SQL Reescrita:
+SELECT * FROM stricto_sensu.discente_stricto WHERE (mes_entrada > (SELECT MIN(mes_entrada) FROM stricto_sensu.discente_stricto AS d, stricto_sensu.area_concentracao AS a WHERE ((d.id_area_concentracao = a.id_area_concentracao) AND (a.denominacao = 'EDUCA��O BRASILEIRA'))));
+
+
+***************************
+SQL 5 foi reescrita
+***************************
+SQL Original:
+select * from ensino.turma where capacidade_aluno < any (select capacidade_aluno FROM ensino.turma where codigo = 'A')
+SQL Reescrita:
+SELECT * FROM ensino.turma WHERE (capacidade_aluno < (SELECT MAX(capacidade_aluno) FROM ensino.turma WHERE (codigo = 'A')));
+
+
+***************************
+SQL 6 foi reescrita
+***************************
+SQL Original:
+select * from ava.forum where data_criacao < ALL(select data_criacao from ava.forum where id_usuario=26510)
+SQL Reescrita:
+SELECT * FROM ava.forum WHERE (data_criacao < (SELECT MIN(data_criacao) FROM ava.forum WHERE (id_usuario = 26510)));
+
+
+***************************
+SQL 7 foi reescrita
+***************************
+SQL Original:
+select * from ava.forum where data_criacao < ANY(select data_criacao from ava.forum where id_usuario=26510)
+SQL Reescrita:
+SELECT * FROM ava.forum WHERE (data_criacao < (SELECT MAX(data_criacao) FROM ava.forum WHERE (id_usuario = 26510)));
+
+
+***************************
+SQL 8 foi reescrita
+***************************
+SQL Original:
+SELECT id_discente, ano_ingresso, periodo_ingresso, matricula, observacao, id_pessoa, codmerg, id_gestora_academica, nivel, status, matricula_temp, id_forma_ingresso, ch_integralizada, prazo_conclusao, data_colacao_grau, codmergpa, id_curso, id_curriculo, codmergpapos, formando, matricula_antiga, tipo, id_foto, id_perfil, data_cadastro, codmergcomperve, matricula_substituida, id_pessoa_transferencia, id_registro_entrada, codmergppgeec, nivel_antigo, id_curso_antigo, periodo_atual, id_historico_digital, matricula_sem_digito, alterado_cadastrado FROM discente group by id_discente, ano_ingresso, periodo_ingresso, matricula, observacao, id_pessoa, codmerg, id_gestora_academica, nivel, status, matricula_temp, id_forma_ingresso, ch_integralizada, prazo_conclusao, data_colacao_grau, codmergpa, id_curso, id_curriculo, codmergpapos, formando, matricula_antiga, tipo, id_foto, id_perfil, data_cadastro, codmergcomperve, matricula_substituida, id_pessoa_transferencia, id_registro_entrada, codmergppgeec, nivel_antigo, id_curso_antigo, periodo_atual, id_historico_digital, matricula_sem_digito, alterado_cadastrado
+SQL Reescrita:
+SELECT id_discente, ano_ingresso, periodo_ingresso, matricula, observacao, id_pessoa, codmerg, id_gestora_academica, nivel, status, matricula_temp, id_forma_ingresso, ch_integralizada, prazo_conclusao, data_colacao_grau, codmergpa, id_curso, id_curriculo, codmergpapos, formando, matricula_antiga, tipo, id_foto, id_perfil, data_cadastro, codmergcomperve, matricula_substituida, id_pessoa_transferencia, id_registro_entrada, codmergppgeec, nivel_antigo, id_curso_antigo, periodo_atual, id_historico_digital, matricula_sem_digito, alterado_cadastrado FROM discente;
+
+
+############################
+SQL 9 contém erro
+############################
+SQL com erro:
+SELECT distinct(id_discente_graduacao), perfil_inicial, anistiado, ira, codmergpa, id_matriz_curricular, pontosvestibular, classificacaovestibular, ch_optativa_integralizada, ch_nao_atividade_obrig_integ, ch_atividade_obrig_integ, ch_aula_integralizada, ch_aula_pendente, ch_lab_pendente, ch_estagio_integralizada, ch_estagio_pendente, cr_lab_integralizado, cr_lab_pendente, cr_estagio_integralizado, cr_estagio_pendente, cr_nao_atividade_obrig_integralizado, ch_optativa_pendente, ch_nao_atividade_obrig_pendente, ch_atividade_obrig_pendente, cr_nao_atividade_obrig_pendente, prazomaximoconclusao, participacao_enad, id_polo, escola_conclusao_medio, ano_conclusao_medio, cidade_conclusao_medio, uf_conclusao_medio, pais_conclusao_medio, ch_lab_integralizada, cr_extra_integralizados, ch_total_integralizada, ch_total_pendente, cr_total_integralizados, cr_total_pendentes, cr_aula_integralizado, cr_aula_pendente, ultima_atualizacao_totais, total_atividades_pendentes, codmergcomperve, possivel_formando, argumento_fase1, argumento_fase2, argumento_final, total_grupos_optativas_pendentes, cola_grau, ch_integralizada_aproveitamentos, ch_optativa_integralizada_fracionado, ch_nao_atividade_obrig_integ_fracionado, ch_atividade_obrig_integ_fracionado, ch_aula_integralizada_fracionado, ch_aula_pendente_fracionado, ch_lab_pendente_fracionado, ch_estagio_integralizada_fracionado, ch_estagio_pendente_fracionado, cr_lab_integralizado_fracionado, cr_lab_pendente_fracionado, cr_estagio_integralizado_fracionado, cr_estagio_pendente_fracionado, cr_nao_atividade_obrig_integralizado_fracionado, ch_optativa_pendente_fracionado, ch_nao_atividade_obrig_pendente_fracionado, ch_atividade_obrig_pendente_fracionado, cr_nao_atividade_obrig_pendente_fracionado, ch_lab_integralizada_fracionado, cr_extra_integralizados_fracionado, ch_total_integralizada_fracionado, ch_total_pendente_fracionado, cr_total_integralizados_fracionado, cr_total_pendentes_fracionado, cr_aula_integralizado_fracionado, cr_aula_pendente_fracionado, ch_integralizada_aproveitamentos_fracionado, ch_extra_integralizados FROM graduacao.discente_graduacao;
+
+############################
+SQL 10 contém erro
+############################
+SQL com erro:
+SELECT distinct(id_turma), ano, periodo, id_situacao_turma, capacidade_aluno, total_matriculados, "@hora_livre", local, data_inicio, data_fim, id_disciplina, codmerg, codigo, id_plano_curso, codmergpa, total_reservados, total_espera, status, pro_basica, vagas_reservadas, descricao_horario, repeticaohorario, codmergpapos, id_convenio, id_especializacao_turma_entrada, id_turma_bloco, observacao, distancia, id_polo, id_curso, tipo, processada, total_solicitacoes, processamento_rematricula, codmergppgeec, id_registro_cadastro, data_cadastro, id_registro_atualizacao, data_alteracao, id_campus_ies, processada_rematricula, id_usuario_consolidacao, data_consolidacao, "@nomes_docentes", x, id_turma_agrupadora, agrupadora, permite_consolidacao_docente, horario_extenso, unidade_academica, sub_unidade_academica FROM ensino.turma;
+
+-------------------------------
+SQL 11 não foi reescrita
+-------------------------------
+SQL Original:
+SELECT * FROM graduacao.solicitacao_matricula where ano + 1= 2010;
+
+-------------------------------
+SQL 12 não foi reescrita
+-------------------------------
+SQL Original:
+SELECT * FROM graduacao.solicitacao_matricula where ano +2 = DATE_PART('YEAR', CURRENT_TIMESTAMP) 
+
+-------------------------------
+SQL 13 não foi reescrita
+-------------------------------
+SQL Original:
+select * from graduacao.discente_graduacao where ira - 1 = (select avg(ira) from graduacao.discente_graduacao)
+
+-------------------------------
+SQL 14 não foi reescrita
+-------------------------------
+SQL Original:
+select * from graduacao.discente_graduacao where ira - 1 > (select avg(ira) from graduacao.discente_graduacao)
+
+-------------------------------
+SQL 15 não foi reescrita
+-------------------------------
+SQL Original:
+select * FROM stricto_sensu.discente_stricto where (mes_entrada+12)/2 = 6
+
+-------------------------------
+SQL 16 não foi reescrita
+-------------------------------
+SQL Original:
+SELECT * FROM stricto_sensu.discente_stricto WHERE mes_entrada + id_origem_discente = 6
+
+-------------------------------
+SQL 17 não foi reescrita
+-------------------------------
+SQL Original:
+select * FROM ensino.turma t, ensino.docente_turma dt, rh.servidor s where capacidade_aluno*2 = total_matriculados and s.id_servidor=dt.id_docente and t.id_turma=dt.id_turma or t.periodo = 2
+
+-------------------------------
+SQL 18 não foi reescrita
+-------------------------------
+SQL Original:
+SELECT * FROM discente where ano_ingresso=2010 or nivel='G' or status=6
+
+-------------------------------
+SQL 19 não foi reescrita
+-------------------------------
+SQL Original:
+select id_servidor, siape, id_pessoa, id_atividade, digito_siape, id_escolaridade, id_ativo, id_situacao, id_categoria, id_cargo, uorg, lotacao, ultima_atualizacao, auxilio_transporte, uorgsiapecad, id_unidade, id_formacao, regime_trabalho, dedicacao_exclusiva, tipo_vinculo, id_foto, id_perfil, id_pessoa_transferencia, data_desligamento, id_classe_funcional, admissao, referencia_nivel_padrao, id_unidade_lotacao, matricula_interna, nome_identificacao FROM ensino.docente_turma dt, rh.servidor s where s.id_servidor=dt.id_docente and s.id_servidor=10727
+
+***************************
+SQL 20 foi reescrita
+***************************
+SQL Original:
+select * from graduacao.discente_graduacao where ira > ALL (select ira from graduacao.discente_graduacao g where g.id_matriz_curricular=658149) and ira - 1 = (select avg(ira) from graduacao.discente_graduacao)
+SQL Reescrita:
+SELECT * FROM graduacao.discente_graduacao WHERE ((ira > (SELECT MAX(ira) FROM graduacao.discente_graduacao AS g WHERE (g.id_matriz_curricular = 658149))) AND ((ira - 1) = (SELECT avg(ira) FROM graduacao.discente_graduacao)));
+
+
+***************************
+SQL 21 foi reescrita
+***************************
+SQL Original:
+select * from graduacao.discente_graduacao where ira > ALL (select ira from graduacao.discente_graduacao g where g.id_matriz_curricular=658149) and ira - 1 > (select avg(ira) from graduacao.discente_graduacao)
+SQL Reescrita:
+SELECT * FROM graduacao.discente_graduacao WHERE ((ira > (SELECT MAX(ira) FROM graduacao.discente_graduacao AS g WHERE (g.id_matriz_curricular = 658149))) AND ((ira - 1) > (SELECT avg(ira) FROM graduacao.discente_graduacao)));
+
+
+############################
+SQL 22 contém erro
+############################
+SQL com erro:
+SELECT distinct(id_discente_graduacao), perfil_inicial, anistiado, ira, codmergpa, id_matriz_curricular, pontosvestibular, classificacaovestibular, ch_optativa_integralizada, ch_nao_atividade_obrig_integ, ch_atividade_obrig_integ, ch_aula_integralizada, ch_aula_pendente, ch_lab_pendente, ch_estagio_integralizada, ch_estagio_pendente, cr_lab_integralizado, cr_lab_pendente, cr_estagio_integralizado, cr_estagio_pendente, cr_nao_atividade_obrig_integralizado, ch_optativa_pendente, ch_nao_atividade_obrig_pendente, ch_atividade_obrig_pendente, cr_nao_atividade_obrig_pendente, prazomaximoconclusao, participacao_enad, id_polo, escola_conclusao_medio, ano_conclusao_medio, cidade_conclusao_medio, uf_conclusao_medio, pais_conclusao_medio, ch_lab_integralizada, cr_extra_integralizados, ch_total_integralizada, ch_total_pendente, cr_total_integralizados, cr_total_pendentes, cr_aula_integralizado, cr_aula_pendente, ultima_atualizacao_totais, total_atividades_pendentes, codmergcomperve, possivel_formando, argumento_fase1, argumento_fase2, argumento_final, total_grupos_optativas_pendentes, cola_grau, ch_integralizada_aproveitamentos, ch_optativa_integralizada_fracionado, ch_nao_atividade_obrig_integ_fracionado, ch_atividade_obrig_integ_fracionado, ch_aula_integralizada_fracionado, ch_aula_pendente_fracionado, ch_lab_pendente_fracionado, ch_estagio_integralizada_fracionado, ch_estagio_pendente_fracionado, cr_lab_integralizado_fracionado, cr_lab_pendente_fracionado, cr_estagio_integralizado_fracionado, cr_estagio_pendente_fracionado, cr_nao_atividade_obrig_integralizado_fracionado, ch_optativa_pendente_fracionado, ch_nao_atividade_obrig_pendente_fracionado, ch_atividade_obrig_pendente_fracionado, cr_nao_atividade_obrig_pendente_fracionado, ch_lab_integralizada_fracionado, cr_extra_integralizados_fracionado, ch_total_integralizada_fracionado, ch_total_pendente_fracionado, cr_total_integralizados_fracionado, cr_total_pendentes_fracionado, cr_aula_integralizado_fracionado, cr_aula_pendente_fracionado, ch_integralizada_aproveitamentos_fracionado, ch_extra_integralizados FROM graduacao.discente_graduacao where ira - 1 > (select avg(ira) from graduacao.discente_graduacao)
+
+***************************
+SQL 23 foi reescrita
+***************************
+SQL Original:
+SELECT distinct(id_discente_graduacao), perfil_inicial, anistiado, ira, codmergpa, id_matriz_curricular, pontosvestibular, classificacaovestibular, ch_optativa_integralizada, ch_nao_atividade_obrig_integ, ch_atividade_obrig_integ, ch_aula_integralizada, ch_aula_pendente, ch_lab_pendente, ch_estagio_integralizada, ch_estagio_pendente, cr_lab_integralizado, cr_lab_pendente, cr_estagio_integralizado, cr_estagio_pendente, cr_nao_atividade_obrig_integralizado, ch_optativa_pendente, ch_nao_atividade_obrig_pendente, ch_atividade_obrig_pendente, cr_nao_atividade_obrig_pendente, prazomaximoconclusao, participacao_enad, id_polo, escola_conclusao_medio, ano_conclusao_medio, cidade_conclusao_medio, uf_conclusao_medio, pais_conclusao_medio, ch_lab_integralizada, cr_extra_integralizados, ch_total_integralizada, ch_total_pendente, cr_total_integralizados, cr_total_pendentes, cr_aula_integralizado, cr_aula_pendente, ultima_atualizacao_totais, total_atividades_pendentes, codmergcomperve, possivel_formando, argumento_fase1, argumento_fase2, argumento_final, total_grupos_optativas_pendentes, cola_grau, ch_integralizada_aproveitamentos, ch_optativa_integralizada_fracionado, ch_nao_atividade_obrig_integ_fracionado, ch_atividade_obrig_integ_fracionado, ch_aula_integralizada_fracionado, ch_aula_pendente_fracionado, ch_lab_pendente_fracionado, ch_estagio_integralizada_fracionado, ch_estagio_pendente_fracionado, cr_lab_integralizado_fracionado, cr_lab_pendente_fracionado, cr_estagio_integralizado_fracionado, cr_estagio_pendente_fracionado, cr_nao_atividade_obrig_integralizado_fracionado, ch_optativa_pendente_fracionado, ch_nao_atividade_obrig_pendente_fracionado, ch_atividade_obrig_pendente_fracionado, cr_nao_atividade_obrig_pendente_fracionado, ch_lab_integralizada_fracionado, cr_extra_integralizados_fracionado, ch_total_integralizada_fracionado, ch_total_pendente_fracionado, cr_total_integralizados_fracionado, cr_total_pendentes_fracionado, cr_aula_integralizado_fracionado, cr_aula_pendente_fracionado, ch_integralizada_aproveitamentos_fracionado, ch_extra_integralizados FROM graduacao.discente_graduacao where ira > ALL (select ira from graduacao.discente_graduacao g where g.id_matriz_curricular=658149)
+SQL Reescrita:
+SELECT DISTINCT id_discente_graduacao, perfil_inicial, anistiado, ira, codmergpa, id_matriz_curricular, pontosvestibular, classificacaovestibular, ch_optativa_integralizada, ch_nao_atividade_obrig_integ, ch_atividade_obrig_integ, ch_aula_integralizada, ch_aula_pendente, ch_lab_pendente, ch_estagio_integralizada, ch_estagio_pendente, cr_lab_integralizado, cr_lab_pendente, cr_estagio_integralizado, cr_estagio_pendente, cr_nao_atividade_obrig_integralizado, ch_optativa_pendente, ch_nao_atividade_obrig_pendente, ch_atividade_obrig_pendente, cr_nao_atividade_obrig_pendente, prazomaximoconclusao, participacao_enad, id_polo, escola_conclusao_medio, ano_conclusao_medio, cidade_conclusao_medio, uf_conclusao_medio, pais_conclusao_medio, ch_lab_integralizada, cr_extra_integralizados, ch_total_integralizada, ch_total_pendente, cr_total_integralizados, cr_total_pendentes, cr_aula_integralizado, cr_aula_pendente, ultima_atualizacao_totais, total_atividades_pendentes, codmergcomperve, possivel_formando, argumento_fase1, argumento_fase2, argumento_final, total_grupos_optativas_pendentes, cola_grau, ch_integralizada_aproveitamentos, ch_optativa_integralizada_fracionado, ch_nao_atividade_obrig_integ_fracionado, ch_atividade_obrig_integ_fracionado, ch_aula_integralizada_fracionado, ch_aula_pendente_fracionado, ch_lab_pendente_fracionado, ch_estagio_integralizada_fracionado, ch_estagio_pendente_fracionado, cr_lab_integralizado_fracionado, cr_lab_pendente_fracionado, cr_estagio_integralizado_fracionado, cr_estagio_pendente_fracionado, cr_nao_atividade_obrig_integralizado_fracionado, ch_optativa_pendente_fracionado, ch_nao_atividade_obrig_pendente_fracionado, ch_atividade_obrig_pendente_fracionado, cr_nao_atividade_obrig_pendente_fracionado, ch_lab_integralizada_fracionado, cr_extra_integralizados_fracionado, ch_total_integralizada_fracionado, ch_total_pendente_fracionado, cr_total_integralizados_fracionado, cr_total_pendentes_fracionado, cr_aula_integralizado_fracionado, cr_aula_pendente_fracionado, ch_integralizada_aproveitamentos_fracionado, ch_extra_integralizados FROM graduacao.discente_graduacao WHERE (ira > ALL (SELECT ira FROM graduacao.discente_graduacao AS g WHERE (g.id_matriz_curricular = 658149)));
+
+
+***************************
+SQL 24 foi reescrita
+***************************
+SQL Original:
+SELECT distinct(id_discente_graduacao), perfil_inicial, anistiado, ira, codmergpa, id_matriz_curricular, pontosvestibular, classificacaovestibular, ch_optativa_integralizada, ch_nao_atividade_obrig_integ, ch_atividade_obrig_integ, ch_aula_integralizada, ch_aula_pendente, ch_lab_pendente, ch_estagio_integralizada, ch_estagio_pendente, cr_lab_integralizado, cr_lab_pendente, cr_estagio_integralizado, cr_estagio_pendente, cr_nao_atividade_obrig_integralizado, ch_optativa_pendente, ch_nao_atividade_obrig_pendente, ch_atividade_obrig_pendente, cr_nao_atividade_obrig_pendente, prazomaximoconclusao, participacao_enad, id_polo, escola_conclusao_medio, ano_conclusao_medio, cidade_conclusao_medio, uf_conclusao_medio, pais_conclusao_medio, ch_lab_integralizada, cr_extra_integralizados, ch_total_integralizada, ch_total_pendente, cr_total_integralizados, cr_total_pendentes, cr_aula_integralizado, cr_aula_pendente, ultima_atualizacao_totais, total_atividades_pendentes, codmergcomperve, possivel_formando, argumento_fase1, argumento_fase2, argumento_final, total_grupos_optativas_pendentes, cola_grau, ch_integralizada_aproveitamentos, ch_optativa_integralizada_fracionado, ch_nao_atividade_obrig_integ_fracionado, ch_atividade_obrig_integ_fracionado, ch_aula_integralizada_fracionado, ch_aula_pendente_fracionado, ch_lab_pendente_fracionado, ch_estagio_integralizada_fracionado, ch_estagio_pendente_fracionado, cr_lab_integralizado_fracionado, cr_lab_pendente_fracionado, cr_estagio_integralizado_fracionado, cr_estagio_pendente_fracionado, cr_nao_atividade_obrig_integralizado_fracionado, ch_optativa_pendente_fracionado, ch_nao_atividade_obrig_pendente_fracionado, ch_atividade_obrig_pendente_fracionado, cr_nao_atividade_obrig_pendente_fracionado, ch_lab_integralizada_fracionado, cr_extra_integralizados_fracionado, ch_total_integralizada_fracionado, ch_total_pendente_fracionado, cr_total_integralizados_fracionado, cr_total_pendentes_fracionado, cr_aula_integralizado_fracionado, cr_aula_pendente_fracionado, ch_integralizada_aproveitamentos_fracionado, ch_extra_integralizados FROM graduacao.discente_graduacao where ira > ALL (select ira from graduacao.discente_graduacao g where g.id_matriz_curricular=658149) and ira - 1 > (select avg(ira) from graduacao.discente_graduacao)
+SQL Reescrita:
+SELECT DISTINCT id_discente_graduacao, perfil_inicial, anistiado, ira, codmergpa, id_matriz_curricular, pontosvestibular, classificacaovestibular, ch_optativa_integralizada, ch_nao_atividade_obrig_integ, ch_atividade_obrig_integ, ch_aula_integralizada, ch_aula_pendente, ch_lab_pendente, ch_estagio_integralizada, ch_estagio_pendente, cr_lab_integralizado, cr_lab_pendente, cr_estagio_integralizado, cr_estagio_pendente, cr_nao_atividade_obrig_integralizado, ch_optativa_pendente, ch_nao_atividade_obrig_pendente, ch_atividade_obrig_pendente, cr_nao_atividade_obrig_pendente, prazomaximoconclusao, participacao_enad, id_polo, escola_conclusao_medio, ano_conclusao_medio, cidade_conclusao_medio, uf_conclusao_medio, pais_conclusao_medio, ch_lab_integralizada, cr_extra_integralizados, ch_total_integralizada, ch_total_pendente, cr_total_integralizados, cr_total_pendentes, cr_aula_integralizado, cr_aula_pendente, ultima_atualizacao_totais, total_atividades_pendentes, codmergcomperve, possivel_formando, argumento_fase1, argumento_fase2, argumento_final, total_grupos_optativas_pendentes, cola_grau, ch_integralizada_aproveitamentos, ch_optativa_integralizada_fracionado, ch_nao_atividade_obrig_integ_fracionado, ch_atividade_obrig_integ_fracionado, ch_aula_integralizada_fracionado, ch_aula_pendente_fracionado, ch_lab_pendente_fracionado, ch_estagio_integralizada_fracionado, ch_estagio_pendente_fracionado, cr_lab_integralizado_fracionado, cr_lab_pendente_fracionado, cr_estagio_integralizado_fracionado, cr_estagio_pendente_fracionado, cr_nao_atividade_obrig_integralizado_fracionado, ch_optativa_pendente_fracionado, ch_nao_atividade_obrig_pendente_fracionado, ch_atividade_obrig_pendente_fracionado, cr_nao_atividade_obrig_pendente_fracionado, ch_lab_integralizada_fracionado, cr_extra_integralizados_fracionado, ch_total_integralizada_fracionado, ch_total_pendente_fracionado, cr_total_integralizados_fracionado, cr_total_pendentes_fracionado, cr_aula_integralizado_fracionado, cr_aula_pendente_fracionado, ch_integralizada_aproveitamentos_fracionado, ch_extra_integralizados FROM graduacao.discente_graduacao WHERE ((ira > ALL (SELECT ira FROM graduacao.discente_graduacao AS g WHERE (g.id_matriz_curricular = 658149))) AND ((ira - 1) > (SELECT avg(ira) FROM graduacao.discente_graduacao)));
+
+
+-------------------------------
+SQL 25 não foi reescrita
+-------------------------------
+SQL Original:
+SELECT t.id_turma, t.ano, t.periodo, t.id_situacao_turma, t.capacidade_aluno, t.total_matriculados, t."@hora_livre", t.local, t.data_inicio, t.data_fim, t.id_disciplina, t.codmerg, t.codigo, t.id_plano_curso, t.codmergpa, t.total_reservados, t.total_espera, t.status, t.pro_basica, t.vagas_reservadas, t.descricao_horario, t.repeticaohorario, t.codmergpapos, t.id_convenio, t.id_especializacao_turma_entrada, t.id_turma_bloco, t.observacao, t.distancia, t.id_polo, t.id_curso, t.tipo, t.processada, t.total_solicitacoes, t.processamento_rematricula, t.codmergppgeec, t.id_registro_cadastro, t.data_cadastro, t.id_registro_atualizacao, t.data_alteracao, t.id_campus_ies, t.processada_rematricula, t.id_usuario_consolidacao, t.data_consolidacao, t."@nomes_docentes", t.x, t.id_turma_agrupadora, t.agrupadora, t.permite_consolidacao_docente, t.horario_extenso, t.unidade_academica, t.sub_unidade_academica FROM ensino.turma t, ensino.docente_turma dt, rh.servidor s where capacidade_aluno*2 = total_matriculados and s.id_servidor=dt.id_docente and t.id_turma=dt.id_turma
+
+***************************
+SQL 26 foi reescrita
+***************************
+SQL Original:
+SELECT id_discente, ano_ingresso, periodo_ingresso, matricula, observacao, id_pessoa, codmerg, id_gestora_academica, nivel, status, matricula_temp, id_forma_ingresso, ch_integralizada, prazo_conclusao, data_colacao_grau, codmergpa, id_curso, id_curriculo, codmergpapos, formando, matricula_antiga, tipo, id_foto, id_perfil, data_cadastro, codmergcomperve, matricula_substituida, id_pessoa_transferencia, id_registro_entrada, codmergppgeec, nivel_antigo, id_curso_antigo, periodo_atual, id_historico_digital, matricula_sem_digito, alterado_cadastrado FROM discente group by id_discente, ano_ingresso, periodo_ingresso, matricula, observacao, id_pessoa, codmerg, id_gestora_academica, nivel, status, matricula_temp, id_forma_ingresso, ch_integralizada, prazo_conclusao, data_colacao_grau, codmergpa, id_curso, id_curriculo, codmergpapos, formando, matricula_antiga, tipo, id_foto, id_perfil, data_cadastro, codmergcomperve, matricula_substituida, id_pessoa_transferencia, id_registro_entrada, codmergppgeec, nivel_antigo, id_curso_antigo, periodo_atual, id_historico_digital, matricula_sem_digito, alterado_cadastrado having ano_ingresso = 2011
+SQL Reescrita:
+SELECT id_discente, ano_ingresso, periodo_ingresso, matricula, observacao, id_pessoa, codmerg, id_gestora_academica, nivel, status, matricula_temp, id_forma_ingresso, ch_integralizada, prazo_conclusao, data_colacao_grau, codmergpa, id_curso, id_curriculo, codmergpapos, formando, matricula_antiga, tipo, id_foto, id_perfil, data_cadastro, codmergcomperve, matricula_substituida, id_pessoa_transferencia, id_registro_entrada, codmergppgeec, nivel_antigo, id_curso_antigo, periodo_atual, id_historico_digital, matricula_sem_digito, alterado_cadastrado FROM discente WHERE (ano_ingresso = 2011);
+
+
+***************************
+SQL 27 foi reescrita
+***************************
+SQL Original:
+SELECT DISTINCT(id_discente), ano_ingresso, periodo_ingresso, matricula, observacao, id_pessoa, codmerg, id_gestora_academica, nivel, status, matricula_temp, id_forma_ingresso, ch_integralizada, prazo_conclusao, data_colacao_grau, codmergpa, id_curso, id_curriculo, codmergpapos, formando, matricula_antiga, tipo, id_foto, id_perfil, data_cadastro, codmergcomperve, matricula_substituida, id_pessoa_transferencia, id_registro_entrada, codmergppgeec, nivel_antigo, id_curso_antigo, periodo_atual, id_historico_digital, matricula_sem_digito, alterado_cadastrado FROM discente group by id_discente, ano_ingresso, periodo_ingresso, matricula, observacao, id_pessoa, codmerg, id_gestora_academica, nivel, status, matricula_temp, id_forma_ingresso, ch_integralizada, prazo_conclusao, data_colacao_grau, codmergpa, id_curso, id_curriculo, codmergpapos, formando, matricula_antiga, tipo, id_foto, id_perfil, data_cadastro, codmergcomperve, matricula_substituida, id_pessoa_transferencia, id_registro_entrada, codmergppgeec, nivel_antigo, id_curso_antigo, periodo_atual, id_historico_digital, matricula_sem_digito, alterado_cadastrado having ano_ingresso = 2011
+SQL Reescrita:
+SELECT DISTINCT id_discente, ano_ingresso, periodo_ingresso, matricula, observacao, id_pessoa, codmerg, id_gestora_academica, nivel, status, matricula_temp, id_forma_ingresso, ch_integralizada, prazo_conclusao, data_colacao_grau, codmergpa, id_curso, id_curriculo, codmergpapos, formando, matricula_antiga, tipo, id_foto, id_perfil, data_cadastro, codmergcomperve, matricula_substituida, id_pessoa_transferencia, id_registro_entrada, codmergppgeec, nivel_antigo, id_curso_antigo, periodo_atual, id_historico_digital, matricula_sem_digito, alterado_cadastrado FROM discente GROUP BY id_discente, ano_ingresso, periodo_ingresso, matricula, observacao, id_pessoa, codmerg, id_gestora_academica, nivel, status, matricula_temp, id_forma_ingresso, ch_integralizada, prazo_conclusao, data_colacao_grau, codmergpa, id_curso, id_curriculo, codmergpapos, formando, matricula_antiga, tipo, id_foto, id_perfil, data_cadastro, codmergcomperve, matricula_substituida, id_pessoa_transferencia, id_registro_entrada, codmergppgeec, nivel_antigo, id_curso_antigo, periodo_atual, id_historico_digital, matricula_sem_digito, alterado_cadastrado HAVING (ano_ingresso = 2011);
+
+
+-------------------------------
+SQL 28 não foi reescrita
+-------------------------------
+SQL Original:
+SELECT * FROM comum.pessoa WHERE UPPER(pais_nacionalidade) = 'BRASILEIRA'
+
+-------------------------------
+SQL 29 não foi reescrita
+-------------------------------
+SQL Original:
+SELECT * FROM comum.pessoa WHERE id_estado_civil = 7 OR UPPER(pais_nacionalidade) = 'BRASILEIRA'
+
