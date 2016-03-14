@@ -1,5 +1,7 @@
 package interfaceweb.util;
 
+import agents.libraries.Configuration;
+import iqt.Dbms;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
@@ -10,9 +12,11 @@ import java.sql.SQLException;
  */
 public class ConnectionFactory {
     public Connection getConnection() {
-        String url = "jdbc:postgresql://localhost:5432/pg_tpch_1gb?currentSchema=agent";
-        String usuario = "postgres";
-        String senha = "admin";
+        Configuration config = new Configuration();
+
+        String url = "jdbc:postgresql://"+config.getProperty("serverPostgres")+":"+config.getProperty("portPostgres")+"/"+config.getProperty("databaseName")+"?currentSchema=agent";
+        String usuario = config.getProperty("userPostgres");
+        String senha = config.getProperty("pwdPostgres");
         Connection connection = null;
 
         try {

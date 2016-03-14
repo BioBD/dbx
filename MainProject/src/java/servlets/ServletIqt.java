@@ -40,7 +40,7 @@ public class ServletIqt extends HttpServlet {
         PrintWriter out = response.getWriter();
        
         Configuration config = new Configuration();
-        Dbms dbms = new Dbms(Dbms.POSTGRESQL, "localhost", "5432", "pg_tpch_1gb", "postgres", "admin");
+        Dbms dbms = new Dbms(Dbms.POSTGRESQL, config.getProperty("serverPostgres"), config.getProperty("portPostgres"), config.getProperty("databaseName"), config.getProperty("userPostgres"), config.getProperty("pwdPostgres"));
         agentRewriter = new AgentRewriter(Dbms.POSTGRESQL);        
         
         String executar = request.getParameter("executar");
@@ -109,9 +109,8 @@ public class ServletIqt extends HttpServlet {
             try {
                 fu.setSizeMax(Long.MAX_VALUE);
                 fu.setSizeThreshold(4096);
-                fu.setRepositoryPath("C:\\t\\temp");
 
-                BufferedReader reader = new BufferedReader(new FileReader("C:\\t\\" + file));
+                BufferedReader reader = new BufferedReader(new FileReader(config.getProperty("filesPathIqt") + file));
                 StringBuilder sb = new StringBuilder();
                 String line;
                 int cont = 1;
