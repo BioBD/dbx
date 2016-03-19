@@ -23,7 +23,6 @@
        
         color: #FFFFFF;
         margin-top: 45px;
-        //text-shadow: 1px 1px 1px #FFF;
     }
     
     #element-menu-heuristics{
@@ -71,14 +70,10 @@
 /* DIV DOS RESULTADOS DAS CONSULTAS */  
     #original{
         margin: 0 auto;
-        //margin-bottom: 10px;
-
     }
     
-    #form-main-query-original{
-        
+    #form-main-query-original{ 
         margin: 0 auto;
-        //margin-top: 5px;
         width: 450px;
         height: 130px;
         border: 2px #dcdcdc solid;
@@ -104,13 +99,14 @@
 /* DIV DOS RESULTADOS DAS CONSULTAS */  
     
     #form-main-plan-original{
-        
+        position: absolute;
         margin: 0 auto;
-        //margin-top: 5px;
-        width: 450px;
+        width: 400px;
         height: 130px;
         border: 2px #dcdcdc solid;
         background-color: #FFFFFF;
+        left: 490px;
+        top: 285px;
     }
 
     #form-main-plan-original-title{
@@ -120,6 +116,7 @@
         padding: 5px;
         text-align: left;
         background-color: #e0e0e0;
+        
     }
 
     #form-main-plan-original-body{
@@ -128,12 +125,12 @@
         height: 95px;
         resize: none;
         border: 0px;
+        overflow: auto;
     }
     
 /* DIV DAS TABELAS */
     #form-main-table{
         margin: 0px auto;
-       //margin-top: 35px;
     }
 
     #form-main-table-bar{
@@ -159,12 +156,14 @@
 /* DIV DOS PLANO DAS REESCRITAS */
     
     #form-main-plan-result{
+        position: absolute;
         margin: 0 auto;
-        //margin-top: 10px;
-        width: 450px;
+        width: 400px;
         height: 130px;
         border: 2px #dcdcdc solid;
         background-color: #FFFFFF;
+        left: 490px;
+        top: 460px;
     }
 
     #form-main-plan-result-title{
@@ -195,7 +194,6 @@
     
     #form-main-query-result{
         margin: 0 auto;
-        //margin-top: 10px;
         width: 450px;
         height: 130px;
         border: 2px #dcdcdc solid;

@@ -53,7 +53,6 @@ $(document).ready(function(){
     });
     $('#planOriginal').click(function(){
         $.post("ServletIqt", {plano: $("#form-main-query-original-body").val()}, function( data ) {
-            $('#form-main-query-original').toggleClass('invisible');
             $('#form-main-plan-original-body').html(data);
             $('#form-main-plan-original').toggleClass('invisible');
         });
@@ -61,9 +60,8 @@ $(document).ready(function(){
     
     $('#planResult').click(function(){
         $.post( "ServletIqt", {plano: $("#form-main-query-result-body").text()}, function( data ) {
-            $('#form-main-query-result').toggleClass('invisible');
-            $('#form-main-plan-result').toggleClass('invisible');
             $('#form-main-plan-result-body').html(data);
+            $('#form-main-plan-result').toggleClass('invisible');
         });
     });
     

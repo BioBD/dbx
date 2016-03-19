@@ -42,6 +42,7 @@
                         <input type="checkbox" id="9"> Substituir operação In por junção<br />
                         <input type="checkbox" id="10"> Remover Expressão Aritmética de coluna com índice<br />
                         <input type="checkbox" id="11"> Remover Distinct desnecessário<br />
+                        <%--
                         <hr>
                         <b>Definir Reescrita Padrão</b><br />
                         <input type="radio" name="opcaoReescrita"> Utilizar as heurísticas selecionadas para todas as SQLs<br />
@@ -49,6 +50,7 @@
                         <input type="radio" name="opcaoReescrita"> Escolher automaticamente as heurísticas para todas as SQLs, excetos para as com Reescrita Personalizada<br />
                         <input type="radio" name="opcaoReescrita"> Escolher automaticamente as heurísticas para todas as SQLs<br />
                         <button type="submit" class="btn btn-success btn-xs">Salvar</button>
+                        --%>
                     </div>
                 </div>
             <center>  
@@ -82,7 +84,7 @@
                         <div id="form-main-plan-original-title">
                             <b>Plano Original</b>
                         </div>
-                        <textarea id="form-main-plan-original-body" class="form-control" name="txt-plan-original"></textarea>
+                        <div id="form-main-plan-original-body"></div>
                     </div>
                 </div>
                 <div id="result" class="select">

@@ -14,7 +14,8 @@ public class ConnectionFactory {
     public Connection getConnection() {
         Configuration config = new Configuration();
 
-        String url = "jdbc:postgresql://"+config.getProperty("serverPostgres")+":"+config.getProperty("portPostgres")+"/"+config.getProperty("databaseName")+"?currentSchema=agent";
+        String url = config.getProperty("urlPostgres") + config.getProperty("databaseName") + "?currentSchema=agent";
+        System.out.println(url);
         String usuario = config.getProperty("userPostgres");
         String senha = config.getProperty("pwdPostgres");
         Connection connection = null;

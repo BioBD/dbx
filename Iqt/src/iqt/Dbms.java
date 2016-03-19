@@ -6,8 +6,7 @@ package iqt;
  */
 public class Dbms {
     private int dbms;
-    private String server;
-    private String port;
+    private String url;
     private String database;
     private String user;
     private String password;
@@ -17,7 +16,6 @@ public class Dbms {
      * uma das constantes abaixo.
      */
     public final static int POSTGRESQL = 1;
-    //public final static int MYSQL = 2;//OBS: esse sgbd não foi investigado ainda
     public final static int SQLSERVER = 3;
     public final static int ORACLE = 4;
 
@@ -50,16 +48,8 @@ public class Dbms {
      * Retorna a porta de acesso ao SGBD.
      * @return
      */
-    public String getPort() {
-        return port;
-    }
-
-    /**
-     * Retorna o endereço do servidor do SGBD.
-     * @return
-     */
-    public String getServer() {
-        return server;
+    public String getUrl() {
+        return url;
     }
 
     /**
@@ -86,10 +76,9 @@ public class Dbms {
      * @param password
      * Senha do usuário de acesso ao SGBD.
      */
-    public Dbms(int dbms, String server, String port, String database, String user, String password) {
+    public Dbms(int dbms, String url, String database, String user, String password) {
         this.dbms = dbms;
-        this.server = server;
-        this.port = port;
+        this.url = url;
         this.database = database;
         this.user = user;
         this.password = password;

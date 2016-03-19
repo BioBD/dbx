@@ -40,7 +40,7 @@ public class ServletIqt extends HttpServlet {
         PrintWriter out = response.getWriter();
        
         Configuration config = new Configuration();
-        Dbms dbms = new Dbms(Dbms.POSTGRESQL, config.getProperty("serverPostgres"), config.getProperty("portPostgres"), config.getProperty("databaseName"), config.getProperty("userPostgres"), config.getProperty("pwdPostgres"));
+        Dbms dbms = new Dbms(Dbms.POSTGRESQL, config.getProperty("urlPostgres"), config.getProperty("databaseName"), config.getProperty("userPostgres"), config.getProperty("pwdPostgres"));
         agentRewriter = new AgentRewriter(Dbms.POSTGRESQL);        
         
         String executar = request.getParameter("executar");
@@ -99,6 +99,7 @@ public class ServletIqt extends HttpServlet {
                 out.println("PLANO DE EXECUÇÃO DA CONSULTA ORIGINAL\n");
                 for (Iterator it = executionPlan.iterator(); it.hasNext();){
                     String object = it.next().toString();
+                    
                     out.println(object+"");
                 }
             }

@@ -3,6 +3,7 @@ package iqt;
 import iqt.Dbms;
 import java.sql.*;
 import java.util.ArrayList;
+import javax.swing.JOptionPane;
 
 /**
  *
@@ -36,7 +37,7 @@ public class ConnectionDbms{
         switch(dbms.getDbms()){
             case Dbms.POSTGRESQL:
                 driver = ConnectionDbms.driverPostgresql;
-                url = "jdbc:postgresql://" + dbms.getServer() + ":" + dbms.getPort() + "/" + dbms.getDatabase();
+                url = dbms.getUrl() + dbms.getDatabase();
                 sql = "select * from pg_index where indrelid = (select oid from pg_class where upper(relname)= upper('" + table
                         + "') and relkind = 'r' and relnamespace = (select oid from pg_namespace where UPPER(nspname) = "
                         + "UPPER('" + scheme + "'))) and indkey[0] = (select attnum from pg_attribute where upper(attname) = upper('" + column
@@ -45,7 +46,7 @@ public class ConnectionDbms{
                 break;
             case Dbms.SQLSERVER:
                 driver = ConnectionDbms.driverSqlServer;
-                url = "jdbc:sqlserver://" + dbms.getServer() + ";database=" + dbms.getDatabase();
+                url = dbms.getUrl() +"database=" + dbms.getDatabase();
                 /*
                  * Tentaiva de fazer sql para procurar existencia de indice de uma coluna em uma tabela SQL Server
                  * 
@@ -72,7 +73,7 @@ public class ConnectionDbms{
                 //break;
             case Dbms.ORACLE:
                 driver = ConnectionDbms.driverOracle;
-                url = "jdbc:oracle:thin:@" + dbms.getServer() + ":" + dbms.getPort() + ":orcl";
+                url = dbms.getUrl() + "orcl";
                 System.out.println("Procura por coluna com índice em uma determinada tabela ainda não foi implementado para esse SGBD! Classe ConnectionDbms.isIndex()");
                 return false;
                 //break;
@@ -107,20 +108,20 @@ public class ConnectionDbms{
         switch(dbms.getDbms()){
             case Dbms.POSTGRESQL:
                 driver = ConnectionDbms.driverPostgresql;
-                url = "jdbc:postgresql://" + dbms.getServer() + ":" + dbms.getPort() + "/" + dbms.getDatabase();
+                url = dbms.getUrl() + dbms.getDatabase();
                 sql = "select * from pg_constraint where contype='p' and conrelid = (select oid from pg_class where "
                         + "relname= '" + table + "') and conkey[1] = (select attnum from pg_attribute where attname = "
                         + "'" + column + "' and attrelid = (select oid from pg_class where relname= '" + table + "'))";
                 break;
             case Dbms.SQLSERVER:
                 driver = ConnectionDbms.driverSqlServer;
-                url = "jdbc:sqlserver://" + dbms.getServer() + ";database=" + dbms.getDatabase();
+                url = dbms.getUrl() +"database=" + dbms.getDatabase();
                 System.out.println("Procura por coluna com índice em uma determinada tabela ainda não foi implementado para esse SGBD! Classe ConnectionDbms.isIndex()");
                 return false;
                 //break;
             case Dbms.ORACLE:
                 driver = ConnectionDbms.driverOracle;
-                url = "jdbc:oracle:thin:@" + dbms.getServer() + ":" + dbms.getPort() + ":orcl";
+                url = dbms.getUrl() + "orcl";
                 System.out.println("Procura por coluna com índice em uma determinada tabela ainda não foi implementado para esse SGBD! Classe ConnectionDbms.isIndex()");
                 return false;
                 //break;
@@ -153,15 +154,15 @@ public class ConnectionDbms{
         switch(dbms.getDbms()){
             case Dbms.POSTGRESQL:
                 driver = ConnectionDbms.driverPostgresql;
-                url = "jdbc:postgresql://" + dbms.getServer() + ":" + dbms.getPort() + "/" + dbms.getDatabase();
+                url = dbms.getUrl() + dbms.getDatabase();
                 break;
             case Dbms.SQLSERVER:
                 driver = ConnectionDbms.driverSqlServer;
-                url = "jdbc:sqlserver://" + dbms.getServer() + ";database=" + dbms.getDatabase();
+                url = dbms.getUrl() +"database=" + dbms.getDatabase();
                 break;
             case Dbms.ORACLE:
                 driver = ConnectionDbms.driverOracle;
-                url = "jdbc:oracle:thin:@" + dbms.getServer() + ":" + dbms.getPort() + ":orcl";
+                url = dbms.getUrl() + "orcl";
                 break;
         }
         
@@ -197,7 +198,7 @@ public class ConnectionDbms{
                 case Dbms.POSTGRESQL:
                     driver = ConnectionDbms.driverPostgresql;
                     Class.forName(driver);
-                    url = "jdbc:postgresql://" + dbms.getServer() + ":" + dbms.getPort() + "/" + dbms.getDatabase();
+                    url = dbms.getUrl() + dbms.getDatabase();
                     sql = "EXPLAIN " + sql;
                     
                     connection = (Connection) DriverManager.getConnection(url, dbms.getUser(), dbms.getPassword());
@@ -213,7 +214,7 @@ public class ConnectionDbms{
                 case Dbms.SQLSERVER:
                     driver = ConnectionDbms.driverSqlServer;
                     Class.forName(driver);
-                    url = "jdbc:sqlserver://" + dbms.getServer() + ";database=" + dbms.getDatabase();
+                    url = dbms.getUrl() +"database=" + dbms.getDatabase();
                     
                     connection = (Connection) DriverManager.getConnection(url, dbms.getUser(), dbms.getPassword());
                     statement = connection.createStatement();
@@ -232,7 +233,7 @@ public class ConnectionDbms{
                 case Dbms.ORACLE:
                     driver = ConnectionDbms.driverOracle;
                     Class.forName(driver);
-                    url = "jdbc:oracle:thin:@" + dbms.getServer() + ":" + dbms.getPort() + ":orcl";
+                    url = dbms.getUrl() + "orcl";
                     sql = "select operation, id from v$sql_plan sp, v$sql s where "
                             + "sp.sql_id = s.sql_id and sql_text = '" + sql + "'";
                     
@@ -272,15 +273,15 @@ public class ConnectionDbms{
         switch(dbms.getDbms()){
             case Dbms.POSTGRESQL:
                 driver = ConnectionDbms.driverPostgresql;
-                url = "jdbc:postgresql://" + dbms.getServer() + ":" + dbms.getPort() + "/" + dbms.getDatabase();
+                url = dbms.getUrl() + dbms.getDatabase();
                 break;
             case Dbms.SQLSERVER:
                 driver = ConnectionDbms.driverSqlServer;
-                url = "jdbc:sqlserver://" + dbms.getServer() + ";database=" + dbms.getDatabase();
+                url = dbms.getUrl() +"database=" + dbms.getDatabase();
                 break;
             case Dbms.ORACLE:
                 driver = ConnectionDbms.driverOracle;
-                url = "jdbc:oracle:thin:@" + dbms.getServer() + ":" + dbms.getPort() + ":orcl";
+                url = dbms.getUrl() + "orcl";
                 break;
         }
         
@@ -309,15 +310,15 @@ public class ConnectionDbms{
         switch(dbms.getDbms()){
             case Dbms.POSTGRESQL:
                 driver = ConnectionDbms.driverPostgresql;
-                url = "jdbc:postgresql://" + dbms.getServer() + ":" + dbms.getPort() + "/" + dbms.getDatabase();
+                url = dbms.getUrl() + dbms.getDatabase();
                 break;
             case Dbms.SQLSERVER:
                 driver = ConnectionDbms.driverSqlServer;
-                url = "jdbc:sqlserver://" + dbms.getServer() + ";database=" + dbms.getDatabase();
+                url = dbms.getUrl() +"database=" + dbms.getDatabase();
                 break;
             case Dbms.ORACLE:
                 driver = ConnectionDbms.driverOracle;
-                url = "jdbc:oracle:thin:@" + dbms.getServer() + ":" + dbms.getPort() + ":orcl";
+                url = dbms.getUrl() + "orcl";
                 break;
         }
         
@@ -342,15 +343,15 @@ public class ConnectionDbms{
         switch(dbms.getDbms()){
             case Dbms.POSTGRESQL:
                 driver = ConnectionDbms.driverPostgresql;
-                url = "jdbc:postgresql://" + dbms.getServer() + ":" + dbms.getPort() + "/" + dbms.getDatabase();
+                url = dbms.getUrl() + dbms.getDatabase();
                 break;
             case Dbms.SQLSERVER:
                 driver = ConnectionDbms.driverSqlServer;
-                url = "jdbc:sqlserver://" + dbms.getServer() + ";database=" + dbms.getDatabase();
+                url = dbms.getUrl() +"database=" + dbms.getDatabase();
                 break;
             case Dbms.ORACLE:
                 driver = ConnectionDbms.driverOracle;
-                url = "jdbc:oracle:thin:@" + dbms.getServer() + ":" + dbms.getPort() + ":orcl";
+                url = dbms.getUrl() + "orcl";
                 break;
         }
         
