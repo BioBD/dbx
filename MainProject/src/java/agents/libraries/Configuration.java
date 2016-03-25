@@ -29,7 +29,7 @@ public class Configuration {
                 path = path.substring(0, path.indexOf("build")) + "parameters";
                 System.out.println(path);
                 File folder = new File(path);
-                if (folder.exists()) {
+                if (folder.exists()){
                     System.out.println("Reading parameters.");
                     File[] listOfFiles = folder.listFiles();
                     for (int i = 0; i < listOfFiles.length; i++) {
