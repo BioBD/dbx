@@ -14,6 +14,7 @@ import java.util.Locale;
 import agents.libraries.Configuration;
 import agents.libraries.ConnectionSGBD;
 import agents.libraries.Log;
+import java.util.Properties;
 
 /**
  *
@@ -25,11 +26,11 @@ public final class Captor {
     private final ArrayList<SQL> lastcapturedSQL;
     protected ConnectionSGBD driver;
     private final Schema schema;
-    public final Configuration config;
+    public final Properties config;
     public final Log log;
 
     public Captor() {
-        this.config = new Configuration();
+        this.config = Configuration.getProperties();
         this.log = new Log(this.config);
         this.capturedSQL = new ArrayList<>();
         this.lastcapturedSQL = new ArrayList<>();

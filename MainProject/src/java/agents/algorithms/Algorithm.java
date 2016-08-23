@@ -6,6 +6,7 @@ package agents.algorithms;
 
 import agents.libraries.Configuration;
 import agents.libraries.Log;
+import java.util.Properties;
 
 /**
  *
@@ -13,11 +14,11 @@ import agents.libraries.Log;
  */
 public class Algorithm {
 
-    public final Configuration config;
+    public final Properties config;
     public final Log log;
 
     public Algorithm() {
-        this.config = new Configuration();
+        this.config = Configuration.getProperties();
         this.log = new Log(this.config);
     }
 

@@ -4,6 +4,8 @@
  */
 package agents.sgbd;
 
+import agents.libraries.Configuration;
+import agents.libraries.Log;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.text.ParseException;
@@ -11,10 +13,9 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Objects;
+import java.util.Properties;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import agents.libraries.Configuration;
-import agents.libraries.Log;
 
 /**
  *
@@ -40,7 +41,7 @@ public class SQL {
     private ArrayList<Date> timesOfCapture;
     private Schema schemaDataBase;
 
-    public final Configuration config;
+    public final Properties config;
     public final Log log;
 
     public String getPid() {
@@ -130,7 +131,7 @@ public class SQL {
     }
 
     public SQL() {
-        this.config = new Configuration();
+        this.config = Configuration.getProperties();
         this.log = new Log(this.config);
         this.tablesQuery = new ArrayList<>();
         this.fieldsQuery = new ArrayList<>();

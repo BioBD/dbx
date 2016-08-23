@@ -4,6 +4,9 @@
  */
 package agents.algorithms;
 
+import agents.libraries.Configuration;
+import agents.libraries.ConnectionSGBD;
+import agents.libraries.Log;
 import agents.sgbd.Captor;
 import agents.sgbd.MaterializedView;
 import agents.sgbd.SQL;
@@ -11,9 +14,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import agents.libraries.Configuration;
-import agents.libraries.ConnectionSGBD;
-import agents.libraries.Log;
+import java.util.Properties;
 
 /**
  *
@@ -21,13 +22,13 @@ import agents.libraries.Log;
  */
 public class ActionMV {
 
-    public final Configuration config;
+    public final Properties config;
     public final Log log;
     public final ConnectionSGBD connection;
     protected final Captor captor;
 
     public ActionMV() {
-        this.config = new Configuration();
+        this.config = Configuration.getProperties();
         this.log = new Log(this.config);
         this.connection = new ConnectionSGBD();
         this.captor = new Captor();
