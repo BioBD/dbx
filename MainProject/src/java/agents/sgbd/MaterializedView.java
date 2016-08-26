@@ -6,6 +6,7 @@ package agents.sgbd;
 
 import agents.libraries.Configuration;
 import agents.libraries.Log;
+import java.util.Properties;
 
 /**
  *
@@ -18,11 +19,11 @@ public class MaterializedView extends SQL {
     private long hypoNumPages;
     private long hypoCreationCost;
     private long hypoGainAC;
-    public final Configuration config;
+    public final Properties config;
     public final Log log;
 
     public MaterializedView() {
-        this.config = new Configuration();
+        this.config = Configuration.getProperties();
         this.log = new Log(this.config);
     }
 
