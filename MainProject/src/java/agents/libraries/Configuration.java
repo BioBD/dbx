@@ -12,10 +12,11 @@ import java.io.InputStream;
 import java.util.Properties;
 
 /**
- * Esta classe é responsável pela busca de um arquivo de propriedades
- * armazenado em disco.
- * 
- * <p>O arquivo de propriedades contém os seguintes parâmetros de configuração da
+ * Esta classe é responsável pela busca de um arquivo de propriedades armazenado
+ * em disco.
+ *
+ * <p>
+ * O arquivo de propriedades contém os seguintes parâmetros de configuração da
  * aplicação:
  * <ul>
  * <li>versao: Versão da aplicação</li>
@@ -26,47 +27,55 @@ import java.util.Properties;
  * <li>user: Nome de usuário do SGBD</li>
  * <li>pwd: Senha do usuário no SGBD</li>
  * <li>geoPortalKey: Valor da chave de acesso da API GeoPortal</li>
- * <li>delayAPIThread: Tempo em segundos para um ciclo da Thread de leitura de mensagens</li>
- * <li>delayRuleThread: Tempo em segundos para um ciclo da Thread de leitura das regras</li>
- * <li>limitQuerySize: Quantidade máxima de registros na consulta da tabela de mensagens</li>
- * <li>refreshEntradaTableInterval: Tempo em milissegundos para a atualização da tabela de mensagens de entrada</li>
- * <li>refreshSaidaTableInterval: Tempo em milissegundos para a atualização da tabela de mensagens filtradas</li>
+ * <li>delayAPIThread: Tempo em segundos para um ciclo da Thread de leitura de
+ * mensagens</li>
+ * <li>delayRuleThread: Tempo em segundos para um ciclo da Thread de leitura das
+ * regras</li>
+ * <li>limitQuerySize: Quantidade máxima de registros na consulta da tabela de
+ * mensagens</li>
+ * <li>refreshEntradaTableInterval: Tempo em milissegundos para a atualização da
+ * tabela de mensagens de entrada</li>
+ * <li>refreshSaidaTableInterval: Tempo em milissegundos para a atualização da
+ * tabela de mensagens filtradas</li>
  * </ul>
- * 
+ *
  * @author Rafael
  *
  */
 public class Configuration {
-	
 
+    private static final Properties PARAMETERS = new Properties();
 
     /**
      * Este método retorna uma instância de {@link Properties} contendo as
      * propriedades de configuração da aplicação.
-     * 
+     *
      * @return Propriedades de configuração da aplicação.
      */
     public static Properties getProperties() {
         Properties prop;
-        Properties parameters = new Properties();
-        try {
-            String path = Configuration.class.getProtectionDomain().getCodeSource().getLocation().getPath().substring(1).replace("%20", " ");
-            prop = readPropertyFile(path + "parameters/credentials.properties");
-            if (prop != null) {
-                String fileLocation = prop.getProperty("location");
-                parameters = readPropertyFile(fileLocation);
+        if (PARAMETERS.isEmpty()) {
+            try {
+                prop = readPropertyFile("/config/parameters.properties");
+                if (prop != null) {
+                    PARAMETERS.putAll(prop);
+                }
+                prop = readPropertyFile("/config/sql.properties");
+                if (prop != null) {
+                    PARAMETERS.putAll(prop);
+                }
+            } catch (IOException e) {
+                System.err.print(e);
             }
-            parameters.setProperty("location", prop.getProperty("location"));
-        } catch (IOException e) {
-            e.printStackTrace();
         }
-        return parameters;
+        return PARAMETERS;
     }
 
     /**
-     * 
-     * Este método busca um arquivo de propriedades em disco, utilizando o caminho fornecido.
-     * 
+     *
+     * Este método busca um arquivo de propriedades em disco, utilizando o
+     * caminho fornecido.
+     *
      * @param filename Caminho absoluto em disco.
      * @return Uma instância de {@link Properties} lidas do arquivo
      * @throws IOException Indicando erro de leitura.
@@ -98,7 +107,7 @@ public class Configuration {
 
     /**
      * Este método retorna o local do arquivo de configuração.
-     * 
+     *
      * @return String contendo o caminho em disco do arquivo de configuração.
      */
     public static String getPathProperties() {
