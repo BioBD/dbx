@@ -538,17 +538,24 @@ public class IHSTIS_CI extends Algorithm {
 
     private void insertColumn(int cidId, Column c) {
         //Insere coluna de índice candidato
+        //RPOLIVEIRA: TODO: VERIFICAR SE EXISTE ANTES DE INSERIR
         try {
-            String queryTemp = config.getProperty("setDMLInsertCandidateIndexColumnonpostgresql");
+            String queryTemp = config.getProperty("getDMLSelectCandidateIndexColumnonpostgresql");
             PreparedStatement preparedStatement = connection.prepareStatement(queryTemp);
             //cid_id
             preparedStatement.setInt(1, cidId);
-            //cic_column_name
-            preparedStatement.setString(2, c.getName());
-
             //Executa a inserção
-            connection.executeUpdate(preparedStatement);
-
+            ResultSet result = connection.executeQuery(preparedStatement);
+            if (!result.next()) {
+                queryTemp = config.getProperty("setDMLInsertCandidateIndexColumnonpostgresql");
+                preparedStatement = connection.prepareStatement(queryTemp);
+                //cid_id
+                preparedStatement.setInt(1, cidId);
+                //cic_column_name
+                preparedStatement.setString(2, c.getName());
+                //Executa a inserção
+                connection.executeUpdate(preparedStatement);
+            }
         } catch (SQLException e) {
             log.error(e.getMessage());
         }
@@ -600,12 +607,14 @@ public class IHSTIS_CI extends Algorithm {
 
             } //Filtro é do tipo theta (>, <, >=, <=)
             else //Testa se o índice é primário
-             if (ind.getIndexType().equals("P")) {
+            {
+                if (ind.getIndexType().equals("P")) {
                     isCost = deepTree + (ind.getNumberOfRows() / (numberOfTableTuples / numberOfTablePages));;
                 } //Índice é secundário
                 else {
                     isCost = deepTree + ind.getNumberOfRows();
                 }
+            }
         }
 
         return isCost;
