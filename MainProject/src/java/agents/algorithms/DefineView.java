@@ -26,6 +26,7 @@ public class DefineView extends Algorithm {
     public ArrayList<MaterializedView> getWorkloadSelected(ArrayList<MaterializedView> capturedQueries) {
         for (int i = 0; i < capturedQueries.size(); i++) {
             MaterializedView current = (MaterializedView) capturedQueries.get(i);
+            System.out.println("passou aqui");
             current.setHypoMaterializedView(this.getDdlCreateViewFromQuery(current));
             capturedQueries.set(i, current);
         }
@@ -85,12 +86,10 @@ public class DefineView extends Algorithm {
     protected void gerateClauseGroupByForDDLView(SQL query) {
         if (!this.groupBy.isEmpty() && query.existClause("group by")) {
             this.groupBy = query.getClauseFromSql("group by") + this.groupBy;
+        } else if (this.hasForceClauseGroupBy()) {
+            this.groupBy = " group by " + this.groupBy.substring(1);
         } else {
-            if (this.hasForceClauseGroupBy()) {
-                this.groupBy = " group by " + this.groupBy.substring(1);
-            } else {
-                this.groupBy = "";
-            }
+            this.groupBy = "";
         }
     }
 

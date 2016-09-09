@@ -40,24 +40,27 @@ ALTER SCHEMA agent OWNER TO postgres;
 
 SET search_path = agent, pg_catalog;
 
-CREATE FUNCTION agent.limpa_estatisticas() RETURNS boolean
-  LANGUAGE sql
-  AS $$
-delete from agent.tb_epoque;
-delete from agent.tb_profits;
-delete from agent.tb_task_indexes;
-delete from agent.tb_candidate_index_column;
-delete from agent.tb_access_plan;
-delete from agent.tb_workload_log;
-delete from agent.tb_task_views;
-delete from agent.tb_candidate_view;
-delete from agent.tb_candidate_index;
-delete from agent.tb_workload;
-select true;
-$$;
 
+CREATE OR REPLACE FUNCTION agent.limpa_estatisticas()
+  RETURNS boolean AS
+$BODY$
+  delete from agent.tb_access_plan;
+  delete from agent.tb_task_views;
+  delete from agent.tb_candidate_view;
+  delete from agent.tb_workload;
+  delete from agent.tb_task_indexes;
+  delete from agent.tb_candidate_index_column;
+  delete from agent.tb_candidate_index;
+  delete from agent.tb_epoque;
+  delete from agent.tb_profits;
+  delete from agent.tb_task_indexes;
+  select true;
+  $BODY$
+  LANGUAGE sql VOLATILE
+  COST 100;
+ALTER FUNCTION agent.limpa_estatisticas()
+  OWNER TO postgres;
 
-ALTER FUNCTION agent.limpa_estatisticas() OWNER TO postgres;
 
 SET default_tablespace = '';
 
@@ -78,7 +81,7 @@ ALTER TABLE agent.tb_access_plan OWNER TO postgres;
 
 CREATE TABLE agent.tb_candidate_index (
 cid_id integer NOT NULL,
-cid_table_name character varying(100) NOT NULL,
+cid_table_name character varying(1024) NOT NULL,
 cid_index_profit integer NOT NULL DEFAULT 0,
 cid_creation_cost integer NOT NULL DEFAULT 0,
 cid_status character(1),
@@ -86,7 +89,7 @@ cid_type character(1),
 cid_initial_profit integer,
 cid_fragmentation_level integer,
 cid_initial_ratio real,
-cid_index_name character varying(100),
+cid_index_name character varying(1024),
 cid_creation_time timestamp with time zone, 
 CONSTRAINT pk_tb_candidate_index PRIMARY KEY (cid_id)
 );
@@ -115,7 +118,7 @@ cmv_cost bigint,
 cmv_profit bigint NOT NULL,
 cmv_status character(1) DEFAULT 'H'::bpchar, -- Possiveis valores:...
 cmv_timestamp_create timestamp with time zone,
-cmv_id serial NOT NULL,
+cmv_id integer NOT NULL,
 CONSTRAINT pk_tb_candidate_view PRIMARY KEY (cmv_id)
 )
 WITH (
@@ -295,11 +298,6 @@ ALTER TABLE ONLY agent.tb_access_plan
 ALTER TABLE ONLY agent.tb_profits
   ADD CONSTRAINT fk_wld_id FOREIGN KEY (wld_id) REFERENCES agent.tb_workload(wld_id);
 
-
-
-
-ALTER TABLE ONLY agent.tb_candidate_view
-  ADD CONSTRAINT tb_cadidate_view_fk FOREIGN KEY (cmv_id) REFERENCES agent.tb_workload(wld_id) ON UPDATE CASCADE ON DELETE CASCADE;
 
 
 
