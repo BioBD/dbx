@@ -15,7 +15,6 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Enumeration;
 import java.util.Locale;
-import java.util.Properties;
 import java.util.ResourceBundle;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -24,7 +23,7 @@ import java.util.regex.Pattern;
 
 public class Log {
 
-    protected static Properties prop = null;
+    protected static Configuration prop = null;
     protected static String debug;
     private static ResourceBundle bundle;
     private static Locale locale;
@@ -62,7 +61,7 @@ public class Log {
                 && prop.containsKey("country");
     }
 
-    public Log(Properties properties) {
+    public Log(Configuration properties) {
         Log.prop = properties;
         readDebug();
         createBundle();

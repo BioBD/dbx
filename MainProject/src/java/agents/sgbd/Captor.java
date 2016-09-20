@@ -14,7 +14,6 @@ import java.util.Locale;
 import agents.libraries.Configuration;
 import agents.libraries.ConnectionSGBD;
 import agents.libraries.Log;
-import java.util.Properties;
 
 /**
  *
@@ -26,11 +25,11 @@ public final class Captor {
     private final ArrayList<SQL> lastcapturedSQL;
     protected ConnectionSGBD driver;
     private final Schema schema;
-    public final Properties config;
+    public final Configuration config;
     public final Log log;
 
     public Captor() {
-        this.config = Configuration.getProperties();
+        this.config = new Configuration();
         this.log = new Log(this.config);
         this.capturedSQL = new ArrayList<>();
         this.lastcapturedSQL = new ArrayList<>();
@@ -512,6 +511,23 @@ public final class Captor {
         } else {
             return 0;
         }
+    }
+    public ArrayList<SQL> getALLWorkload() {
+        ArrayList<SQL> sqlList = new ArrayList<>();
+        try {
+            PreparedStatement prepareStatement = driver.prepareStatement(config.getProperty("getSqlQueriesALLObserver"));
+            ResultSet resultset = driver.executeQuery(prepareStatement);
+            while (resultset.next()) {
+                SQL sql = new SQL();
+                sql.setResultSet(resultset);
+                sqlList.add(sql);
+
+            }
+            resultset.close();
+        } catch (SQLException ex) {
+            log.error(ex);
+        }
+        return sqlList;
     }
     /* Implementation to DBx-Iqt */
     public ArrayList<SQL> getWorkloadFromTBWorkloadToIqt() {

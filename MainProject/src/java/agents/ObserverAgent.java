@@ -6,6 +6,7 @@ package agents;
 
 import agents.algorithms.ActionMV;
 import agents.algorithms.IHSTIS;
+import agents.algorithms.PIH_FI;
 import agents.sgbd.Captor;
 import agents.sgbd.SQL;
 import static java.lang.Thread.sleep;
@@ -22,10 +23,12 @@ public class ObserverAgent extends Agent {
 
     protected final Captor captor;
     protected final ActionMV controlMV;
+    protected final PIH_FI pih;
 
     public ObserverAgent() {
         this.captor = new Captor();
         this.controlMV = new ActionMV();
+        pih = new PIH_FI(captor.getSchemaDataBase());
     }
 
     @Override
@@ -134,11 +137,19 @@ public class ObserverAgent extends Agent {
             ihstis.runAlg(sql);
         }
     }
-
+    public void evaluatePartialIndexes(ArrayList<SQL> sqlList){
+        
+        for (SQL sql : sqlList) { 
+            pih.runAlg(sql);
+        }
+    }
     private void evaluateFromAllTypesTuning() {
         ArrayList<SQL> sqlList = captor.getWorkloadFromTBWorkload();
         if (config.getProperty("indexActive").equals("1")) {
             this.evaluateIndexes(sqlList);
+        }
+        if(config.getProperty("partialIndex").equals("1")){
+            evaluatePartialIndexes(sqlList);
         }
         if (config.getProperty("materializedViewActive").equals("1")) {
             this.evaluateMV(sqlList);

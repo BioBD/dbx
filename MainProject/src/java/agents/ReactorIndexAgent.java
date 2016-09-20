@@ -80,7 +80,7 @@ public class ReactorIndexAgent extends ReactorAgent {
             String indexName = ind.getIndexName();
             String ddl = null;
 
-            ddl = "CREATE INDEX IF NOT EXISTS "
+            ddl = "CREATE INDEX "
                     + indexName
                     + " ON "
                     + tableName
@@ -114,7 +114,6 @@ public class ReactorIndexAgent extends ReactorAgent {
                 try {
                     log.msg("Clustering Index " + indexName);
                     String ddlCluster = "Cluster " + tableName + " Using " + indexName;
-                    log.msg(ddlCluster);
                     preparedStatement = connection.prepareStatement(ddlCluster);
                     connection.executeUpdate(preparedStatement);
                     preparedStatement.close();
@@ -123,14 +122,6 @@ public class ReactorIndexAgent extends ReactorAgent {
                     log.error(e);
                 }
 
-            }
-            try {
-                preparedStatement = connection.prepareStatement("update agent.tb_candidate_index set cid_status = 'R' where cid_index_name = ?");
-                preparedStatement.setString(1, ind.getIndexName());
-                connection.executeUpdate(preparedStatement);
-                preparedStatement.close();
-            } catch (SQLException e) {
-                log.error(e);
             }
         }
     }

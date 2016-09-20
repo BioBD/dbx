@@ -4,7 +4,6 @@
  */
 package agents.algorithms;
 
-import agents.libraries.ConnectionSGBD;
 import agents.sgbd.Column;
 import agents.sgbd.Filter;
 import agents.sgbd.Index;
@@ -15,6 +14,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import agents.libraries.ConnectionSGBD;
 
 /**
  *
@@ -206,32 +206,30 @@ public class IHSTIS_CI extends Algorithm {
          */
         //Percorrer os Indices Candidatos
         for (Index lCandidate : lCandidates) {
-            if (!lCandidate.getTableName().isEmpty()) {
-                //Testa se o indice ja existe na metabase local
-                if (!inLM(lCandidate)) {
-                    //Insere um novo indice candidato na LM
-                    insertIndexLM(lCandidate);
-                }
-                //verificar se o indice ja estah associado ah tarefa corrente
-                if (!inTaskIndexes(wldId, lCandidate)) {
-                    //Inserir tupla na tabela tb_task_indexes
-                    insertTaskIndexes(wldId, lCandidate);
-                }
-
-                //Verifica se o indice eh hipotetico (ou seja, nao eh um indice real)
-                if (isHypotheticalIndex(lCandidate) && !lCandidate.getTableName().isEmpty()) {
-                    //Estimar Custo de Index Scan
-                    indexScanCost = getIndexScanCost(lCandidate);
-                    //Estima custo do SeqScan
-                    seqScanCost = getSeqScanCost(lCandidate.getTableName());
-                    //Verifica se o custo de utilizar o indice (Index Scan) eh menor que o custo do SeqScan
-                    if (indexScanCost < seqScanCost) {
-                        profit = seqScanCost - indexScanCost;
-                    }
-                    updateProfit(lCandidate, profit);
-                }
-                //Se o indice eh real e nao foi utilizado deveria ter um beneficio descontado???
+            //Testa se o indice ja existe na metabase local
+            if (!inLM(lCandidate)) {
+                //Insere um novo indice candidato na LM
+                insertIndexLM(lCandidate);
             }
+            //verificar se o indice ja estah associado ah tarefa corrente
+            if (!inTaskIndexes(wldId, lCandidate)) {
+                //Inserir tupla na tabela tb_task_indexes
+                insertTaskIndexes(wldId, lCandidate);
+            }
+
+            //Verifica se o indice eh hipotetico (ou seja, nao eh um indice real)
+            if (isHypotheticalIndex(lCandidate)) {
+                //Estimar Custo de Index Scan
+                indexScanCost = getIndexScanCost(lCandidate);
+                //Estima custo do SeqScan
+                seqScanCost = getSeqScanCost(lCandidate.getTableName());
+                //Verifica se o custo de utilizar o indice (Index Scan) eh menor que o custo do SeqScan
+                if (indexScanCost < seqScanCost) {
+                    profit = seqScanCost - indexScanCost;
+                }
+                updateProfit(lCandidate, profit);
+            }
+            //Se o indice eh real e nao foi utilizado deveria ter um beneficio descontado???
         }
     }
 
@@ -538,24 +536,17 @@ public class IHSTIS_CI extends Algorithm {
 
     private void insertColumn(int cidId, Column c) {
         //Insere coluna de índice candidato
-        //RPOLIVEIRA: TODO: VERIFICAR SE EXISTE ANTES DE INSERIR
         try {
-            String queryTemp = config.getProperty("getDMLSelectCandidateIndexColumnonpostgresql");
+            String queryTemp = config.getProperty("setDMLInsertCandidateIndexColumnonpostgresql");
             PreparedStatement preparedStatement = connection.prepareStatement(queryTemp);
             //cid_id
             preparedStatement.setInt(1, cidId);
+            //cic_column_name
+            preparedStatement.setString(2, c.getName());
+
             //Executa a inserção
-            ResultSet result = connection.executeQuery(preparedStatement);
-            if (!result.next()) {
-                queryTemp = config.getProperty("setDMLInsertCandidateIndexColumnonpostgresql");
-                preparedStatement = connection.prepareStatement(queryTemp);
-                //cid_id
-                preparedStatement.setInt(1, cidId);
-                //cic_column_name
-                preparedStatement.setString(2, c.getName());
-                //Executa a inserção
-                connection.executeUpdate(preparedStatement);
-            }
+            connection.executeUpdate(preparedStatement);
+
         } catch (SQLException e) {
             log.error(e.getMessage());
         }
@@ -606,14 +597,15 @@ public class IHSTIS_CI extends Algorithm {
                 }
 
             } //Filtro é do tipo theta (>, <, >=, <=)
-            else //Testa se o índice é primário
-            {
+            else {
+                //Testa se o índice é primário
                 if (ind.getIndexType().equals("P")) {
                     isCost = deepTree + (ind.getNumberOfRows() / (numberOfTableTuples / numberOfTablePages));;
                 } //Índice é secundário
                 else {
                     isCost = deepTree + ind.getNumberOfRows();
                 }
+
             }
         }
 

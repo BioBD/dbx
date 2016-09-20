@@ -52,7 +52,7 @@ public class PlanPostgreSQL extends Plan {
     public ArrayList<SeqScan> getSeqScanOperations() {
 
         ArrayList<SeqScan> sso = new ArrayList();
-        ArrayList<Filter> filters = new ArrayList();
+        ArrayList<Filter> filters;
         //String plan = null;
         String name = null, fType = null;
         String[] attributes = null;
@@ -62,18 +62,29 @@ public class PlanPostgreSQL extends Plan {
         Filter filter;
         SeqScan ss;
 
-        String[] scan = getPlan().split("seq scan on ");
+        Pattern scans = Pattern.compile("(?:-> *seq scan on) ((?!->).)*", Pattern.DOTALL);
+        Matcher scaner = scans.matcher(getPlan());
+        ArrayList<String> scanList = new ArrayList<String>();//getPlan().split("seq scan on ");
+        while (scaner.find()) {
+            scanList.add(scaner.group().replaceFirst("-> *seq scan on *", ""));
+        }
+        String [] scan = new String[scanList.size()];
+        for(int i=0;i<scanList.size();i++){
+            scan[i]= scanList.get(i);
+        }
 
         Pattern rest_name = Pattern.compile("(.*).cost");
         Pattern rest_cols = Pattern.compile("filter:(.*)");
         Pattern rest;
 
-        for (int i = 1; i < scan.length; i++) {
+        for (int i = 0; i < scan.length; i++) {
             Matcher nameM, str;
 
             /* Pega o custo. De qual Sec Scan? */
             seqScanCost = getCost();
             rows = getNumRow();
+            
+            filters =  new ArrayList();
 
             nameM = rest_name.matcher(scan[i]);
             while (nameM.find()) {
@@ -92,16 +103,16 @@ public class PlanPostgreSQL extends Plan {
                 //Trata o SeqScan atual
                 scan[i] = (scan[i]).replaceAll("[(]|[)]|filter:", "");
                 scan[i] = (scan[i]).replaceAll("::\\w+,*", "");
-                scan[i] = (scan[i]).replaceAll(" and | or ", ",");
+                scan[i] = (scan[i]).replaceAll(" and | or ", "&");
 
                 if (scan[i].matches(" and | or ")) {
-                    scan[i] = (scan[i]).replaceAll(" and | or ", ",");
+                    scan[i] = (scan[i]).replaceAll(" and | or ", "&");
                 } else {
-                    scan[i] = scan[i] + ",";
+                    scan[i] = scan[i] + "&";
                 }
 
                 //Cria um array de atributos
-                attributes = scan[i].split(",");
+                attributes = scan[i].split("&");
                 rest_cols = Pattern.compile(".*[|]");
 
                 //Armazena os atributos no ArrayList columns
@@ -125,19 +136,26 @@ public class PlanPostgreSQL extends Plan {
                     }
 
                     attributes[j] = (attributes[j]).trim();
-
-                    filter = new Filter();
-                    filter.setName(attributes[j]);
-                    filter.setFilterType(fType);
-
-                    /*Cria o array list de filters*/
-                    filters.add(filter);
+                    boolean contain=false;
+                    for(Filter f : filters){
+                        if(f.getName().equals(attributes[j]))
+                            contain = true;
+                    }
+                    if(!contain){
+                        filter = new Filter();
+                        filter.setName(attributes[j]);
+                        filter.setFilterType(fType);
+                        /*Cria o array list de filters*/
+                        filters.add(filter);
+                    }
                 }
             }
             /* adiciona o sec scan na lista */
-            ss = new SeqScan(name, filters, seqScanCost);
-            ss.setNumberOfRows(rows);
-            sso.add(ss);
+            if(filters.size()>0){
+                ss = new SeqScan(name, filters, seqScanCost);
+                ss.setNumberOfRows(rows);
+                sso.add(ss);
+            }
         }
         return sso;
     }

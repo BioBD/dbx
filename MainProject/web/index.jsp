@@ -60,6 +60,11 @@
                                 <% } else {%>
                                 PredictorIndex Agent is running.
                                 <% }%><br/>
+                                <% if (memory.isNotRunning("AgentPredictorIndexPartial")) {%>
+                                <a href="ServletAgents?cmd=startPredictorPartialIndexAgent">Start PredictorPartialIndex Agent</a>
+                                <% } else {%>
+                                PredictorPartialIndex Agent is running.
+                                <% }%><br/>
                             </td>
                         </tr>
                         <tr>
@@ -75,6 +80,12 @@
                                 <a href="ServletAgents?cmd=startReactorIndexAgent">Start ReactorIndex Agent</a>
                                 <% } else {%>
                                 ReactorIndex Agent is running.
+                                <% }%><br/>
+                                
+                                <% if (memory.isNotRunning("AgentReactorIndexPartial")) {%>
+                                <a href="ServletAgents?cmd=startReactorPartialIndexAgent">Start ReactorPartialIndex Agent</a>
+                                <% } else {%>
+                                ReactorPartialIndex Agent is running.
                                 <% }%><br/>
                             </td>
                         </tr>

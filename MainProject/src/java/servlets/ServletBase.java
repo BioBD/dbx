@@ -1,11 +1,8 @@
 package servlets;
 
-import agents.libraries.Configuration;
-import agents.libraries.Log;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.servlet.ServletException;
@@ -13,6 +10,8 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import agents.libraries.Configuration;
+import agents.libraries.Log;
 
 /**
  *
@@ -26,7 +25,7 @@ public class ServletBase extends HttpServlet {
     protected String output = "";
     protected String param = "";
     protected Log log;
-    protected Properties config;
+    protected Configuration config;
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -43,7 +42,7 @@ public class ServletBase extends HttpServlet {
         this.response = response;
         this.output = "";
         this.param = "";
-        this.config = Configuration.getProperties();
+        this.config = new Configuration();
         this.log = new Log(config);
         this.response.setContentType("text/html;charset=UTF-8");
         if (this.request != null && this.request.getParameterMap().containsKey("cmd") && !this.request.getParameter("cmd").isEmpty()) {

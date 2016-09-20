@@ -10,15 +10,14 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.Properties;
 
 public class ConnectionSGBD {
 
-    private final Properties config;
+    private final Configuration config;
     private final Log log;
 
     public ConnectionSGBD() {
-        this.config = Configuration.getProperties();
+        this.config = new Configuration();
         this.log = new Log(this.config);
         connect();
     }

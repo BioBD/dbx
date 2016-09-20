@@ -4,6 +4,8 @@
  */
 package servlets;
 
+import agents.AgentPredictorIndexPartial;
+import agents.AgentReactorIndexPartial;
 import agents.ObserverAgent;
 import agents.PredictorIndexAgent;
 import agents.PredictorMVAgent;
@@ -70,6 +72,28 @@ public class ServletAgents extends ServletBase {
             threadObserver.start();
             memory.addAgent("ReactorIndexAgent");
             log.msg("ReactorIndexAgent agent started");
+        }
+    }
+    
+    public void startPredictorPartialIndexAgent() {
+        Memory memory = new Memory();
+        if (memory.isNotRunning("AgentPredictorIndexPartial")) {
+            AgentPredictorIndexPartial agent = new AgentPredictorIndexPartial();
+            Thread threadObserver = new Thread(agent);
+            threadObserver.start();
+            memory.addAgent("AgentPredictorIndexPartial");
+            log.msg("AgentPredictorIndexPartial agent started");
+        }
+    }
+
+    public void startReactorPartialIndexAgent() {
+        Memory memory = new Memory();
+        if (memory.isNotRunning("AgentReactorIndexPartial")) {
+            AgentReactorIndexPartial agent = new AgentReactorIndexPartial();
+            Thread threadObserver = new Thread(agent);
+            threadObserver.start();
+            memory.addAgent("AgentReactorIndexPartial");
+            log.msg("AgentReactorIndexPartial agent started");
         }
     }
 

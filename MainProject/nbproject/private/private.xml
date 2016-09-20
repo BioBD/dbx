@@ -3,11 +3,11 @@
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
-            <file>file:/C:/_workspace/dbx/MainProject/src/java/config/parameters.properties</file>
-            <file>file:/C:/_workspace/dbx/MainProject/src/java/agents/libraries/Configuration.java</file>
-            <file>file:/C:/_workspace/dbx/MainProject/src/java/agents/algorithms/IHSTIS_CI.java</file>
-            <file>file:/C:/_workspace/dbx/MainProject/src/java/agents/sgbd/PlanPostgreSQL.java</file>
-            <file>file:/C:/_workspace/dbx/MainProject/src/java/agents/ReactorIndexAgent.java</file>
+            <file>file:/C:/Bitnami/wappstack-5.6.20-1/apache2/htdocs/dbx/MainProject/src/java/agents/sgbd/IndexCandidate.java</file>
+            <file>file:/C:/Bitnami/wappstack-5.6.20-1/apache2/htdocs/dbx/MainProject/src/java/agents/AgentPredictorIndexPartial.java</file>
+            <file>file:/C:/Bitnami/wappstack-5.6.20-1/apache2/htdocs/dbx/MainProject/parameters/sql.properties</file>
+            <file>file:/C:/Bitnami/wappstack-5.6.20-1/apache2/htdocs/dbx/MainProject/src/java/agents/algorithms/PIH_FI.java</file>
+            <file>file:/C:/Bitnami/wappstack-5.6.20-1/apache2/htdocs/dbx/MainProject/src/java/agents/AgentReactorIndexPartial.java</file>
         </group>
     </open-files>
 </project-private>

@@ -10,12 +10,11 @@ databaseName=pg_tpch_1gb
 # Niveis de Debug ===========================================================
 # 1* = AVISOS
 # *1 = CRIAR ARQUIVO LOG NO DISCO
-# 1* = CRIAR PASTA ONDE SER\u00c3O ARMAZENADOS OS ARQUIVOS DO IQT
 debug=11
 signature=/*AGENT_DBX*/
 # Modo de Execucao
 # 1 = Indices
-# 2 = Vis\u00c3\u00b5es materializadas
+# 2 = Visoes materializadas
 executionMode=2
 # ============================================================== SQL SERVER ===============================================================
 # Dados de conexao do SQL Server
@@ -27,14 +26,14 @@ pwdSQLServer=*****
 # Dados de conexao do Postgres
 driverPostgres=org.postgresql.Driver
 urlPostgres=jdbc:postgresql://localhost:5432/
-userPostgres=postgres
-pwdPostgres=postgres
+userPostgres=******
+pwdPostgres=*******
 # ============================================================== ORACLE ===============================================================
 # Dados de conexao do Oracle
 urlOracle=jdbc:oracle:thin:@localhost:1521:
 userOracle=*****
 pwdOracle=*****
-# ======================================= TUNING ACTIONS =================================================================================
+
 # Materialized Views =========================================================
 thresholdpostgresql=1
 thresholdoracle=1
@@ -56,11 +55,8 @@ seq_page_costpostgresql=1.0
 seq_page_costsqlserver=1.0
 cpu_tuple_costpostgresql=0.01
 cpu_tuple_costsqlserver=0.01
+
 # DBX Options =================================================================
 indexActive=1
 materializedViewActive=1
 insertTableLog=1
-folderLog=C:\\_workspace\\dbx\\MainProject\\log
-# IQT Files ===================================================================
-filesPathIqt=C:\\iqtFiles\\
-
